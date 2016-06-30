@@ -59,6 +59,58 @@ This creates a new entity inside the world, and adds a position component to it.
 world.entity().set('position', 5, 10)
 ```
 
+#### Use entities
+
+##### Check if a component exists
+
+```javascript
+entity.has('position')
+```
+
+##### Get a component
+
+```javascript
+let position = entity.get('position')
+
+let distance = position.x - someOtherPosition
+```
+
+##### Modify a component
+
+**Note:** The following methods will create the component if it does not already exist!
+
+###### Using get
+
+Get component first to access or set any of its properties.
+
+```javascript
+entity.get('position').x += 50
+```
+
+###### Using set
+
+Call the component's constructor function to set values.
+
+```javascript
+entity.set('position', 50)
+```
+
+###### Using merge
+
+Merge a new object's properties into the component.
+
+```javascript
+entity.merge('position', {
+	x: 50
+})
+```
+
+##### Remove a component
+
+```javascript
+entity.remove('position')
+```
+
 #### Seralization
 
 ##### Serialize a world, entity, or component to a JSON string
