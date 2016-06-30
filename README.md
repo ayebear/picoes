@@ -61,6 +61,11 @@ world.entity().set('position', 5, 10)
 
 #### Use entities
 
+Assume the following have an entity object defined:
+```javascript
+let entity = world.entity()
+```
+
 ##### Check if a component exists
 
 ```javascript
@@ -109,6 +114,14 @@ entity.merge('position', {
 
 ```javascript
 entity.remove('position')
+```
+
+#### Destroy entities
+
+Remove an entity from the world.
+
+```javascript
+entity.destroy()
 ```
 
 #### Seralization
