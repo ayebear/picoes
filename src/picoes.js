@@ -1,7 +1,22 @@
+function isFunction(obj) {
+	return typeof obj === 'function'
+}
+
+function isObject(obj) {
+	return typeof obj === 'object'
+}
+
 class Entity {
 	constructor(world) {
 		this.world = world
 		this.data = {}
+	}
+
+	get(component) {
+		if (!this.has(component)) {
+			this.set(component)
+		}
+		return this.data[component]
 	}
 
 	// Adds or overwrites a new component
@@ -76,8 +91,18 @@ class World {
 	}
 
 	// world.system(class { every(ent) {} })
-	system(systemClass) {
-		this.systems.push(new systemClass())
+	system(components, systemClass) {
+		let newSystem = new systemClass()
+		newSystem.components = components
+		this.systems.push(newSystem)
+	}
+
+	init() {
+		for (let system of this.systems) {
+			if ('init' in system) {
+				system.init()
+			}
+		}
 	}
 
 	// world.run()
@@ -122,6 +147,17 @@ class World {
 			}
 		}
 		return entities
+	}
+
+	prototype(name, data) {
+		console.log('Warning: Prototypes are not implemented yet')
+	}
+
+	prototypes(data) {
+		let parsed = JSON.parse(data)
+		for (let name in parsed) {
+			this.prototype(name, parsed[name])
+		}
 	}
 }
 
