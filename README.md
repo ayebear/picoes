@@ -38,6 +38,21 @@ world.component('position', function(x = 0, y = 0) {
 })
 ```
 
+You can also register components from objects, but then you cannot use the shorthand set() syntax.
+
+```javascript
+world.component('position', {
+	x: 0,
+	y: 0
+})
+```
+
+You can also make basic components without any properties. You can add properties to it later on though.
+
+```javascript
+world.component('position')
+```
+
 #### Register systems
 
 This registers a basic movement system.
