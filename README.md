@@ -66,6 +66,19 @@ world.system(['position', 'velocity'], class {
 })
 ```
 
+#### Run systems
+
+Run all systems registered in the world.
+
+```javascript
+world.run()
+```
+
+Before running, you may initialize systems to call the init() method on them.
+```javascript
+world.init()
+```
+
 #### Create entities
 
 This creates a new entity inside the world, and adds a position component to it.
