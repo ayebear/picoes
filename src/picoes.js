@@ -79,12 +79,16 @@ class Entity {
 
 	// Serializes entire entity to JSON
 	toJson() {
-
+		// TODO: Allow for custom recursive toJson methods
+		return JSON.stringify(this.data)
 	}
 
 	// Deserializes data from JSON, creating new components
 	fromJson(data) {
-
+		let parsed = JSON.parse(data)
+		for (let name in parsed) {
+			this.merge(name, parsed[name])
+		}
 	}
 }
 
