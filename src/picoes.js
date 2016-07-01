@@ -70,7 +70,7 @@ class Entity {
 		if (component === undefined) {
 			// Remove all
 			this.data = {}
-		} else if (component.length > 0) {
+		} else if (component in this.data) {
 			// Remove component
 			delete this.data[component]
 		}
@@ -123,7 +123,7 @@ class World {
 
 	init() {
 		for (let system of this.systems) {
-			if ('init' in system) {
+			if (isFunction(system.init)) {
 				system.init()
 			}
 		}
@@ -132,11 +132,11 @@ class World {
 	// world.run()
 	run() {
 		for (let system of this.systems) {
-			if ('pre' in system) {
+			if (isFunction(system.pre)) {
 				system.pre()
 			}
 
-			if ('every' in system) {
+			if (isFunction(system.every)) {
 				let entities = this.query(system.components)
 				for (let ent of entities) {
 					// TODO: Pass all components dynamically as parameters or an array or something
@@ -144,7 +144,7 @@ class World {
 				}
 			}
 
-			if ('post' in system) {
+			if (isFunction(system.post)) {
 				system.post()
 			}
 		}
