@@ -23,11 +23,11 @@ describe('World', function() {
 				x: 0,
 				y: 0
 			})
-			let ent = world.entity().merge('position', {
+			let ent = world.entity().update('position', {
 				x: 1,
 				y: 2
 			})
-			let ent2 = world.entity().merge('position', {
+			let ent2 = world.entity().update('position', {
 				x: 1
 			})
 			assert('position' in world.components)
@@ -42,7 +42,7 @@ describe('World', function() {
 		it('define an empty component', function () {
 			let world = new es.World()
 			world.component('position')
-			let ent = world.entity().merge('position', {
+			let ent = world.entity().update('position', {
 				x: 1
 			})
 			assert('position' in world.components)
@@ -74,8 +74,8 @@ describe('World', function() {
 			})
 			let entA = world.entity()
 			let entB = world.entity()
-			entA.merge('position', {x: 1, y: 1}).merge('velocity', {x: 1, y: 0})
-			entB.merge('position', {x: 30, y: 40}).merge('velocity', {x: -1, y: 2})
+			entA.update('position', {x: 1, y: 1}).update('velocity', {x: 1, y: 0})
+			entB.update('position', {x: 30, y: 40}).update('velocity', {x: -1, y: 2})
 
 			assert(entA.get('position').x == 1 && entA.get('position').y == 1)
 			assert(entB.get('position').x == 30 && entB.get('position').y == 40)
@@ -116,17 +116,17 @@ describe('World', function() {
 			assert(ent.get('position').x === 5)
 			assert(ent.get('position').y === 0)
 
-			ent.merge('position', {y: 3})
+			ent.update('position', {y: 3})
 			assert(Object.keys(ent.data).length == 1)
 			assert(ent.get('position').x === 5)
 			assert(ent.get('position').y === 3)
 
-			ent.merge('object', {val: 50})
+			ent.update('object', {val: 50})
 			assert(Object.keys(ent.data).length == 2)
 			assert(ent.get('object').val === 50)
 			assert(ent.get('object').test === 1)
 
-			ent.merge('empty', {testing: 100})
+			ent.update('empty', {testing: 100})
 			assert(Object.keys(ent.data).length == 3)
 			assert(ent.get('empty').testing === 100)
 		})
@@ -153,7 +153,7 @@ describe('World', function() {
 			assert(Object.keys(ent.data).length == 2)
 			assert(ent.has('position'))
 			assert(ent.has('velocity'))
-			ent.remove()
+			ent.removeAll()
 			assert(Object.keys(ent.data).length == 0)
 			assert(!ent.has('position'))
 			assert(!ent.has('velocity'))
@@ -161,7 +161,7 @@ describe('World', function() {
 		it('serialize components', function() {
 			let world = new es.World()
 			world.component('position')
-			let ent = world.entity().merge('position', {x: 4, y: 6})
+			let ent = world.entity().update('position', {x: 4, y: 6})
 
 			let data = JSON.parse(ent.toJson())
 			assert(data)

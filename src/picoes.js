@@ -39,7 +39,7 @@ class Entity {
 		return this.data[component]
 	}
 
-	// Adds or overwrites a new component
+	// Adds a new component, or overwrites an existing component
 	// ent.set('position', 1, 2)
 	set(component, ...args) {
 		let compTemplate = this.world.components[component]
@@ -53,9 +53,9 @@ class Entity {
 		return this
 	}
 
-	// Updates data from existing component (and creates a new one first if necessary)
-	// ent.merge('position', {x: 1, y: 2})
-	merge(component, data) {
+	// Updates component data from an object or other component
+	// ent.update('position', {x: 1, y: 2})
+	update(component, data) {
 		let comp = this.get(component)
 		for (let key in data) {
 			comp[key] = data[key]
@@ -65,23 +65,20 @@ class Entity {
 
 	// Removes a component from the entity (no effect when it doesn't exist)
 	// ent.remove('position')
-	// Also can remove all components: ent.remove()
-	// TODO: Maybe split into removeAll, seems dangerous
 	remove(component) {
-		if (component === undefined) {
-			// Remove all
-			this.data = {}
-		} else if (component in this.data) {
-			// Remove component
-			delete this.data[component]
-		}
+		delete this.data[component]
 		return this
+	}
+
+	// Remove all components
+	removeAll() {
+		this.data = {}
 	}
 
 	// Remove this entity and all of its components from the world
 	destroy() {
 		if (this.entId) {
-			this.remove()
+			this.removeAll()
 			delete this.world.entities[this.entId]
 			this.entId = null
 		}
@@ -97,7 +94,7 @@ class Entity {
 	fromJson(data) {
 		let parsed = JSON.parse(data)
 		for (let name in parsed) {
-			this.merge(name, parsed[name])
+			this.update(name, parsed[name])
 		}
 	}
 }
