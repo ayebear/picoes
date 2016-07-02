@@ -84,6 +84,11 @@ describe('World', function() {
 
 			assert(entA.get('position').x == 2 && entA.get('position').y == 1)
 			assert(entB.get('position').x == 29 && entB.get('position').y == 42)
+
+			world.run()
+
+			assert(entA.get('position').x == 3 && entA.get('position').y == 1)
+			assert(entB.get('position').x == 28 && entB.get('position').y == 44)
 		})
 	})
 

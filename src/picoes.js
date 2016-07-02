@@ -19,8 +19,9 @@ function clone(obj) {
 }
 
 class Entity {
-	constructor(world) {
+	constructor(world, id) {
 		this.world = world
+		this.id = id
 		this.data = {}
 	}
 
@@ -77,6 +78,15 @@ class Entity {
 		return this
 	}
 
+	// Remove this entity and all of its components from the world
+	destroy() {
+		if (this.entId) {
+			this.remove()
+			delete this.world.entities[this.entId]
+			this.entId = null
+		}
+	}
+
 	// Serializes entire entity to JSON
 	toJson() {
 		// TODO: Allow for custom recursive toJson methods
@@ -98,7 +108,20 @@ class World {
 		this.entities = {}
 		this.components = {}
 
-		this.idCounter = 0
+		this.idCounter = 1
+
+		// Maps component names to sets of entity IDs which contain those components
+		this.index = {}
+		/*
+		{
+			position: [1, 5, 6, 19],
+			velocity: [6, 19],
+			sprite: [19, 20],
+		}
+
+		Querying could use the minimum length array, and only iterate through those entities,
+			then check if each of those have all of the specified components.
+		*/
 	}
 
 	// world.component(class { constructor(a) {this.a = a} })
@@ -110,7 +133,7 @@ class World {
 	// or world.entity('Player')
 	entity(name) {
 		let entId = this.idCounter++
-		let ent = new Entity(this)
+		let ent = new Entity(this, entId)
 
 		// TODO: Use 'name' to get prototype data
 
@@ -142,14 +165,7 @@ class World {
 
 			// Run the "every" method in the system
 			if (isFunction(system.every)) {
-				let entities = this.query(system.components)
-				for (let ent of entities) {
-					// Get all components as an array
-					let comps = system.components.map(name => ent.get(name))
-
-					// Expand array as parameters to the system
-					system.every(...comps)
-				}
+				this.every(system.components, system.every)
 			}
 
 			if (isFunction(system.post)) {
@@ -158,6 +174,37 @@ class World {
 		}
 	}
 
+	// world.every(['comp'], comp => {comp.value = 0})
+	every(componentNames, callback) {
+		// First, get a list of entities (fixes problems with adding new ones during the loop)
+		let entities = this.query(componentNames)
+
+		// Go through this list of entities
+		for (let ent of entities) {
+			// Get all components as an array
+			let comps = componentNames.map(name => ent.get(name))
+
+			// If all components are defined
+			if (comps.every(i => i)) {
+				// Expand array as parameters to the method
+				callback(...comps)
+			}
+		}
+	}
+
+	prototype(name, data) {
+		console.log('Warning: Prototypes are not implemented yet')
+	}
+
+	prototypes(data) {
+		let parsed = JSON.parse(data)
+		for (let name in parsed) {
+			this.prototype(name, parsed[name])
+		}
+	}
+
+	// Warning: Internal use only, use at your own risk
+	// Builds an array of entities based on the specified components
 	// let entities = world.query(['position', 'velocity'])
 	query(componentNames) {
 		// TODO: Use some kind of a reverse index to make this closer to O(1)
@@ -179,17 +226,6 @@ class World {
 			}
 		}
 		return entities
-	}
-
-	prototype(name, data) {
-		console.log('Warning: Prototypes are not implemented yet')
-	}
-
-	prototypes(data) {
-		let parsed = JSON.parse(data)
-		for (let name in parsed) {
-			this.prototype(name, parsed[name])
-		}
 	}
 }
 
