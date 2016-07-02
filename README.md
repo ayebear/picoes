@@ -1,7 +1,9 @@
 # PicoES
+
 Pico Entity System for JavaScript (ES6).
 
 ### About
+
 Read up on what an ECS is here: [https://en.wikipedia.org/wiki/Entity_component_system](https://en.wikipedia.org/wiki/Entity_component_system)
 
 This entity system is designed to be as simple as possible, while still having useful features.
@@ -16,6 +18,7 @@ This entity system is designed to be as simple as possible, while still having u
 * Entity querying support (outside of systems)
 
 ### Instructions
+
 Full API documentation will be available later, but here is a basic usage guide for now.
 
 
@@ -65,6 +68,8 @@ world.system(['position', 'velocity'], class {
 	}
 })
 ```
+
+**Note:** Most edge cases are handled correctly. Deleting an entity that hasn't been iterated over yet, will not be iterated over. Also, entities that do not satisify the condition of having all required components will not be included (even if it is changed during the loop). Newly added entities will not be included in the loop either.
 
 #### Run systems
 
@@ -155,6 +160,7 @@ entity.destroy()
 #### Seralization
 
 ##### Serialize a world, entity, or component to a JSON string
+
 ```javascript
 world.toJson()
 
@@ -164,6 +170,7 @@ entity.get('position').toJson()
 ```
 
 ##### Deserialize a world, entity, or component from a JSON string
+
 ```javascript
 world.fromJson(data)
 
@@ -175,6 +182,7 @@ entity.get('position').fromJson(data)
 #### Prototypes
 
 ##### Register a prototype
+
 ```javascript
 world.prototype('Player', {
 	position: {},
@@ -186,6 +194,7 @@ world.prototype('Player', {
 ```
 
 ##### Register prototypes from a string
+
 ```javascript
 let data = '{"Player": {"position": {}, "sprite": {"texture": "player.png"}}}'
 
@@ -193,6 +202,7 @@ world.prototypes(data)
 ```
 
 ##### Create an entity from a prototype
+
 ```javascript
 world.entity('Player')
 ```
@@ -205,16 +215,15 @@ world.entity('Player')
 * Above query includes entities such as ['position', 'velocity', 'sprite']
 * Above query **does not** include entities such as ['position', 'sprite']
 
-##### Get an array of entities from component names
-```javascript
-let entities = world.query(['position', 'velocity'])
-```
+##### Iterate through entities from component names
 
-##### Can iterate over this array like normal
+This is basically like an on-the-fly system.
+
 ```javascript
-for (let ent of entities) {
-	ent.get('position').x += 1
-}
+world.every(['position', 'velocity'], (position, velocity) => {
+	position.x += velocity.x
+	position.y += velocity.y
+})
 ```
 
 
