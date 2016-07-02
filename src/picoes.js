@@ -124,11 +124,13 @@ class World {
 		*/
 	}
 
+	// Registers a component type to the world
 	// world.component(class { constructor(a) {this.a = a} })
 	component(name, componentClass) {
 		this.components[name] = componentClass
 	}
 
+	// Creates a new entity in the world
 	// world.entity()
 	// or world.entity('Player')
 	entity(name) {
@@ -141,6 +143,7 @@ class World {
 		return ent
 	}
 
+	// Registers a system to the world
 	// world.system(class { every(ent) {} })
 	system(components, systemClass) {
 		let newSystem = new systemClass()
@@ -148,6 +151,7 @@ class World {
 		this.systems.push(newSystem)
 	}
 
+	// Calls init() on all systems
 	init() {
 		for (let system of this.systems) {
 			if (isFunction(system.init)) {
@@ -156,7 +160,7 @@ class World {
 		}
 	}
 
-	// world.run()
+	// Calls pre, every, and post on all systems
 	run() {
 		for (let system of this.systems) {
 			if (isFunction(system.pre)) {
@@ -174,6 +178,7 @@ class World {
 		}
 	}
 
+	// Iterate through entities with the specified components
 	// world.every(['comp'], comp => {comp.value = 0})
 	every(componentNames, callback) {
 		// First, get a list of entities (fixes problems with adding new ones during the loop)
@@ -192,10 +197,12 @@ class World {
 		}
 	}
 
+	// Register an entity prototype (a template of components)
 	prototype(name, data) {
 		console.log('Warning: Prototypes are not implemented yet')
 	}
 
+	// Register prototypes from json data
 	prototypes(data) {
 		let parsed = JSON.parse(data)
 		for (let name in parsed) {
