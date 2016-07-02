@@ -4,7 +4,7 @@
   "description": "A minimal entity system for JavaScript.",
   "main": "es.js",
   "scripts": {
-    "test": "node tests.js"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
