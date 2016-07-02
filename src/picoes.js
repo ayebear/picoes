@@ -140,11 +140,15 @@ class World {
 				system.pre()
 			}
 
+			// Run the "every" method in the system
 			if (isFunction(system.every)) {
 				let entities = this.query(system.components)
 				for (let ent of entities) {
-					// TODO: Pass all components dynamically as parameters or an array or something
-					system.every(ent)
+					// Get all components as an array
+					let comps = system.components.map(name => ent.get(name))
+
+					// Expand array as parameters to the system
+					system.every(...comps)
 				}
 			}
 

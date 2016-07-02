@@ -60,6 +60,31 @@ describe('World', function() {
 			world.system(['position'], class {})
 			assert(world.systems.length == 1)
 		})
+		it('system iteration', function() {
+			let world = new es.World()
+			world.component('position')
+			world.component('velocity')
+			world.system(['position', 'velocity'], class {
+				every(position, velocity) {
+					assert(position)
+					assert(velocity)
+					position.x += velocity.x
+					position.y += velocity.y
+				}
+			})
+			let entA = world.entity()
+			let entB = world.entity()
+			entA.merge('position', {x: 1, y: 1}).merge('velocity', {x: 1, y: 0})
+			entB.merge('position', {x: 30, y: 40}).merge('velocity', {x: -1, y: 2})
+
+			assert(entA.get('position').x == 1 && entA.get('position').y == 1)
+			assert(entB.get('position').x == 30 && entB.get('position').y == 40)
+
+			world.run()
+
+			assert(entA.get('position').x == 2 && entA.get('position').y == 1)
+			assert(entB.get('position').x == 29 && entB.get('position').y == 42)
+		})
 	})
 
 	describe('entity()', function() {
