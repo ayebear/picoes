@@ -186,6 +186,9 @@ class World {
 			// Get all components as an array
 			let comps = componentNames.map(name => ent.get(name))
 
+			// Add entity itself as the last parameter
+			comps.push(ent)
+
 			// If all components are defined
 			if (comps.every(i => i)) {
 				// Expand array as parameters to the method

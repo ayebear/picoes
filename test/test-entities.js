@@ -69,11 +69,14 @@ describe('World', function() {
 			world.component('position')
 			world.component('velocity')
 			world.system(['position', 'velocity'], class {
-				every(position, velocity) {
+				every(position, velocity, ent) {
 					assert(position)
 					assert(velocity)
 					position.x += velocity.x
 					position.y += velocity.y
+					assert(ent)
+					assert(ent.has('position'))
+					assert(ent.has('velocity'))
 				}
 			})
 			let entA = world.entity()
@@ -189,6 +192,8 @@ describe('World', function() {
 	})
 
 	describe('Performance', function() {
+		this.timeout(10000)
+
 		it('should be fast', function() {
 			let world = new es.World()
 			world.component('compA', function(val) {
