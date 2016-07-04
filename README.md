@@ -71,6 +71,20 @@ world.system(['position', 'velocity'], class {
 
 **Note:** Most edge cases are handled correctly. Deleting an entity that hasn't been iterated over yet, will not be iterated over. Also, entities that do not satisify the condition of having all required components will not be included (even if it is changed during the loop). Newly added entities will not be included in the loop either.
 
+It is also possible to get the entire entity by adding it as the last parameter:
+
+```javascript
+world.system(['position', 'velocity'], class {
+	every(position, velocity, ent) {
+		position.x += velocity.x
+		position.y += velocity.y
+		if (ent.has('sprite')) {
+			ent.get('sprite').position = position
+		}
+	}
+})
+```
+
 #### Run systems
 
 Run all systems registered in the world.
@@ -207,24 +221,24 @@ world.prototypes(data)
 world.entity('Player')
 ```
 
-#### Query entities
-
-##### Query rules
-
-* AND logic - without exact matching
-* Above query includes entities such as ['position', 'velocity', 'sprite']
-* Above query **does not** include entities such as ['position', 'sprite']
+#### Iterate over entities
 
 ##### Iterate through entities from component names
 
-This is basically like an on-the-fly system.
+This works exactly the same as systems, and is actually used internally to run the every() method on systems.
 
 ```javascript
-world.every(['position', 'velocity'], (position, velocity) => {
+world.every(['position', 'velocity'], (position, velocity, ent) => {
 	position.x += velocity.x
 	position.y += velocity.y
 })
 ```
+
+##### Component query rules for every()
+
+* AND logic - without exact matching
+* Above query **does** include entities such as ['position', 'velocity', 'sprite']
+* Above query **does not** include entities such as ['position', 'sprite']
 
 
 ### Author
