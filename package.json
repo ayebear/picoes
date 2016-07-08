@@ -4,7 +4,7 @@
   "description": "A minimal entity system for JavaScript.",
   "main": "es.js",
   "scripts": {
-    "test": "mocha"
+    "test": "./node_modules/mocha/bin/mocha"
   },
   "repository": {
     "type": "git",
@@ -18,5 +18,9 @@
   "bugs": {
     "url": "https://github.com/ayebear/es.js/issues"
   },
-  "homepage": "https://github.com/ayebear/es.js#readme"
+  "homepage": "https://github.com/ayebear/es.js#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.5.3"
+  }
 }
