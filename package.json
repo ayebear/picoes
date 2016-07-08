@@ -1,14 +1,14 @@
 {
-  "name": "es.js",
-  "version": "1.0.0",
-  "description": "A minimal entity system for JavaScript.",
-  "main": "es.js",
+  "name": "PicoES",
+  "version": "0.1.0",
+  "description": "Pico Entity System for JavaScript (ES6).",
+  "main": "PicoES",
   "scripts": {
     "test": "mocha"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ayebear/es.js.git"
+    "url": "git+https://github.com/ayebear/picoes.git"
   },
   "keywords": [
     "entity"
@@ -16,7 +16,7 @@
   "author": "Eric Hebert",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ayebear/es.js/issues"
+    "url": "https://github.com/ayebear/picoes/issues"
   },
-  "homepage": "https://github.com/ayebear/es.js#readme"
+  "homepage": "https://github.com/ayebear/picoes#readme"
 }
