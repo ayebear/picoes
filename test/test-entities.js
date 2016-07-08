@@ -2,10 +2,6 @@
 let es = require('../src/picoes.js')
 let assert = require('chai').assert
 
-function getRandomInt(min, max) {
-	return Math.floor(Math.random() * (max - min)) + min
-}
-
 describe('World', function() {
 	describe('component()', function () {
 		it('define a component', function () {
@@ -188,52 +184,6 @@ describe('World', function() {
 			assert(ent.get('position'))
 			assert(ent.get('position').x === 4)
 			assert(ent.get('position').y === 6)
-		})
-	})
-
-	describe('Performance', function() {
-		this.timeout(10000)
-
-		it('should be fast', function() {
-			let world = new es.World()
-			world.component('compA', function(val) {
-				this.val = val
-			})
-			world.component('compB', {
-				val: 0,
-				val2: 0
-			})
-			world.component('compC')
-
-			// Create some entities, randomly add components to them
-			let start = new Date()
-			let count = 10000
-			for (let i = 0; i < count; ++i) {
-				let ent = world.entity()
-				ent.set('compA', 5)
-				if (getRandomInt(1, 100) < 50) {
-					ent.update('compB', {val: 7})
-				}
-				if (getRandomInt(1, 100) > 50) {
-					ent.update('compC', {val: 42})
-				}
-			}
-			let end = new Date()
-			let elapsed = (end - start) / 1000
-			let speed = count / elapsed
-			console.log('\tBenchmark A: ' + speed + ' entities/second')
-
-			// Query for entities
-			start = new Date()
-
-			world.every(['compA', 'compB'], function(compA, compB) {
-				compA.newVal = compB.val
-			})
-
-			end = new Date()
-			elapsed = (end - start) / 1000
-			speed = count / elapsed
-			console.log('\tBenchmark B: ' + speed + ' entities/second')
 		})
 	})
 })
