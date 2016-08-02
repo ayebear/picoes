@@ -143,23 +143,25 @@ entity.get('position').x += 50
 
 ###### Using set
 
-Call the component's constructor function to set values.
+Create or overwrite a component with the component's constructor.
 
 ```javascript
 entity.set('position', 50)
 ```
 
-###### Using merge
+###### Using update
 
-Merge a new object's properties into the component.
+Update individual component properties from an object.
 
 ```javascript
-entity.merge('position', {
+entity.update('position', {
 	x: 50
 })
 ```
 
 ##### Remove a component
+
+Removes a component from an entity. Has no effect when it does not exist.
 
 ```javascript
 entity.remove('position')
