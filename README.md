@@ -23,6 +23,17 @@ This entity system is designed to be as simple as possible, while still having u
 
 Full API documentation will be available later, but here is a basic usage guide for now.
 
+#### Terminology
+
+* **Component:** Holds some related data
+	* Example: Position, Velocity, Health
+* **Entity:** Refers to a collection of components
+	* Example: Position + Health could represent a player
+* **Prototype:** A template of components used for creating entities
+	* Example: Player could contain Position, Velocity, and Health
+* **System:** Logic loop that processes entities
+	* Example: Movement system which handles positions and velocities
+* **World:** Lets you register components, systems, and prototypes in a self-contained object - which avoids the use of singletons. This is also where you can create entities from.
 
 #### Create a world
 
