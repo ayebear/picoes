@@ -201,22 +201,34 @@ entity.get('position').fromJson(data)
 
 ##### Register a prototype
 
+This will create a "prototype", which is a template for an entity to be created from.
+
 ```javascript
-world.prototype('Player', {
+world.prototype({'Player': {
 	position: {},
 	velocity: {},
 	sprite: {
 		texture: 'player.png'
 	}
+}})
+```
+
+Note that the top level of the object specifies the prototype name. This way you can specify multiple prototypes:
+
+```javascript
+world.prototype({
+	'Player': {...},
+	'NPC': {...},
+	'Enemy': {...}
 })
 ```
 
-##### Register prototypes from a string
+You can also register prototypes from strings with the same syntax:
 
 ```javascript
 let data = '{"Player": {"position": {}, "sprite": {"texture": "player.png"}}}'
 
-world.prototypes(data)
+world.prototype(data)
 ```
 
 ##### Create an entity from a prototype
