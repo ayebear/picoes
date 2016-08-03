@@ -77,11 +77,16 @@ class Entity {
 
 	// Remove this entity and all of its components from the world
 	destroy() {
-		if (this.entId) {
+		if (this.id) {
 			this.removeAll()
-			delete this.world.entities[this.entId]
-			this.entId = null
+			delete this.world.entities[this.id]
+			this.id = null
 		}
+	}
+
+	// Returns true if this is a valid, existing, and usable entity
+	valid() {
+		return this.world !== null && this.id !== null
 	}
 
 	// Serializes entire entity to JSON
@@ -104,6 +109,19 @@ class World {
 		this.systems = []
 		this.entities = {}
 		this.components = {}
+
+		/*
+		Entity templates:
+		{
+			"Player": {
+				"Position": '{"x": 0, "y": 0}',
+				"Health": '{"value": 100}'
+			},
+			"Enemy": {...},
+			...
+		}
+		*/
+		this.entityTemplates = {}
 
 		this.idCounter = 1
 
@@ -134,7 +152,16 @@ class World {
 		let entId = this.idCounter++
 		let ent = new Entity(this, entId)
 
-		// TODO: Use 'name' to get prototype data
+		// Use 'name' to get prototype data (if specified)
+		if (name && name in this.entityTemplates) {
+			// Add all components from prototype
+			let template = this.entityTemplates[name]
+			for (let componentName in template) {
+				// Update component with data from template
+				let newComponentData = JSON.parse(template[componentName])
+				ent.update(componentName, newComponentData)
+			}
+		}
 
 		this.entities[entId] = ent
 		return ent
@@ -197,9 +224,36 @@ class World {
 		}
 	}
 
-	// Register an entity prototype (a template of components)
-	prototype(name, data) {
-		console.log('Warning: Prototypes are not implemented yet')
+	// Registers entity prototype(s)
+	// Must be either a string or an object
+	// Top level must be prototype names
+	// Note: Any existing prototype names that are the same will be overwritten
+	// Returns true if successfully registered
+	prototype(data) {
+		let success = false
+
+		// Convert to an object when given a string
+		if (typeof data == 'string') {
+			data = JSON.parse(data)
+		}
+
+		// Data must be an object at this point
+		if (isObject(data)) {
+			// Iterate through prototype names
+			for (let protoName in data) {
+				let inputObject = data[protoName]
+				let protoObject = {}
+				// Iterate through component names
+				for (let compName in inputObject) {
+					// Store strings of each component
+					protoObject[compName] = JSON.stringify(inputObject[compName])
+				}
+				this.entityTemplates[protoName] = protoObject
+			}
+			success = true
+		}
+
+		return success
 	}
 
 	// Register prototypes from json data
