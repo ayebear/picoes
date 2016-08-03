@@ -100,13 +100,14 @@ world.system(['position', 'velocity'], class {
 
 #### Run systems
 
-Run all systems registered in the world.
+Run all systems in the order they were registered.
 
 ```javascript
 world.run()
 ```
 
 Before running, you may initialize systems to call the init() method on them.
+
 ```javascript
 world.init()
 ```
@@ -122,6 +123,7 @@ world.entity().set('position', 5, 10)
 #### Use entities
 
 Assume the following have an entity object defined:
+
 ```javascript
 let entity = world.entity()
 ```
@@ -243,6 +245,8 @@ world.prototype(data)
 ```
 
 ##### Create an entity from a prototype
+
+This will create an entity and initialize components based on the "Player" prototype that was registered. If no prototype exists of this name, an empty entity will be created instead.
 
 ```javascript
 world.entity('Player')
