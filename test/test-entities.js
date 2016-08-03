@@ -102,6 +102,26 @@ describe('World', function() {
 			let ent = world.entity()
 			assert(Object.keys(world.entities).length == 1)
 		})
+		it('remove an entity', function() {
+			let world = new es.World()
+			world.component('position')
+			let ent = world.entity()
+			ent.set('position')
+			ent.get('position').val = 100
+
+			assert(Object.keys(world.entities).length == 1)
+			assert(Object.keys(world.components).length == 1)
+			assert(ent.has('position'))
+			assert(ent.get('position').val === 100)
+			assert(ent.valid())
+
+			ent.destroy()
+
+			assert(Object.keys(world.entities).length == 0)
+			assert(Object.keys(world.components).length == 1)
+			assert(!ent.valid())
+			assert(!ent.has('position'))
+		})
 		it('support components', function() {
 			let world = new es.World()
 			world.component('position', function(x = 0, y = 0) {
