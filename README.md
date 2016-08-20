@@ -114,19 +114,13 @@ world.init()
 
 #### Create entities
 
-This creates a new entity inside the world, and adds a position component to it.
-
-```javascript
-world.entity().set('position', 5, 10)
-```
-
-#### Use entities
-
-Assume the following have an entity object defined:
+This creates a new entity inside the world, and returns it.
 
 ```javascript
 let entity = world.entity()
 ```
+
+#### Use entities
 
 ##### Check if a component exists
 
@@ -135,6 +129,8 @@ entity.has('position')
 ```
 
 ##### Get a component
+
+**Note:** This method will **not** automatically create the component if it doesn't exist.
 
 ```javascript
 let position = entity.get('position')
@@ -146,12 +142,12 @@ let distance = position.x - someOtherPosition
 
 **Note:** The following methods will create the component if it does not already exist!
 
-###### Using get
+###### Using access
 
 Get component first to access or set any of its properties.
 
 ```javascript
-entity.get('position').x += 50
+entity.access('position').x += 50
 ```
 
 ###### Using set
