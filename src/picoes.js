@@ -268,37 +268,22 @@ class World {
 		return success
 	}
 
-	// Register prototypes from json data
-	prototypes(data) {
-		let parsed = JSON.parse(data)
-		for (let name in parsed) {
-			this.prototype(name, parsed[name])
-		}
-	}
-
 	// Warning: Internal use only, use at your own risk
 	// Builds an array of entities based on the specified components
 	// let entities = world.query(['position', 'velocity'])
 	query(componentNames) {
 		// TODO: Use some kind of a reverse index to make this closer to O(1)
-		let entities = []
+		let results = []
 		for (let entId in this.entities) {
 			let ent = this.entities[entId]
 
 			// Ensure entity contains all specified components
-			let i = 0
-			let exists = true
-			while (i < componentNames.length && exists) {
-				exists = ent.has(componentNames[i])
-				++i
-			}
-
-			// Add entity to search results
-			if (exists) {
-				entities.push(ent)
+			if (ent.has(...componentNames)) {
+				// Add entity to search results
+				results.push(ent)
 			}
 		}
-		return entities
+		return results
 	}
 }
 
