@@ -4,7 +4,7 @@
   "description": "Pico Entity System for JavaScript (ES6).",
   "main": "PicoES",
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha"
+    "test": "./test/run-tests.sh"
   },
   "repository": {
     "type": "git",

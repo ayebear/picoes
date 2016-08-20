@@ -121,8 +121,16 @@ describe('World', function() {
 			assert(Object.keys(world.components).length == 1)
 			assert(!ent.valid())
 			assert(!ent.has('position'))
+
+			// Just for safe measure
+			ent.destroy()
+
+			assert(Object.keys(world.entities).length == 0)
+			assert(Object.keys(world.components).length == 1)
+			assert(!ent.valid())
+			assert(!ent.has('position'))
 		})
-		it('support components', function() {
+		it('get and set components', function() {
 			let world = new es.World()
 			world.component('position', function(x = 0, y = 0) {
 				this.x = x
@@ -152,6 +160,22 @@ describe('World', function() {
 			ent.update('empty', {testing: 100})
 			assert(Object.keys(ent.data).length == 3)
 			assert(ent.get('empty').testing === 100)
+
+			// Access test
+			ent.removeAll()
+			assert(!ent.has('position'))
+			ent.access('position').x = 300
+			assert(ent.has('position'))
+			assert(ent.get('position').x === 300)
+
+			// Get test
+			ent.removeAll()
+			assert(!ent.has('position'))
+			assert(ent.get('position') === undefined)
+			assert(!ent.has('position'))
+			ent.set('position', 333)
+			assert(ent.get('position').x === 333)
+			assert(ent.get('position').y === 0)
 		})
 		it('remove components', function() {
 			let world = new es.World()
@@ -204,6 +228,87 @@ describe('World', function() {
 			assert(ent.get('position'))
 			assert(ent.get('position').x === 4)
 			assert(ent.get('position').y === 6)
+		})
+		it('check for existence of components', function() {
+			let world = new es.World()
+
+			// Test all three component types
+			world.component('position', function(x = 0, y = 0) {
+				this.x = x
+				this.y = y
+			})
+			world.component('velocity', {
+				x: 0,
+				y: 0
+			})
+			world.component('player')
+
+			let ent = world.entity()
+				.set('position', 1, 2)
+				.set('velocity', {x: 3, y: 4})
+				.set('player')
+
+			// Check for existence
+			assert(ent.has('position') && ent.has('velocity') && ent.has('player'))
+			assert(ent.has('position', 'velocity', 'player'))
+			assert(!ent.has('position', 'invalid'))
+			assert(!ent.has('velocity', 'invalid'))
+			assert(!ent.has('player', 'invalid'))
+		})
+		it('register and use prototypes', function() {
+			let world = new es.World()
+
+			// Test all three component types
+			world.component('position', function(x = 0, y = 0) {
+				this.x = x
+				this.y = y
+			})
+			world.component('velocity', {
+				x: 0,
+				y: 0
+			})
+			world.component('player')
+
+			// Register prototypes in all ways
+			world.prototype({Player: {
+				position: {
+					x: 5,
+					y: 10
+				},
+				velocity: {
+					x: 15,
+					y: 20
+				},
+				player: {}
+			}, Enemy: {
+				position: {},
+				velocity: {}
+			}})
+			let stringTest = JSON.stringify({Test: {
+				position: {
+					x: 3.14159,
+					y: 5000
+				}
+			}})
+			world.prototype(stringTest)
+
+			// Create entities with the prototype
+			let p = world.entity('Player')
+			let e = world.entity('Enemy')
+			let t = world.entity('Test')
+
+			// Make sure all components exist and there are no extras
+			assert(p.has('position', 'velocity', 'player'))
+			assert(e.has('position', 'velocity') && !e.has('player'))
+			assert(t.has('position') && !t.has('velocity') && !t.has('player'))
+
+			// Make sure all component values are correct
+			assert(p.get('position').x === 5 && p.get('position').y === 10)
+			assert(p.get('velocity').x === 15 && p.get('velocity').y === 20)
+			assert(p.get('player') !== undefined)
+			assert(e.get('position').x === 0 && e.get('position').y === 0)
+			assert(e.get('velocity').x === 0 && e.get('velocity').y === 0)
+			assert(t.get('position').x === 3.14159 && t.get('position').y === 5000)
 		})
 	})
 })

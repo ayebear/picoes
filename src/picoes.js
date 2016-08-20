@@ -25,14 +25,26 @@ class Entity {
 		this.data = {}
 	}
 
-	// Checks if a component exists
-	has(component) {
-		return component in this.data
+	// Returns true if the entity has ALL of the specified components
+	has(...args) {
+		let comps = [...args]
+		return comps.every((name) => {
+			return name in this.data
+		})
 	}
 
-	// Returns a component by name
+	// Returns a component by name (returns undefined if it doesn't exist)
 	// ent.get('position')
 	get(component) {
+		if (this.has(component)) {
+			return this.data[component]
+		}
+		return undefined
+	}
+
+	// Returns a component by name (automatically created if it doesn't exist)
+	// ent.access('position')
+	access(component) {
 		if (!this.has(component)) {
 			this.set(component)
 		}
@@ -56,7 +68,7 @@ class Entity {
 	// Updates component data from an object or other component
 	// ent.update('position', {x: 1, y: 2})
 	update(component, data) {
-		let comp = this.get(component)
+		let comp = this.access(component)
 		for (let key in data) {
 			comp[key] = data[key]
 		}
@@ -80,13 +92,13 @@ class Entity {
 		if (this.id) {
 			this.removeAll()
 			delete this.world.entities[this.id]
-			this.id = null
+			this.id = undefined
 		}
 	}
 
 	// Returns true if this is a valid, existing, and usable entity
 	valid() {
-		return this.world !== null && this.id !== null
+		return this.world && this.id !== undefined
 	}
 
 	// Serializes entire entity to JSON
@@ -233,7 +245,7 @@ class World {
 		let success = false
 
 		// Convert to an object when given a string
-		if (typeof data == 'string') {
+		if (typeof data === 'string') {
 			data = JSON.parse(data)
 		}
 
