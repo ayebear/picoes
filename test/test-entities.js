@@ -19,10 +19,13 @@ describe('World', function() {
 		})
 		it('define an object component', function () {
 			let world = new es.World()
-			world.component('position', {
+			let result = world.component('position', {
 				x: 0,
 				y: 0
 			})
+			assert(result === 'position')
+			let result2 = world.component('invalid', 555)
+			assert(result2 === undefined)
 			let ent = world.entity().update('position', {
 				x: 1,
 				y: 2
@@ -77,8 +80,90 @@ describe('World', function() {
 			})
 			let entA = world.entity()
 			let entB = world.entity()
+			let entC = world.entity()
 			entA.update('position', {x: 1, y: 1}).update('velocity', {x: 1, y: 0})
 			entB.update('position', {x: 30, y: 40}).update('velocity', {x: -1, y: 2})
+
+			world.init()
+
+			assert(entA.get('position').x == 1 && entA.get('position').y == 1)
+			assert(entB.get('position').x == 30 && entB.get('position').y == 40)
+
+			world.run()
+
+			assert(entA.get('position').x == 2 && entA.get('position').y == 1)
+			assert(entB.get('position').x == 29 && entB.get('position').y == 42)
+
+			world.run()
+
+			assert(entA.get('position').x == 3 && entA.get('position').y == 1)
+			assert(entB.get('position').x == 28 && entB.get('position').y == 44)
+		})
+		it('system methods', function() {
+			let world = new es.World()
+			world.component('position')
+
+			let methodsCalled = 0
+
+			world.system(['position'], class {
+				init() {
+					++methodsCalled
+				}
+				pre() {
+					++methodsCalled
+				}
+				every(position) {
+					position.x = 1
+					++methodsCalled
+				}
+				post() {
+					++methodsCalled
+				}
+			})
+
+			world.system(['invalid'], class {})
+			world.system()
+
+			let ent = world.entity().set('position')
+			world.init()
+			assert(methodsCalled == 1)
+			world.run()
+			assert(methodsCalled == 4)
+		})
+		it('system edge cases', function() {
+			let world = new es.World()
+			world.component('position')
+			world.component('velocity')
+
+			for (let i = 0; i < 100; ++i) {
+				world.entity().set('position').set('velocity')
+			}
+
+			let testEnt = world.entity().set('position').set('velocity')
+			let count = 0
+
+			world.system(['position', 'velocity'], class {
+				every(position, velocity, ent) {
+					assert(ent !== testEnt)
+					if (count == 0) {
+						testEnt.removeAll()
+					}
+					assert(position)
+					assert(velocity)
+					position.x += velocity.x
+					position.y += velocity.y
+					assert(ent)
+					assert(ent.has('position'))
+					assert(ent.has('velocity'))
+				}
+			})
+			let entA = world.entity()
+			let entB = world.entity()
+			let entC = world.entity()
+			entA.update('position', {x: 1, y: 1}).update('velocity', {x: 1, y: 0})
+			entB.update('position', {x: 30, y: 40}).update('velocity', {x: -1, y: 2})
+
+			world.init()
 
 			assert(entA.get('position').x == 1 && entA.get('position').y == 1)
 			assert(entB.get('position').x == 30 && entB.get('position').y == 40)
@@ -140,26 +225,35 @@ describe('World', function() {
 				val: 0,
 				test: 1
 			})
+			world.component('objectEmpty', {})
 			world.component('empty')
 			let ent = world.entity()
 			ent.set('position', 5)
+			assert(ent.has('position'))
 			assert(Object.keys(ent.data).length == 1)
 			assert(ent.get('position').x === 5)
 			assert(ent.get('position').y === 0)
 
 			ent.update('position', {y: 3})
+			assert(ent.has('position'))
 			assert(Object.keys(ent.data).length == 1)
 			assert(ent.get('position').x === 5)
 			assert(ent.get('position').y === 3)
 
 			ent.update('object', {val: 50})
+			assert(ent.has('object'))
 			assert(Object.keys(ent.data).length == 2)
 			assert(ent.get('object').val === 50)
 			assert(ent.get('object').test === 1)
 
 			ent.update('empty', {testing: 100})
+			assert(ent.has('empty'))
 			assert(Object.keys(ent.data).length == 3)
 			assert(ent.get('empty').testing === 100)
+
+			ent.set('objectEmpty')
+			assert(Object.keys(ent.data).length == 4)
+			assert(ent.has('objectEmpty'))
 
 			// Access test
 			ent.removeAll()
@@ -269,8 +363,11 @@ describe('World', function() {
 			})
 			world.component('player')
 
+			let result = world.prototype()
+			assert(result == 0)
+
 			// Register prototypes in all ways
-			world.prototype({Player: {
+			result = world.prototype({Player: {
 				position: {
 					x: 5,
 					y: 10
@@ -284,13 +381,16 @@ describe('World', function() {
 				position: {},
 				velocity: {}
 			}})
+			assert(result == 2)
+
 			let stringTest = JSON.stringify({Test: {
 				position: {
 					x: 3.14159,
 					y: 5000
 				}
 			}})
-			world.prototype(stringTest)
+			result = world.prototype(stringTest)
+			assert(result == 1)
 
 			// Create entities with the prototype
 			let p = world.entity('Player')

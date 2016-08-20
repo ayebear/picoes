@@ -6,15 +6,8 @@ function isObject(obj) {
 	return typeof obj === 'object'
 }
 
-function isPrimitive(obj) {
-	return (typeof obj === 'boolean') || (typeof obj === 'number') || (typeof obj === 'string')
-}
-
 // TODO: Figure out a better solution for component templates and prototypes
 function clone(obj) {
-	if (isPrimitive(obj)) {
-		return obj
-	}
 	return JSON.parse(JSON.stringify(obj))
 }
 
@@ -55,9 +48,10 @@ class Entity {
 	// ent.set('position', 1, 2)
 	set(component, ...args) {
 		let compTemplate = this.world.components[component]
-		if (isFunction(compTemplate)) {
+		let templateType = typeof compTemplate
+		if (templateType === 'function') {
 			this.data[component] = new compTemplate(...args)
-		} else if (isObject(compTemplate)) {
+		} else if (templateType === 'object') {
 			this.data[component] = clone(compTemplate)
 		} else {
 			this.data[component] = {}
@@ -152,9 +146,15 @@ class World {
 	}
 
 	// Registers a component type to the world
+	// Note: Must be either a function or an object (nothing specified is allowed as well)
 	// world.component(class { constructor(a) {this.a = a} })
 	component(name, componentClass) {
-		this.components[name] = componentClass
+		let type = typeof componentClass
+		if (type === 'function' || type === 'object' || type === 'undefined') {
+			this.components[name] = componentClass
+			return name
+		}
+		return undefined
 	}
 
 	// Creates a new entity in the world
@@ -180,11 +180,16 @@ class World {
 	}
 
 	// Registers a system to the world
+	// Returns its unique ID on success or undefined on failure
 	// world.system(class { every(ent) {} })
 	system(components, systemClass) {
-		let newSystem = new systemClass()
-		newSystem.components = components
-		this.systems.push(newSystem)
+		if (isFunction(systemClass)) {
+			let newSystem = new systemClass()
+			newSystem.components = components
+			this.systems.push(newSystem)
+			return this.systems.length - 1
+		}
+		return undefined
 	}
 
 	// Calls init() on all systems
@@ -240,9 +245,9 @@ class World {
 	// Must be either a string or an object
 	// Top level must be prototype names
 	// Note: Any existing prototype names that are the same will be overwritten
-	// Returns true if successfully registered
+	// Returns number of prototypes added
 	prototype(data) {
-		let success = false
+		let count = 0
 
 		// Convert to an object when given a string
 		if (typeof data === 'string') {
@@ -261,11 +266,11 @@ class World {
 					protoObject[compName] = JSON.stringify(inputObject[compName])
 				}
 				this.entityTemplates[protoName] = protoObject
+				++count
 			}
-			success = true
 		}
 
-		return success
+		return count
 	}
 
 	// Warning: Internal use only, use at your own risk
