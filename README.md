@@ -23,6 +23,17 @@ This entity system is designed to be as simple as possible, while still having u
 
 Full API documentation will be available later, but here is a basic usage guide for now.
 
+#### Terminology
+
+* **Component:** Holds some related data
+	* Example: Position, Velocity, Health
+* **Entity:** Refers to a collection of components
+	* Example: Position + Health could represent a player
+* **Prototype:** A template of components used for creating entities
+	* Example: Player could contain Position, Velocity, and Health
+* **System:** Logic loop that processes entities
+	* Example: Movement system which handles positions and velocities
+* **World:** Lets you register components, systems, and prototypes in a self-contained object - which avoids the use of singletons. This is also where you can create entities from.
 
 #### Create a world
 
@@ -89,31 +100,27 @@ world.system(['position', 'velocity'], class {
 
 #### Run systems
 
-Run all systems registered in the world.
+Run all systems in the order they were registered.
 
 ```javascript
 world.run()
 ```
 
 Before running, you may initialize systems to call the init() method on them.
+
 ```javascript
 world.init()
 ```
 
 #### Create entities
 
-This creates a new entity inside the world, and adds a position component to it.
+This creates a new entity inside the world, and returns it.
 
-```javascript
-world.entity().set('position', 5, 10)
-```
-
-#### Use entities
-
-Assume the following have an entity object defined:
 ```javascript
 let entity = world.entity()
 ```
+
+#### Use entities
 
 ##### Check if a component exists
 
@@ -122,6 +129,8 @@ entity.has('position')
 ```
 
 ##### Get a component
+
+**Note:** This method will **not** automatically create the component if it doesn't exist.
 
 ```javascript
 let position = entity.get('position')
@@ -133,33 +142,35 @@ let distance = position.x - someOtherPosition
 
 **Note:** The following methods will create the component if it does not already exist!
 
-###### Using get
+###### Using access
 
 Get component first to access or set any of its properties.
 
 ```javascript
-entity.get('position').x += 50
+entity.access('position').x += 50
 ```
 
 ###### Using set
 
-Call the component's constructor function to set values.
+Create or overwrite a component with the component's constructor.
 
 ```javascript
 entity.set('position', 50)
 ```
 
-###### Using merge
+###### Using update
 
-Merge a new object's properties into the component.
+Update individual component properties from an object.
 
 ```javascript
-entity.merge('position', {
+entity.update('position', {
 	x: 50
 })
 ```
 
 ##### Remove a component
+
+Removes a component from an entity. Has no effect when it does not exist.
 
 ```javascript
 entity.remove('position')
@@ -199,25 +210,39 @@ entity.get('position').fromJson(data)
 
 ##### Register a prototype
 
+This will create a "prototype", which is a template for an entity to be created from.
+
 ```javascript
-world.prototype('Player', {
+world.prototype({'Player': {
 	position: {},
 	velocity: {},
 	sprite: {
 		texture: 'player.png'
 	}
+}})
+```
+
+Note that the top level of the object specifies the prototype name. This way you can specify multiple prototypes:
+
+```javascript
+world.prototype({
+	'Player': {...},
+	'NPC': {...},
+	'Enemy': {...}
 })
 ```
 
-##### Register prototypes from a string
+You can also register prototypes from strings with the same syntax:
 
 ```javascript
 let data = '{"Player": {"position": {}, "sprite": {"texture": "player.png"}}}'
 
-world.prototypes(data)
+world.prototype(data)
 ```
 
 ##### Create an entity from a prototype
+
+This will create an entity and initialize components based on the "Player" prototype that was registered. If no prototype exists of this name, an empty entity will be created instead.
 
 ```javascript
 world.entity('Player')
