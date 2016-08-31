@@ -326,6 +326,20 @@ describe('World', function() {
 			assert(!ent.has('test'))
 			assert(obj.created)
 			assert(obj.removed)
+
+
+			let obj2 = {
+				created: false,
+				removed: false
+			}
+			let ent2 = world.entity().set('test', obj2)
+			assert(ent2.has('test'))
+			assert(obj2.created)
+			assert(!obj2.removed)
+
+			ent2.destroy()
+			assert(obj2.created)
+			assert(obj2.removed)
 		})
 		it('serialize components', function() {
 			let world = new es.World()
