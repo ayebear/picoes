@@ -445,6 +445,12 @@ describe('World', function() {
 			assert(!ent.has('position', 'invalid'))
 			assert(!ent.has('velocity', 'invalid'))
 			assert(!ent.has('player', 'invalid'))
+
+			// This behavior is important for every/systems to work properly when no components are specified
+			// Basically, it should return all entities when nothing is specified
+			assert(ent.has())
+			let ent2 = world.entity()
+			assert(ent2.has())
 		})
 		it('register and use prototypes', function() {
 			let world = new es.World()
