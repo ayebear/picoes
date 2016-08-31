@@ -106,18 +106,25 @@ describe('World', function() {
 			let methodsCalled = 0
 
 			world.system(['position'], class {
+				constructor() {
+					this.val = 10
+				}
 				init() {
 					++methodsCalled
+					assert(this.val === 10)
 				}
 				pre() {
 					++methodsCalled
+					assert(this.val === 10)
 				}
 				every(position) {
 					position.x = 1
 					++methodsCalled
+					assert(this.val === 10)
 				}
 				post() {
 					++methodsCalled
+					assert(this.val === 10)
 				}
 			})
 

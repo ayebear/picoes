@@ -96,7 +96,7 @@ class World {
 	init() {
 		for (let system of this.systems) {
 			if (isFunction(system.init)) {
-				system.init()
+				system.init.call(system)
 			}
 		}
 	}
@@ -105,23 +105,23 @@ class World {
 	run() {
 		for (let system of this.systems) {
 			if (isFunction(system.pre)) {
-				system.pre()
+				system.pre.call(system)
 			}
 
 			// Run the "every" method in the system
 			if (isFunction(system.every)) {
-				this.every(system.components, system.every)
+				this.every(system.components, system.every, system)
 			}
 
 			if (isFunction(system.post)) {
-				system.post()
+				system.post.call(system)
 			}
 		}
 	}
 
 	// Iterate through entities with the specified components
 	// world.every(['comp'], comp => {comp.value = 0})
-	every(componentNames, callback) {
+	every(componentNames, callback, that = this) {
 		// First, get a list of entities (fixes problems with adding new ones during the loop)
 		let entities = this.query(componentNames)
 
@@ -136,7 +136,7 @@ class World {
 			// If all components are defined
 			if (comps.every(i => i)) {
 				// Expand array as parameters to the method
-				callback(...comps)
+				callback.call(that, ...comps)
 			}
 		}
 	}
