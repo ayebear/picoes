@@ -185,6 +185,26 @@ describe('World', function() {
 			assert(entA.get('position').x == 3 && entA.get('position').y == 1)
 			assert(entB.get('position').x == 28 && entB.get('position').y == 44)
 		})
+		it('use the every() method', function() {
+			let world = new es.World()
+			world.component('position')
+			world.component('velocity')
+			let ent1 = world.entity().set('position').set('velocity')
+			let ent2 = world.entity().set('position')
+			let externalVar = 5
+			world.every(['position'], (pos, ent) => {
+				assert(pos)
+				assert(ent)
+				assert(ent.has('position'))
+				assert(externalVar === 5)
+			})
+			world.every(['position'], function(pos, ent) {
+				assert(pos)
+				assert(ent)
+				assert(ent.has('position'))
+				assert(externalVar === 5)
+			})
+		})
 	})
 
 	describe('entity()', function() {
@@ -452,12 +472,14 @@ describe('World', function() {
 			assert(!ent.has('position', 'invalid'))
 			assert(!ent.has('velocity', 'invalid'))
 			assert(!ent.has('player', 'invalid'))
+			assert(!ent.has('invalid'))
 
 			// This behavior is important for every/systems to work properly when no components are specified
 			// Basically, it should return all entities when nothing is specified
 			assert(ent.has())
 			let ent2 = world.entity()
 			assert(ent2.has())
+			assert(!ent2.has('invalid'))
 		})
 		it('register and use prototypes', function() {
 			let world = new es.World()
