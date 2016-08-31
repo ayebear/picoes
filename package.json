@@ -1,5 +1,5 @@
 {
-  "name": "PicoES",
+  "name": "picoes",
   "version": "0.1.0",
   "description": "Pico Entity System for JavaScript (ES6).",
   "main": "./src/picoes.js",
