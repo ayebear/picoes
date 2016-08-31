@@ -47,4 +47,5 @@ function runBenchmarks() {
 	console.log(' * Querying entities: ' + speed + ' entities/second')
 }
 
-runBenchmarks()
+// Only run benchmarks outside of tests
+// runBenchmarks()
