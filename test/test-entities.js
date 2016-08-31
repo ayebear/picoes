@@ -280,6 +280,9 @@ describe('World', function() {
 			assert(ent.has('position'))
 			assert(ent.has('velocity'))
 
+			ent.remove('invalid')
+			ent.remove()
+
 			ent.remove('position')
 			assert(Object.keys(ent.data).length == 1)
 			assert(!ent.has('position'))
@@ -298,6 +301,31 @@ describe('World', function() {
 			assert(Object.keys(ent.data).length == 0)
 			assert(!ent.has('position'))
 			assert(!ent.has('velocity'))
+		})
+		it('remove components - onRemove', function() {
+			let world = new es.World()
+			world.component('test', function(obj) {
+				this.obj = obj
+				this.obj.created = true
+
+				this.onRemove = () => {
+					this.obj.removed = true
+				}
+			})
+			let obj = {
+				created: false,
+				removed: false
+			}
+			let ent = world.entity().set('test', obj)
+			assert(ent.has('test'))
+			assert(obj.created)
+			assert(!obj.removed)
+
+			ent.remove('test')
+			assert(Object.keys(ent.data).length == 0)
+			assert(!ent.has('test'))
+			assert(obj.created)
+			assert(obj.removed)
 		})
 		it('serialize components', function() {
 			let world = new es.World()
@@ -323,7 +351,6 @@ describe('World', function() {
 			let ent = world.entity().set('position', 4, 6)
 
 			let data = JSON.parse(ent.toString())
-			console.log(data)
 			assert(data)
 			assert(data.position)
 			assert(data.position.result === 24)

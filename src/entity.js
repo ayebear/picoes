@@ -61,14 +61,24 @@ class Entity {
 	}
 
 	// Removes a component from the entity (no effect when it doesn't exist)
+	// Can specify an onRemove() method in your component which gets called before it is removed
 	// ent.remove('position')
 	remove(component) {
-		delete this.data[component]
+		if (component in this.data) {
+			let comp = this.data[component]
+			if (typeof comp.onRemove === 'function') {
+				comp.onRemove()
+			}
+			delete this.data[component]
+		}
 		return this
 	}
 
 	// Remove all components
 	removeAll() {
+		for (let compName in this.data) {
+			this.remove(compName)
+		}
 		this.data = {}
 	}
 
