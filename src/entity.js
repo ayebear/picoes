@@ -1,8 +1,3 @@
-// TODO: Figure out a better solution for component templates and prototypes
-function clone(obj) {
-	return JSON.parse(JSON.stringify(obj))
-}
-
 // Entity class used internally for keeping track of components
 class Entity {
 	constructor(world, id) {
@@ -44,8 +39,8 @@ class Entity {
 		let templateType = typeof compTemplate
 		if (templateType === 'function') {
 			this.data[component] = new compTemplate(...args)
-		} else if (templateType === 'object') {
-			this.data[component] = clone(compTemplate)
+		} else if (templateType === 'string') {
+			this.data[component] = JSON.parse(compTemplate)
 		} else {
 			this.data[component] = {}
 		}
@@ -56,9 +51,12 @@ class Entity {
 	// ent.update('position', {x: 1, y: 2})
 	update(component, data) {
 		let comp = this.access(component)
+
+		// Shallow copy properties of component
 		for (let key in data) {
 			comp[key] = data[key]
 		}
+
 		return this
 	}
 
@@ -89,17 +87,26 @@ class Entity {
 	}
 
 	// Serializes entire entity to JSON
-	toJson() {
-		// TODO: Allow for custom recursive toJson methods
+	// Note: Defining toJSON methods in your components will override the built-in behavior
+	toString() {
 		return JSON.stringify(this.data)
 	}
 
 	// Deserializes data from JSON, creating new components
-	fromJson(data) {
+	// Note: Defining fromJSON methods in your components will override the built-in behavior
+	parse(data) {
 		let parsed = JSON.parse(data)
 		for (let name in parsed) {
-			this.update(name, parsed[name])
+			let comp = this.access(name)
+
+			// Either call custom method or copy all properties
+			if (typeof comp.fromJSON === 'function') {
+				comp.fromJSON(parsed[name])
+			} else {
+				this.update(name, parsed[name])
+			}
 		}
+		return this
 	}
 }
 

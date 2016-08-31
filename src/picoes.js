@@ -43,8 +43,14 @@ class World {
 	// Note: Must be either a function or an object (nothing specified is allowed as well)
 	// world.component(class { constructor(a) {this.a = a} })
 	component(name, componentClass) {
+		// Convert objects to strings for faster duplication later on
+		if (typeof componentClass === 'object') {
+			componentClass = JSON.stringify(componentClass)
+		}
+
+		// Must be one of the three supported types
 		let type = typeof componentClass
-		if (type === 'function' || type === 'object' || type === 'undefined') {
+		if (type === 'function' || type === 'string' || type === 'undefined') {
 			this.components[name] = componentClass
 			return name
 		}
