@@ -2,7 +2,7 @@
   "name": "PicoES",
   "version": "0.1.0",
   "description": "Pico Entity System for JavaScript (ES6).",
-  "main": "PicoES",
+  "main": "./src/picoes.js",
   "scripts": {
     "test": "./test/run-tests.sh"
   },

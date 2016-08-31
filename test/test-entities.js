@@ -280,6 +280,9 @@ describe('World', function() {
 			assert(ent.has('position'))
 			assert(ent.has('velocity'))
 
+			ent.remove('invalid')
+			ent.remove()
+
 			ent.remove('position')
 			assert(Object.keys(ent.data).length == 1)
 			assert(!ent.has('position'))
@@ -299,16 +302,72 @@ describe('World', function() {
 			assert(!ent.has('position'))
 			assert(!ent.has('velocity'))
 		})
+		it('remove components - onRemove', function() {
+			let world = new es.World()
+			world.component('test', function(obj) {
+				this.obj = obj
+				this.obj.created = true
+
+				this.onRemove = () => {
+					this.obj.removed = true
+				}
+			})
+			let obj = {
+				created: false,
+				removed: false
+			}
+			let ent = world.entity().set('test', obj)
+			assert(ent.has('test'))
+			assert(obj.created)
+			assert(!obj.removed)
+
+			ent.remove('test')
+			assert(Object.keys(ent.data).length == 0)
+			assert(!ent.has('test'))
+			assert(obj.created)
+			assert(obj.removed)
+
+
+			let obj2 = {
+				created: false,
+				removed: false
+			}
+			let ent2 = world.entity().set('test', obj2)
+			assert(ent2.has('test'))
+			assert(obj2.created)
+			assert(!obj2.removed)
+
+			ent2.destroy()
+			assert(obj2.created)
+			assert(obj2.removed)
+		})
 		it('serialize components', function() {
 			let world = new es.World()
 			world.component('position')
 			let ent = world.entity().update('position', {x: 4, y: 6})
 
-			let data = JSON.parse(ent.toJson())
+			let data = JSON.parse(ent.toString())
 			assert(data)
 			assert(data.position)
 			assert(data.position.x === 4)
 			assert(data.position.y === 6)
+		})
+		it('serialize custom components', function() {
+			let world = new es.World()
+			world.component('position', function(x = 0, y = 0) {
+				this.x = x
+				this.y = y
+
+				this.toJSON = () => {
+					return {result: this.x * this.y}
+				}
+			})
+			let ent = world.entity().set('position', 4, 6)
+
+			let data = JSON.parse(ent.toString())
+			assert(data)
+			assert(data.position)
+			assert(data.position.result === 24)
 		})
 		it('deserialize components', function() {
 			let world = new es.World()
@@ -316,12 +375,50 @@ describe('World', function() {
 			let ent = world.entity()
 			assert(Object.keys(ent.data).length == 0)
 
-			ent.fromJson('{"position": {"x": 4, "y": 6}}')
+			ent.parse('{"position": {"x": 4, "y": 6}}')
 			assert(ent.has('position'))
 			assert(Object.keys(ent.data).length == 1)
 			assert(ent.get('position'))
 			assert(ent.get('position').x === 4)
 			assert(ent.get('position').y === 6)
+		})
+		it('deserialize custom components', function() {
+			let world = new es.World()
+			world.component('position', function(x = 0, y = 0) {
+				this.x = x
+				this.y = y
+
+				this.toJSON = () => {
+					return {result: this.x * this.y}
+				}
+
+				this.fromJSON = (data) => {
+					this.x = data.result / 2
+					this.y = 2
+				}
+			})
+
+			// Old deserialization test
+			let ent = world.entity()
+			assert(Object.keys(ent.data).length == 0)
+			ent.parse('{"position": {"result": 24}}')
+			assert(ent.has('position'))
+			assert(Object.keys(ent.data).length == 1)
+			assert(ent.get('position'))
+			assert(ent.get('position').x === 12)
+			assert(ent.get('position').y === 2)
+
+			// Full entity-based serialization/deserialization test
+			let ent2 = world.entity().set('position', 7, 4)
+			let jsonData = ent2.toString()
+			let ent3 = world.entity().parse(jsonData)
+			assert(ent3.has('position'))
+			assert(ent3.get('position').x === 14)
+			assert(ent3.get('position').y === 2)
+			ent2.parse(jsonData)
+			assert(ent2.has('position'))
+			assert(ent2.get('position').x === 14)
+			assert(ent2.get('position').y === 2)
 		})
 		it('check for existence of components', function() {
 			let world = new es.World()
