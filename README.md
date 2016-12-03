@@ -186,24 +186,16 @@ entity.destroy()
 
 #### Seralization
 
-##### Serialize a world, entity, or component to a JSON string
+##### Serialize an entity to a JSON string
 
 ```javascript
-world.toJson()
-
-entity.toJson()
-
-entity.get('position').toJson()
+let str = entity.toString()
 ```
 
-##### Deserialize a world, entity, or component from a JSON string
+##### Deserialize an entity from a JSON string
 
 ```javascript
-world.fromJson(data)
-
-entity.fromJson(data)
-
-entity.get('position').fromJson(data)
+entity.parse(data)
 ```
 
 #### Prototypes
