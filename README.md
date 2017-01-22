@@ -189,13 +189,13 @@ entity.destroy()
 ##### Serialize an entity to a JSON string
 
 ```javascript
-let str = entity.toString()
+let str = entity.toJSON()
 ```
 
 ##### Deserialize an entity from a JSON string
 
 ```javascript
-entity.parse(data)
+entity.fromJSON(data)
 ```
 
 #### Prototypes
