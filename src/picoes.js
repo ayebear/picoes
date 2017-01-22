@@ -25,18 +25,8 @@ class World {
 
 		this.idCounter = 1
 
-		// Maps component names to sets of entity IDs which contain those components
+		// Maps entire queries to arrays of entities
 		this.index = {}
-		/*
-		{
-			position: [1, 5, 6, 19],
-			velocity: [6, 19],
-			sprite: [19, 20],
-		}
-
-		Querying could use the minimum length array, and only iterate through those entities,
-			then check if each of those have all of the specified components.
-		*/
 	}
 
 	// Registers a component type to the world
@@ -177,22 +167,42 @@ class World {
 		return count
 	}
 
-	// Warning: Internal use only, use at your own risk
-	// Builds an array of entities based on the specified components
-	// let entities = world.query(['position', 'velocity'])
-	query(componentNames) {
-		// TODO: Use some kind of a reverse index to make this closer to O(1)
-		let results = []
+	// Creates a hash from an array of component names
+	hashComponents(names) {
+		return names.concat().sort().join(':')
+	}
+
+	// Builds an initial index for a set of components
+	// These indeces are expected to be updated when doing entity/component operations
+	buildIndex(hash, componentNames) {
+		let matchingEntities = []
+
 		for (let entId in this.entities) {
 			let ent = this.entities[entId]
 
 			// Ensure entity contains all specified components
 			if (ent.has(...componentNames)) {
 				// Add entity to search results
-				results.push(ent)
+				matchingEntities.push(ent)
 			}
 		}
-		return results
+
+		return this.index[hash] = {
+			components: componentNames,
+			entities: matchingEntities
+		}
+	}
+
+	// Returns an array of entities based on the specified components
+	// let entities = world.query(['position', 'velocity'])
+	query(componentNames) {
+		let hash = this.hashComponents(componentNames)
+
+		if (hash in this.index) {
+			return this.index[hash]
+		} else {
+			return this.buildIndex(hash, componentNames)
+		}
 	}
 }
 
