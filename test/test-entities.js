@@ -373,7 +373,7 @@ describe('World', function() {
 			world.component('position')
 			let ent = world.entity().update('position', {x: 4, y: 6})
 
-			let data = JSON.parse(ent.toString())
+			let data = JSON.parse(ent.toJSON())
 			assert(data)
 			assert(data.position)
 			assert(data.position.x === 4)
@@ -391,7 +391,7 @@ describe('World', function() {
 			})
 			let ent = world.entity().set('position', 4, 6)
 
-			let data = JSON.parse(ent.toString())
+			let data = JSON.parse(ent.toJSON())
 			assert(data)
 			assert(data.position)
 			assert(data.position.result === 24)
@@ -402,7 +402,7 @@ describe('World', function() {
 			let ent = world.entity()
 			assert(Object.keys(ent.data).length == 0)
 
-			ent.parse('{"position": {"x": 4, "y": 6}}')
+			ent.fromJSON('{"position": {"x": 4, "y": 6}}')
 			assert(ent.has('position'))
 			assert(Object.keys(ent.data).length == 1)
 			assert(ent.get('position'))
@@ -428,7 +428,7 @@ describe('World', function() {
 			// Old deserialization test
 			let ent = world.entity()
 			assert(Object.keys(ent.data).length == 0)
-			ent.parse('{"position": {"result": 24}}')
+			ent.fromJSON('{"position": {"result": 24}}')
 			assert(ent.has('position'))
 			assert(Object.keys(ent.data).length == 1)
 			assert(ent.get('position'))
@@ -437,12 +437,12 @@ describe('World', function() {
 
 			// Full entity-based serialization/deserialization test
 			let ent2 = world.entity().set('position', 7, 4)
-			let jsonData = ent2.toString()
-			let ent3 = world.entity().parse(jsonData)
+			let jsonData = ent2.toJSON()
+			let ent3 = world.entity().fromJSON(jsonData)
 			assert(ent3.has('position'))
 			assert(ent3.get('position').x === 14)
 			assert(ent3.get('position').y === 2)
-			ent2.parse(jsonData)
+			ent2.fromJSON(jsonData)
 			assert(ent2.has('position'))
 			assert(ent2.get('position').x === 14)
 			assert(ent2.get('position').y === 2)

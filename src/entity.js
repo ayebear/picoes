@@ -44,6 +44,9 @@ class Entity {
 		} else {
 			this.data[component] = {}
 		}
+
+		this.world.index.add(this, component)
+
 		return this
 	}
 
@@ -65,6 +68,9 @@ class Entity {
 	// ent.remove('position')
 	remove(component) {
 		if (component in this.data) {
+
+			this.world.index.remove(this, component)
+
 			let comp = this.data[component]
 			if (typeof comp.onRemove === 'function') {
 				comp.onRemove()
@@ -96,15 +102,19 @@ class Entity {
 		return this.world && this.id !== undefined
 	}
 
+	toString() {
+		return String(this.id)
+	}
+
 	// Serializes entire entity to JSON
 	// Note: Defining toJSON methods in your components will override the built-in behavior
-	toString() {
+	toJSON() {
 		return JSON.stringify(this.data)
 	}
 
 	// Deserializes data from JSON, creating new components
 	// Note: Defining fromJSON methods in your components will override the built-in behavior
-	parse(data) {
+	fromJSON(data) {
 		let parsed = JSON.parse(data)
 		for (let name in parsed) {
 			let comp = this.access(name)

@@ -1,4 +1,5 @@
 let Entity = require('./entity.js').Entity
+let Index = require('./index.js').Index
 
 function isFunction(obj) {
 	return typeof obj === 'function'
@@ -26,7 +27,7 @@ class World {
 		this.idCounter = 1
 
 		// Maps entire queries to arrays of entities
-		this.index = {}
+		this.index = new Index(this.entities)
 	}
 
 	// Registers a component type to the world
@@ -167,42 +168,10 @@ class World {
 		return count
 	}
 
-	// Creates a hash from an array of component names
-	hashComponents(names) {
-		return names.concat().sort().join(':')
-	}
-
-	// Builds an initial index for a set of components
-	// These indeces are expected to be updated when doing entity/component operations
-	buildIndex(hash, componentNames) {
-		let matchingEntities = []
-
-		for (let entId in this.entities) {
-			let ent = this.entities[entId]
-
-			// Ensure entity contains all specified components
-			if (ent.has(...componentNames)) {
-				// Add entity to search results
-				matchingEntities.push(ent)
-			}
-		}
-
-		return this.index[hash] = {
-			components: componentNames,
-			entities: matchingEntities
-		}
-	}
-
 	// Returns an array of entities based on the specified components
 	// let entities = world.query(['position', 'velocity'])
 	query(componentNames) {
-		let hash = this.hashComponents(componentNames)
-
-		if (hash in this.index) {
-			return this.index[hash]
-		} else {
-			return this.buildIndex(hash, componentNames)
-		}
+		return this.index.query(componentNames)
 	}
 }
 
