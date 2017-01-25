@@ -113,10 +113,10 @@ class World {
 	// Iterate through entities with the specified components
 	// world.every(['comp'], comp => {comp.value = 0})
 	every(componentNames, callback, that) {
-		// First, get a list of entities (fixes problems with adding new ones during the loop)
+		// Get indexed set of entities
 		let entities = this.query(componentNames)
 
-		// Go through this list of entities
+		// Go through the set of entities
 		for (let ent of entities) {
 			// Get all components as an array
 			let comps = componentNames.map(name => ent.get(name))
@@ -124,14 +124,11 @@ class World {
 			// Add entity itself as the last parameter
 			comps.push(ent)
 
-			// If all components are defined
-			if (comps.every(i => i)) {
-				// Expand array as parameters to the method
-				if (that === undefined) {
-					callback(...comps)
-				} else {
-					callback.call(that, ...comps)
-				}
+			// Expand array as parameters to the method
+			if (that === undefined) {
+				callback(...comps)
+			} else {
+				callback.call(that, ...comps)
 			}
 		}
 	}
