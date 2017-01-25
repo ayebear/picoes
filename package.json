@@ -11,7 +11,12 @@
     "url": "git+https://github.com/ayebear/picoes.git"
   },
   "keywords": [
-    "entity"
+    "entity",
+    "component",
+    "system",
+    "ecs",
+    "picoes",
+    "es6"
   ],
   "author": "Eric Hebert",
   "license": "MIT",
