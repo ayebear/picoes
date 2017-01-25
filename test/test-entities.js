@@ -142,8 +142,13 @@ describe('World', function() {
 			world.component('position')
 			world.component('velocity')
 
+			let testEnt2 = null
 			for (let i = 0; i < 100; ++i) {
-				world.entity().set('position').set('velocity')
+				let tmpEnt = world.entity()
+				tmpEnt.set('position').set('velocity')
+				if (i == 80) {
+					testEnt2 = tmpEnt
+				}
 			}
 
 			let testEnt = world.entity().set('position').set('velocity')
@@ -151,9 +156,11 @@ describe('World', function() {
 
 			world.system(['position', 'velocity'], class {
 				every(position, velocity, ent) {
-					assert(ent !== testEnt)
-					if (count == 0) {
+					++count
+					if (count == 1) {
 						testEnt.removeAll()
+						testEnt2.remove('position')
+						return
 					}
 					assert(position)
 					assert(velocity)
@@ -205,6 +212,37 @@ describe('World', function() {
 				assert(externalVar === 5)
 			})
 		})
+		it('test indexing with query()/every()', function() {
+			let world = new es.World()
+			world.component('position', function(val = 0) {
+				this.val = val
+			})
+			world.component('velocity')
+			world.component('sprite', {texture: 'image.png'})
+			let ent1 = world.entity().set('position', 1).set('velocity')
+			let ent2 = world.entity().set('position', 10)
+			let ent3 = world.entity().set('position', 100).set('velocity').set('sprite')
+			let count = 0
+			world.every(['position', 'velocity'], (pos, vel, ent) => {
+				assert(ent.has('position', 'velocity'))
+				count += pos.val
+			})
+			assert(count == 101)
+			count = 0
+
+			ent1.remove('position')
+			ent1.set('sprite')
+			ent2.set('velocity')
+			world.every(['position', 'velocity'], (pos, vel, ent) => {
+				assert(ent.has('position', 'velocity'))
+				count += pos.val
+			})
+			assert(count == 110)
+
+			ent1.remove('sprite')
+			ent2.remove('sprite')
+			ent3.remove('sprite')
+		})
 	})
 
 	describe('entity()', function() {
@@ -213,6 +251,7 @@ describe('World', function() {
 			world.component('position')
 			let ent = world.entity()
 			assert(Object.keys(world.entities).length == 1)
+			assert(ent.toString() == String(ent.id))
 		})
 		it('remove an entity', function() {
 			let world = new es.World()
