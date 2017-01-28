@@ -4,6 +4,8 @@ class Entity {
 		this.world = world
 		this.id = id
 		this.data = {}
+
+		this.world.index.add(this)
 	}
 
 	// Returns true if the entity has ALL of the specified components
@@ -92,6 +94,7 @@ class Entity {
 	destroy() {
 		if (this.id) {
 			this.removeAll()
+			this.world.index.remove(this)
 			delete this.world.entities[this.id]
 			this.id = undefined
 		}

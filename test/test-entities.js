@@ -242,6 +242,31 @@ describe('World', function() {
 			ent1.remove('sprite')
 			ent2.remove('sprite')
 			ent3.remove('sprite')
+
+			// Query for all entities
+			let test = world.query([])
+			assert(test.size == 3)
+			assert('' in world.index.index)
+
+			let ent4 = world.entity()
+			let test2 = world.query([])
+			assert(test2.size == 4)
+			assert(test2.has(ent4))
+
+			ent4.set('velocity')
+			let test3 = world.query([])
+			assert(test3.size == 4)
+			assert(test3.has(ent4))
+
+			ent4.remove('velocity')
+			let test4 = world.query([])
+			assert(test4.size == 4)
+			assert(test4.has(ent4))
+
+			ent4.destroy()
+			let test5 = world.query([])
+			assert(test5.size == 3)
+			assert(!test5.has(ent4))
 		})
 	})
 

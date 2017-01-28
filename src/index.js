@@ -31,7 +31,7 @@ class Index {
 
 			// Ensure entity contains all specified components
 			if (ent.has(...componentNames)) {
-				// Add entity to search results
+				// Add entity to index
 				matchingEntities.add(ent)
 			}
 		}
@@ -42,26 +42,28 @@ class Index {
 		}
 	}
 
-	// Update an entity in the index (for creating components)
-	add(entity, componentName) {
+	apply(componentName, callback) {
 		for (let hash in this.index) {
 			let group = this.index[hash]
 
-			if (group.components.has(componentName)) {
-				group.entities.add(entity)
+			if (group.components.has(componentName) || (componentName == undefined && group.components.size == 0)) {
+				callback(group.entities)
 			}
 		}
 	}
 
+	// Update an entity in the index (for creating components)
+	add(entity, componentName) {
+		this.apply(componentName, (entities) => {
+			entities.add(entity)
+		})
+	}
+
 	// Update an entity in the index (for removing components)
 	remove(entity, componentName) {
-		for (let hash in this.index) {
-			let group = this.index[hash]
-
-			if (group.components.has(componentName)) {
-				group.entities.delete(entity)
-			}
-		}
+		this.apply(componentName, (entities) => {
+			entities.delete(entity)
+		})
 	}
 }
 
