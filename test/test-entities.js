@@ -267,6 +267,12 @@ describe('World', function() {
 			let test5 = world.query([])
 			assert(test5.size == 3)
 			assert(!test5.has(ent4))
+
+			count = 0
+			world.every([], (ent) => {
+				++count
+			})
+			assert(count == 3)
 		})
 	})
 
