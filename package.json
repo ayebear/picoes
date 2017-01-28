@@ -1,6 +1,6 @@
 {
   "name": "picoes",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Pico Entity System for JavaScript (ES6).",
   "main": "./src/picoes.js",
   "scripts": {
@@ -25,8 +25,8 @@
   },
   "homepage": "https://github.com/ayebear/picoes#readme",
   "devDependencies": {
-    "chai": "^3.5.0",
-    "istanbul": "^0.4.4",
-    "mocha": "^2.5.3"
+    "chai": "latest",
+    "istanbul": "latest",
+    "mocha": "latest"
   }
 }
