@@ -273,6 +273,15 @@ describe('World', function() {
 				++count
 			})
 			assert(count == 3)
+
+			count = 0
+			world.system([], class {
+				every(ent) {
+					++count
+				}
+			})
+			world.run()
+			assert(count == 3)
 		})
 	})
 
