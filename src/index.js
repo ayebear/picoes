@@ -1,7 +1,11 @@
 class Index {
 	constructor(entities) {
-		this.entities = entities
+		this.clear(entities)
+	}
 
+	// Removes everything from the index
+	clear(entities) {
+		this.entities = entities
 		this.index = {}
 	}
 
@@ -22,7 +26,7 @@ class Index {
 	}
 
 	// Builds an initial index for a set of components
-	// These indeces are expected to be updated when doing entity/component operations
+	// These indexes are expected to be updated when doing entity/component operations
 	build(hash, componentNames) {
 		let matchingEntities = new Set()
 
@@ -42,6 +46,7 @@ class Index {
 		}
 	}
 
+	// Generic way to apply an operation to matching component groups
 	apply(componentName, callback) {
 		for (let hash in this.index) {
 			let group = this.index[hash]

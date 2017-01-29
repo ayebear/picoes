@@ -10,24 +10,19 @@ class World {
 		this.systems = []
 		this.entities = {}
 		this.components = {}
-
-		/*
-		Entity templates:
-		{
-			"Player": {
-				"Position": '{"x": 0, "y": 0}',
-				"Health": '{"value": 100}'
-			},
-			"Enemy": {...},
-			...
-		}
-		*/
 		this.entityTemplates = {}
 
 		this.idCounter = 1
 
 		// Maps entire queries to arrays of entities
 		this.index = new Index(this.entities)
+	}
+
+	// Removes all entities from the world
+	// Does not affect registered systems, components, or prototypes
+	clear() {
+		this.entities = {}
+		this.index.clear(this.entities)
 	}
 
 	// Registers a component type to the world

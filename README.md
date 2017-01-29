@@ -84,7 +84,7 @@ world.system(['position', 'velocity'], class {
 })
 ```
 
-**Note:** Most edge cases are handled correctly. Deleting an entity that hasn't been iterated over yet, will not be iterated over. Also, entities that do not satisify the condition of having all required components will not be included (even if it is changed during the loop). Newly added entities will not be included in the loop either.
+**Note:** Most edge cases are handled correctly. Deleting an entity that hasn't been iterated over yet, will not be iterated over. Also, entities that do not satisfy the condition of having all required components will not be included (even if it is changed during the loop). Newly added entities will not be included in the loop either.
 
 It is also possible to get the entire entity by adding it as the last parameter:
 
@@ -128,6 +128,12 @@ let entity = world.entity()
 
 ```javascript
 entity.has('position')
+```
+
+##### Check if multiple components all exist
+
+```javascript
+entity.has('position', 'velocity', 'sprite')
 ```
 
 ##### Get a component
@@ -244,7 +250,7 @@ world.entity('Player')
 
 #### Iterate over entities
 
-PicoES uses a cached index, which is built on-demand. This means that the first time a query is done internally, it will build an initial index. Every subsequent call will just return the entities already stored in the index. Whenever components or entities are added or removed, all of the indeces are updated with this change.
+PicoES uses a cached index, which is built on-demand. This means that the first time a query is done internally, it will build an initial index. Every subsequent call will just return the entities already stored in the index. Whenever components or entities are added or removed, all of the indexes are updated with this change.
 
 ##### Iterate through entities from component names
 
