@@ -292,13 +292,6 @@ describe('World', function() {
 			let ent = world.entity()
 			assert(Object.keys(world.entities).length == 1)
 			assert(ent.toString() == String(ent.id))
-
-			ent.set('invalid', {a: 'test'})
-			assert(ent.get('invalid').a === 'test')
-
-			ent.set('invalid', {b: 'test2'})
-			assert(ent.get('invalid').a === undefined)
-			assert(ent.get('invalid').b === 'test2')
 		})
 		it('remove an entity', function() {
 			let world = new es.World()
@@ -383,6 +376,24 @@ describe('World', function() {
 			ent.set('position', 333)
 			assert(ent.get('position').x === 333)
 			assert(ent.get('position').y === 0)
+
+			// Undefined component tests
+			ent.removeAll()
+			ent.set('invalid', {a: 'test'})
+			assert(ent.get('invalid').a === 'test')
+
+			ent.set('invalid', {b: 'test2'})
+			assert(ent.get('invalid').a === undefined)
+			assert(ent.get('invalid').b === 'test2')
+
+			ent.set('invalid2', 5)
+			assert(ent.get('invalid2') === 5)
+
+			ent.set('invalid2', 'test')
+			assert(ent.get('invalid2') === 'test')
+
+			ent.set('invalid2', ['test'])
+			assert(ent.get('invalid2')[0] === 'test')
 		})
 		it('remove components', function() {
 			let world = new es.World()
