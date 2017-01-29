@@ -43,6 +43,8 @@ class Entity {
 			this.data[component] = new compTemplate(...args)
 		} else if (templateType === 'string') {
 			this.data[component] = JSON.parse(compTemplate)
+		} else if (templateType === 'undefined' && args.length > 0) {
+			this.data[component] = args[0]
 		} else {
 			this.data[component] = {}
 		}

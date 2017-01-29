@@ -292,6 +292,13 @@ describe('World', function() {
 			let ent = world.entity()
 			assert(Object.keys(world.entities).length == 1)
 			assert(ent.toString() == String(ent.id))
+
+			ent.set('invalid', {a: 'test'})
+			assert(ent.get('invalid').a === 'test')
+
+			ent.set('invalid', {b: 'test2'})
+			assert(ent.get('invalid').a === undefined)
+			assert(ent.get('invalid').b === 'test2')
 		})
 		it('remove an entity', function() {
 			let world = new es.World()

@@ -54,7 +54,7 @@ world.component('position', function(x = 0, y = 0) {
 })
 ```
 
-You can also register components from objects, but then you cannot use the shorthand set() syntax.
+You can also register components from objects, but then you cannot use the shorthand set() syntax. Internally, this data is stored as a JSON string, so keep that in mind when storing complex types.
 
 ```javascript
 world.component('position', {
@@ -68,6 +68,8 @@ You can also make basic components without any properties. You can add propertie
 ```javascript
 world.component('position')
 ```
+
+Finally, you do not need to actually register components, they are basically just templates to keep your data consistently structured.
 
 #### Register systems
 
@@ -242,6 +244,8 @@ world.entity('Player')
 
 #### Iterate over entities
 
+PicoES uses a cached index, which is built on-demand. This means that the first time a query is done internally, it will build an initial index. Every subsequent call will just return the entities already stored in the index. Whenever components or entities are added or removed, all of the indeces are updated with this change.
+
 ##### Iterate through entities from component names
 
 This works exactly the same as systems, and is actually used internally to run the every() method on systems.
@@ -252,6 +256,22 @@ world.every(['position', 'velocity'], (position, velocity, ent) => {
 	position.y += velocity.y
 })
 ```
+
+##### Get a set of entities from component names
+
+This is used internally by systems, and will directly return the set of entities matching these components.
+
+```javascript
+let entities = world.query(['position', 'velocity'])
+```
+
+It is also possible to get all entities with an empty array query:
+
+```javascript
+let entities = world.query([])
+```
+
+Note that this applies to every() as well as systems.
 
 ##### Component query rules for every()
 
