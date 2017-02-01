@@ -192,6 +192,14 @@ Remove an entity from the world.
 entity.destroy()
 ```
 
+#### Destroy all entities in the world
+
+Remove all entities in a world instance, without getting rid of system/component definitions.
+
+```javascript
+world.clear()
+```
+
 #### Seralization
 
 ##### Serialize an entity to a JSON string
