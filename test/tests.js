@@ -3,8 +3,8 @@ let es = require('../src/picoes.js')
 let assert = require('chai').assert
 
 describe('World', function() {
-	describe('component()', function () {
-		it('define a component', function () {
+	describe('component()', function() {
+		it('define a component', function() {
 			let world = new es.World()
 			world.component('position', function(x = 0, y = 0) {
 				this.x = x
@@ -17,7 +17,7 @@ describe('World', function() {
 			assert(ent.get('position').x === 1)
 			assert(ent.get('position').y === 2)
 		})
-		it('define an object component', function () {
+		it('define an object component', function() {
 			let world = new es.World()
 			let result = world.component('position', {
 				x: 0,
@@ -42,7 +42,7 @@ describe('World', function() {
 			assert(ent2.get('position').x === 1)
 			assert(ent2.get('position').y === 0)
 		})
-		it('define an empty component', function () {
+		it('define an empty component', function() {
 			let world = new es.World()
 			world.component('position')
 			let ent = world.entity().update('position', {
@@ -53,6 +53,42 @@ describe('World', function() {
 			assert(ent.has('position'))
 			assert(ent.get('position').x === 1)
 			assert(!('y' in ent.get('position')))
+		})
+		it('test clearing with indexes', function() {
+			let world = new es.World()
+			world.component('position', function(x = 0, y = 0) {
+				this.x = x
+				this.y = y
+			})
+			world.component('velocity')
+			world.component('sprite')
+			let results = world.every([])
+			results = world.every(['position'])
+			results = world.every(['position', 'velocity'])
+
+			world.entity().set('position', 1, 2).set('velocity')
+			world.entity().set('position', 3, 4).set('velocity')
+			world.entity().set('position', 5, 6)
+			world.entity().set('velocity')
+
+			let count = 0
+			world.every(['position'], (position) => {
+				assert(position.x >= 1)
+				assert(position.y >= 2)
+				++count
+			})
+			assert(count === 3)
+
+			world.clear()
+
+			count = 0
+			world.every(['position'], (position) => {
+				++count
+			})
+			world.every([], (ent) => {
+				++count
+			})
+			assert(count === 0)
 		})
 	})
 
@@ -212,7 +248,7 @@ describe('World', function() {
 				assert(externalVar === 5)
 			})
 		})
-		it('test indexing with query()/every()', function() {
+		it('test indexing with every()', function() {
 			let world = new es.World()
 			world.component('position', function(val = 0) {
 				this.val = val
@@ -243,30 +279,43 @@ describe('World', function() {
 			ent2.remove('sprite')
 			ent3.remove('sprite')
 
+			function getSize(it) {
+				let num = 0
+				for (let elem of it) {
+					++num
+				}
+				return num
+			}
+
+			function has(it, target) {
+				for (let elem of it) {
+					if (elem.toString() == target.toString()) {
+						return true
+					}
+				}
+				return false
+			}
+
 			// Query for all entities
-			let test = world.query([])
-			assert(test.size == 3)
+			let test = world.every([])
+			assert(getSize(test) == 3)
 			assert('' in world.index.index)
 
 			let ent4 = world.entity()
-			let test2 = world.query([])
-			assert(test2.size == 4)
-			assert(test2.has(ent4))
+			assert(getSize(world.every([])) == 4)
+			assert(has(world.every([]), ent4))
 
 			ent4.set('velocity')
-			let test3 = world.query([])
-			assert(test3.size == 4)
-			assert(test3.has(ent4))
+			assert(getSize(world.every([])) == 4)
+			assert(has(world.every([]), ent4))
 
 			ent4.remove('velocity')
-			let test4 = world.query([])
-			assert(test4.size == 4)
-			assert(test4.has(ent4))
+			assert(getSize(world.every([])) == 4)
+			assert(has(world.every([]), ent4))
 
 			ent4.destroy()
-			let test5 = world.query([])
-			assert(test5.size == 3)
-			assert(!test5.has(ent4))
+			assert(getSize(world.every([])) == 3)
+			assert(!has(world.every([]), ent4))
 
 			count = 0
 			world.every([], (ent) => {

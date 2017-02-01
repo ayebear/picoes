@@ -107,25 +107,36 @@ class World {
 
 	// Iterate through entities with the specified components
 	// world.every(['comp'], comp => {comp.value = 0})
+	// Get an iterator for the entities
+	// let it = world.every(['comp'])
 	every(componentNames, callback, that) {
-		// Get indexed set of entities
-		let entities = this.query(componentNames)
+		// Get indexed map of entities
+		let entities = this.index.query(componentNames)
 
-		// Go through the set of entities
-		for (let ent of entities) {
-			// Get all components as an array
-			let comps = componentNames.map(name => ent.get(name))
+		if (isFunction(callback)) {
+			// Go through the map of entities
+			for (let ent of entities.values()) {
 
-			// Add entity itself as the last parameter
-			comps.push(ent)
+				// Ensure entity has all of these components by this point
+				if (ent.has(...componentNames)) {
 
-			// Expand array as parameters to the method
-			if (that === undefined) {
-				callback(...comps)
-			} else {
-				callback.call(that, ...comps)
+					// Get all components as an array
+					let comps = componentNames.map(name => ent.get(name))
+
+					// Add entity itself as the last parameter
+					comps.push(ent)
+
+					// Expand array as parameters to the method
+					if (that === undefined) {
+						callback(...comps)
+					} else {
+						callback.call(that, ...comps)
+					}
+				}
 			}
 		}
+
+		return entities.values()
 	}
 
 	// Registers entity prototype(s)
@@ -158,12 +169,6 @@ class World {
 		}
 
 		return count
-	}
-
-	// Returns an array of entities based on the specified components
-	// let entities = world.query(['position', 'velocity'])
-	query(componentNames) {
-		return this.index.query(componentNames)
 	}
 }
 

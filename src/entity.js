@@ -107,6 +107,7 @@ class Entity {
 		return this.world && this.id !== undefined
 	}
 
+	// Returns unique entity ID as a string
 	toString() {
 		return String(this.id)
 	}

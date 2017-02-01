@@ -28,7 +28,7 @@ class Index {
 	// Builds an initial index for a set of components
 	// These indexes are expected to be updated when doing entity/component operations
 	build(hash, componentNames) {
-		let matchingEntities = new Set()
+		let matchingEntities = new Map()
 
 		for (let entId in this.entities) {
 			let ent = this.entities[entId]
@@ -36,7 +36,7 @@ class Index {
 			// Ensure entity contains all specified components
 			if (ent.has(...componentNames)) {
 				// Add entity to index
-				matchingEntities.add(ent)
+				matchingEntities.set(ent.toString(), ent)
 			}
 		}
 
@@ -60,14 +60,14 @@ class Index {
 	// Update an entity in the index (for creating components)
 	add(entity, componentName) {
 		this.apply(componentName, (entities) => {
-			entities.add(entity)
+			entities.set(entity.toString(), entity)
 		})
 	}
 
 	// Update an entity in the index (for removing components)
 	remove(entity, componentName) {
 		this.apply(componentName, (entities) => {
-			entities.delete(entity)
+			entities.delete(entity.toString())
 		})
 	}
 }
