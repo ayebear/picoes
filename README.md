@@ -12,12 +12,12 @@ This entity system is designed to be as simple as possible, while still having u
 
 #### Features
 
-* Serialization
-* Prototypes
+* Extremely fast entity querying support: O(1) average time
+* Strings as component keys
+* Access/create pattern, like a dictionary
 * ES6 style API
-* String based operations (using component names)
-* Access/create pattern (almost like a dictionary)
-* Entity querying support (outside of systems)
+* JSON serialization
+* Prototypes
 
 ### Instructions
 
@@ -273,23 +273,27 @@ world.every(['position', 'velocity'], (position, velocity, ent) => {
 
 ##### Get a set of entities from component names
 
-This is used internally by systems, and will directly return the set of entities matching these components.
+The callback parameter in every() is optional. The return value can be used instead to get an iterator to the entities with the specified component names.
 
 ```javascript
-let entities = world.query(['position', 'velocity'])
+let entities = world.every(['position', 'velocity'])
+for (let entity of entities) {
+	assert(entity.has('position'))
+	assert(entity.has('velocity'))
+}
 ```
 
 It is also possible to get all entities with an empty array query:
 
 ```javascript
-let entities = world.query([])
+let entities = world.every([])
 ```
 
-Note that this applies to every() as well as systems.
+Note that this applies to systems as well.
 
 ##### Component query rules for every()
 
-* AND logic - without exact matching
+* AND logic, but without exact matching
 * Above query **does** include entities such as ['position', 'velocity', 'sprite']
 * Above query **does not** include entities such as ['position', 'sprite']
 
