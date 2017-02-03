@@ -1,11 +1,12 @@
 // import 'es.js'
 let es = require('../src/picoes.js')
 let assert = require('chai').assert
+let World = es.World
 
 describe('World', function() {
 	describe('component()', function() {
 		it('define a component', function() {
-			let world = new es.World()
+			let world = new World()
 			world.component('position', function(x = 0, y = 0) {
 				this.x = x
 				this.y = y
@@ -16,9 +17,28 @@ describe('World', function() {
 			assert(ent.has('position'))
 			assert(ent.get('position').x === 1)
 			assert(ent.get('position').y === 2)
+
+		})
+		it('README example', function() {
+			let world = new World()
+
+			// Create player
+			let player = world.entity().set('health', { value: 100 })
+
+			// Create enemies
+			world.entity().set('damages', 10)
+			world.entity().set('damages', 30)
+
+			// Apply damage
+			world.every(['damages'], (amount) => {
+				player.get('health').value -= amount
+			})
+
+			// Player now has reduced health
+			assert(player.get('health').value === 60)
 		})
 		it('define an object component', function() {
-			let world = new es.World()
+			let world = new World()
 			let result = world.component('position', {
 				x: 0,
 				y: 0
@@ -43,7 +63,7 @@ describe('World', function() {
 			assert(ent2.get('position').y === 0)
 		})
 		it('define an empty component', function() {
-			let world = new es.World()
+			let world = new World()
 			world.component('position')
 			let ent = world.entity().update('position', {
 				x: 1
@@ -55,7 +75,7 @@ describe('World', function() {
 			assert(!('y' in ent.get('position')))
 		})
 		it('test clearing with indexes', function() {
-			let world = new es.World()
+			let world = new World()
 			world.component('position', function(x = 0, y = 0) {
 				this.x = x
 				this.y = y
@@ -94,13 +114,13 @@ describe('World', function() {
 
 	describe('system()', function() {
 		it('define a system', function() {
-			let world = new es.World()
+			let world = new World()
 			world.component('position')
 			world.system(['position'], class {})
 			assert(world.systems.length == 1)
 		})
 		it('system iteration', function() {
-			let world = new es.World()
+			let world = new World()
 			world.component('position')
 			world.component('velocity')
 			world.system(['position', 'velocity'], class {
@@ -136,7 +156,7 @@ describe('World', function() {
 			assert(entB.get('position').x == 28 && entB.get('position').y == 44)
 		})
 		it('system methods', function() {
-			let world = new es.World()
+			let world = new World()
 			world.component('position')
 
 			let methodsCalled = 0
@@ -174,7 +194,7 @@ describe('World', function() {
 			assert(methodsCalled == 4)
 		})
 		it('system edge cases', function() {
-			let world = new es.World()
+			let world = new World()
 			world.component('position')
 			world.component('velocity')
 
@@ -229,7 +249,7 @@ describe('World', function() {
 			assert(entB.get('position').x == 28 && entB.get('position').y == 44)
 		})
 		it('use the every() method', function() {
-			let world = new es.World()
+			let world = new World()
 			world.component('position')
 			world.component('velocity')
 			let ent1 = world.entity().set('position').set('velocity')
@@ -249,7 +269,7 @@ describe('World', function() {
 			})
 		})
 		it('test indexing with every()', function() {
-			let world = new es.World()
+			let world = new World()
 			world.component('position', function(val = 0) {
 				this.val = val
 			})
@@ -336,14 +356,14 @@ describe('World', function() {
 
 	describe('entity()', function() {
 		it('create an entity', function() {
-			let world = new es.World()
+			let world = new World()
 			world.component('position')
 			let ent = world.entity()
 			assert(Object.keys(world.entities).length == 1)
 			assert(ent.toString() == String(ent.id))
 		})
 		it('remove an entity', function() {
-			let world = new es.World()
+			let world = new World()
 			world.component('position')
 			let ent = world.entity()
 			ent.set('position')
@@ -371,7 +391,7 @@ describe('World', function() {
 			assert(!ent.has('position'))
 		})
 		it('get and set components', function() {
-			let world = new es.World()
+			let world = new World()
 			world.component('position', function(x = 0, y = 0) {
 				this.x = x
 				this.y = y
@@ -445,7 +465,7 @@ describe('World', function() {
 			assert(ent.get('invalid2')[0] === 'test')
 		})
 		it('remove components', function() {
-			let world = new es.World()
+			let world = new World()
 			world.component('position')
 			world.component('velocity')
 			let ent = world.entity().set('position').set('velocity')
@@ -476,7 +496,7 @@ describe('World', function() {
 			assert(!ent.has('velocity'))
 		})
 		it('remove components - onRemove', function() {
-			let world = new es.World()
+			let world = new World()
 			world.component('test', function(obj) {
 				this.obj = obj
 				this.obj.created = true
@@ -515,7 +535,7 @@ describe('World', function() {
 			assert(obj2.removed)
 		})
 		it('serialize components', function() {
-			let world = new es.World()
+			let world = new World()
 			world.component('position')
 			let ent = world.entity().update('position', {x: 4, y: 6})
 
@@ -526,7 +546,7 @@ describe('World', function() {
 			assert(data.position.y === 6)
 		})
 		it('serialize custom components', function() {
-			let world = new es.World()
+			let world = new World()
 			world.component('position', function(x = 0, y = 0) {
 				this.x = x
 				this.y = y
@@ -543,7 +563,7 @@ describe('World', function() {
 			assert(data.position.result === 24)
 		})
 		it('deserialize components', function() {
-			let world = new es.World()
+			let world = new World()
 			world.component('position')
 			let ent = world.entity()
 			assert(Object.keys(ent.data).length == 0)
@@ -556,7 +576,7 @@ describe('World', function() {
 			assert(ent.get('position').y === 6)
 		})
 		it('deserialize custom components', function() {
-			let world = new es.World()
+			let world = new World()
 			world.component('position', function(x = 0, y = 0) {
 				this.x = x
 				this.y = y
@@ -594,7 +614,7 @@ describe('World', function() {
 			assert(ent2.get('position').y === 2)
 		})
 		it('check for existence of components', function() {
-			let world = new es.World()
+			let world = new World()
 
 			// Test all three component types
 			world.component('position', function(x = 0, y = 0) {
@@ -628,7 +648,7 @@ describe('World', function() {
 			assert(!ent2.has('invalid'))
 		})
 		it('register and use prototypes', function() {
-			let world = new es.World()
+			let world = new World()
 
 			// Test all three component types
 			world.component('position', function(x = 0, y = 0) {

@@ -19,6 +19,27 @@ This entity system is designed to be as simple as possible, while still having u
 * JSON serialization
 * Prototypes
 
+#### Example code usage
+
+```javascript
+let world = new World()
+
+// Create player
+let player = world.entity().set('health', { value: 100 })
+
+// Create enemies
+world.entity().set('damages', 10)
+world.entity().set('damages', 30)
+
+// Apply damage
+world.every(['damages'], (amount) => {
+	player.get('health').value -= amount
+})
+
+// Player now has reduced health
+assert(player.get('health').value === 60)
+```
+
 ### Instructions
 
 Full API documentation will be available later, but here is a basic usage guide for now.
