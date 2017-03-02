@@ -26,17 +26,12 @@ class World {
 	}
 
 	// Registers a component type to the world
-	// Note: Must be either a function or an object (nothing specified is allowed as well)
+	// Must be a function or class
+	// Returns the registered component name on success
 	// world.component(class { constructor(a) {this.a = a} })
 	component(name, componentClass) {
-		// Convert objects to strings for faster duplication later on
-		if (typeof componentClass === 'object') {
-			componentClass = JSON.stringify(componentClass)
-		}
-
-		// Must be one of the three supported types
-		let type = typeof componentClass
-		if (type === 'function' || type === 'string' || type === 'undefined') {
+		// Only allow functions and classes to be components
+		if (typeof componentClass === 'function') {
 			this.components[name] = componentClass
 			return name
 		}

@@ -37,18 +37,18 @@ class Entity {
 	// Adds a new component, or overwrites an existing component
 	// ent.set('position', 1, 2)
 	set(component, ...args) {
-		let compTemplate = this.world.components[component]
-		let templateType = typeof compTemplate
-		if (templateType === 'function') {
-			this.data[component] = new compTemplate(...args)
-		} else if (templateType === 'string') {
-			this.data[component] = JSON.parse(compTemplate)
-		} else if (templateType === 'undefined' && args.length > 0) {
+		if (component in this.world.components) {
+			// Use defined component template
+			this.data[component] = new this.world.components[component](...args)
+		} else if (args.length > 0) {
+			// Use first argument as component value
 			this.data[component] = args[0]
 		} else {
+			// Make an empty object
 			this.data[component] = {}
 		}
 
+		// Update the index with this new component
 		this.world.index.add(this, component)
 
 		return this

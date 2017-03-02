@@ -60,42 +60,60 @@ describe('World', function() {
 			// Player now has reduced health
 			assert(player.get('health').value === 60)
 		})
-		it('define an object component', function() {
+		it('define an object component (should be invalid)', function() {
 			let world = new World()
 			let result = world.component('position', {
 				x: 0,
 				y: 0
 			})
-			assert(result === 'position')
+			assert(result === undefined)
 			let result2 = world.component('invalid', 555)
 			assert(result2 === undefined)
-			let ent = world.entity().update('position', {
-				x: 1,
-				y: 2
-			})
-			let ent2 = world.entity().update('position', {
-				x: 1
-			})
-			assert('position' in world.components)
-			assert(Object.keys(world.components).length == 1)
-			assert(ent.has('position'))
-			assert(ent.get('position').x === 1)
-			assert(ent.get('position').y === 2)
-			assert(ent2.has('position'))
-			assert(ent2.get('position').x === 1)
-			assert(ent2.get('position').y === 0)
+			assert(Object.keys(world.components).length === 0)
 		})
 		it('define an empty component', function() {
 			let world = new World()
-			world.component('position')
+			let result = world.component('position')
+			assert(result === undefined)
+		})
+		it('use an empty component', function() {
+			let world = new World()
 			let ent = world.entity().update('position', {
 				x: 1
 			})
-			assert('position' in world.components)
-			assert(Object.keys(world.components).length == 1)
 			assert(ent.has('position'))
 			assert(ent.get('position').x === 1)
-			assert(!('y' in ent.get('position')))
+
+			let ent2 = world.entity().set('velocity', {
+				x: 2
+			})
+			assert(ent2.has('velocity'))
+			assert(ent2.get('velocity').x === 2)
+			ent2.set('velocity', {
+				y: 3
+			})
+			assert(ent2.get('velocity').x === undefined)
+			assert(ent2.get('velocity').y === 3)
+			ent2.update('velocity', {
+				x: 42
+			})
+			assert(ent2.get('velocity').x === 42)
+			assert(ent2.get('velocity').y === 3)
+
+			let ent3 = world.entity().set('singleValue', 5)
+			assert(ent3.has('singleValue'))
+			assert(ent3.get('singleValue') === 5)
+			ent3.set('singleValue', 500)
+			assert(ent3.get('singleValue') === 500)
+
+			let ent4 = world.entity().set('string', 'hello')
+			assert(ent4.has('string'))
+			assert(ent4.get('string') === 'hello')
+			ent4.set('string', 'goodbye')
+			assert(ent4.get('string') === 'goodbye')
+
+			ent4.remove('string')
+			assert(!ent4.has('string'))
 		})
 		it('test clearing with indexes', function() {
 			let world = new World()
@@ -387,7 +405,10 @@ describe('World', function() {
 		})
 		it('remove an entity', function() {
 			let world = new World()
-			world.component('position')
+			world.component('position', function(x = 0, y = 0) {
+				this.x = x
+				this.y = y
+			})
 			let ent = world.entity()
 			ent.set('position')
 			ent.get('position').val = 100
@@ -419,10 +440,6 @@ describe('World', function() {
 				this.x = x
 				this.y = y
 			})
-			world.component('object', {
-				val: 0,
-				test: 1
-			})
 			world.component('objectEmpty', {})
 			world.component('empty')
 			let ent = world.entity()
@@ -442,7 +459,6 @@ describe('World', function() {
 			assert(ent.has('object'))
 			assert(Object.keys(ent.data).length == 2)
 			assert(ent.get('object').val === 50)
-			assert(ent.get('object').test === 1)
 
 			ent.update('empty', {testing: 100})
 			assert(ent.has('empty'))
@@ -678,11 +694,6 @@ describe('World', function() {
 				this.x = x
 				this.y = y
 			})
-			world.component('velocity', {
-				x: 0,
-				y: 0
-			})
-			world.component('player')
 
 			let result = world.prototype()
 			assert(result == 0)
@@ -728,7 +739,7 @@ describe('World', function() {
 			assert(p.get('velocity').x === 15 && p.get('velocity').y === 20)
 			assert(p.get('player') !== undefined)
 			assert(e.get('position').x === 0 && e.get('position').y === 0)
-			assert(e.get('velocity').x === 0 && e.get('velocity').y === 0)
+			assert(e.get('velocity').x === undefined && e.get('velocity').y === undefined)
 			assert(t.get('position').x === 3.14159 && t.get('position').y === 5000)
 		})
 	})
