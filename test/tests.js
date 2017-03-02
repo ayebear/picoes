@@ -291,10 +291,9 @@ describe('World', function() {
 		})
 		it('use the every() method', function() {
 			let world = new World()
-			world.component('position')
-			world.component('velocity')
 			let ent1 = world.entity().set('position').set('velocity')
 			let ent2 = world.entity().set('position')
+			let ent3 = world.entity().set('position:velocity')
 			let externalVar = 5
 			world.every(['position'], (pos, ent) => {
 				assert(pos)
@@ -308,6 +307,18 @@ describe('World', function() {
 				assert(ent.has('position'))
 				assert(externalVar === 5)
 			})
+
+			// Test hash collisions
+			// Note: Seems to work, but will probably be slower due to combined results
+			let count = 0
+			world.every(['position', 'velocity'], function(pos, vel, ent) {
+				assert(pos)
+				assert(vel)
+				assert(ent)
+				assert(ent.has('position', 'velocity'))
+				++count
+			})
+			assert(count === 1)
 		})
 		it('test indexing with every()', function() {
 			let world = new World()
