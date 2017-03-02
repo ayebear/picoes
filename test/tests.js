@@ -10,6 +10,10 @@ describe('World', function() {
 			world.component('position', function(x = 0, y = 0) {
 				this.x = x
 				this.y = y
+
+				this.inc = (a) => {
+					return a + 1
+				}
 			})
 			let ent = world.entity().set('position', 1, 2)
 			assert('position' in world.components)
@@ -17,7 +21,26 @@ describe('World', function() {
 			assert(ent.has('position'))
 			assert(ent.get('position').x === 1)
 			assert(ent.get('position').y === 2)
+			assert(ent.get('position').inc(5) === 6)
 
+			// Using class syntax
+			world.component('velocity', class {
+				constructor(x = 0, y = 0) {
+					this.x = x
+					this.y = y
+				}
+
+				inc(a) {
+					return a + 1
+				}
+			})
+			let ent2 = world.entity().set('velocity', 1, 2)
+			assert('velocity' in world.components)
+			assert(Object.keys(world.components).length == 2)
+			assert(ent2.has('velocity'))
+			assert(ent2.get('velocity').x === 1)
+			assert(ent2.get('velocity').y === 2)
+			assert(ent2.get('velocity').inc(5) === 6)
 		})
 		it('README example', function() {
 			let world = new World()
