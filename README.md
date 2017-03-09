@@ -114,7 +114,8 @@ The following methods are called if defined:
 
 * **`init()`** - Called from `world.init()`
 * **`pre()`** - Called before `every()`, from `world.run()`
-* **`every(...components, entity)`** - Called between `pre()` and `post()`, passes in entities matching specified components
+* **`every(...components, entity)`** - Called between `pre()` and `post()`.
+	* Called for each entity that matches all specified components.
 * **`post()`** - Called after `every()`, from `world.run()`
 
 #### Run systems
