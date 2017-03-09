@@ -1,48 +1,40 @@
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
-
-- [PicoES](#picoes)
-    - [About](#about)
-      - [Features](#features)
-      - [Example code usage](#example-code-usage)
-    - [Instructions](#instructions)
-      - [Terminology](#terminology)
-      - [Create a world](#create-a-world)
-      - [Register components](#register-components)
-      - [Register systems](#register-systems)
-      - [System methods](#system-methods)
-      - [Run systems](#run-systems)
-      - [Create entities](#create-entities)
-      - [Use entities](#use-entities)
-        - [Check if a component exists](#check-if-a-component-exists)
-        - [Check if multiple components all exist](#check-if-multiple-components-all-exist)
-        - [Get a component](#get-a-component)
-        - [Modify a component](#modify-a-component)
-          - [Using access](#using-access)
-          - [Using set](#using-set)
-          - [Using update](#using-update)
-        - [Remove a component](#remove-a-component)
-      - [Destroy entities](#destroy-entities)
-      - [Destroy all entities in the world](#destroy-all-entities-in-the-world)
-      - [Seralization](#seralization)
-        - [Serialize an entity to a JSON string](#serialize-an-entity-to-a-json-string)
-        - [Deserialize an entity from a JSON string](#deserialize-an-entity-from-a-json-string)
-      - [Prototypes](#prototypes)
-        - [Register a prototype](#register-a-prototype)
-        - [Create an entity from a prototype](#create-an-entity-from-a-prototype)
-      - [Iterate over entities](#iterate-over-entities)
-        - [Iterate through entities from component names](#iterate-through-entities-from-component-names)
-        - [Get a set of entities from component names](#get-a-set-of-entities-from-component-names)
-        - [Component query rules for every()](#component-query-rules-for-every)
-    - [Author](#author)
-    - [License](#license)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
 # PicoES
 
 [![Build Status](https://travis-ci.org/ayebear/picoes.svg?branch=master)](https://travis-ci.org/ayebear/picoes)
+
+**Table of contents**
+
+- [About](#about)
+	- [Features](#features)
+	- [Example code usage](#example-code-usage)
+- [Instructions](#instructions)
+	- [Terminology](#terminology)
+	- [Create a world](#create-a-world)
+	- [Register components](#register-components)
+	- [Register systems](#register-systems)
+	- [System methods](#system-methods)
+	- [Run systems](#run-systems)
+	- [Create entities](#create-entities)
+	- [Use entities](#use-entities)
+		- [Check if a component exists](#check-if-a-component-exists)
+		- [Check if multiple components all exist](#check-if-multiple-components-all-exist)
+		- [Get a component](#get-a-component)
+		- [Modify a component](#modify-a-component)
+		- [Remove a component](#remove-a-component)
+	- [Destroy entities](#destroy-entities)
+	- [Destroy all entities in the world](#destroy-all-entities-in-the-world)
+	- [Seralization](#seralization)
+		- [Serialize an entity to a JSON string](#serialize-an-entity-to-a-json-string)
+		- [Deserialize an entity from a JSON string](#deserialize-an-entity-from-a-json-string)
+	- [Prototypes](#prototypes)
+		- [Register a prototype](#register-a-prototype)
+		- [Create an entity from a prototype](#create-an-entity-from-a-prototype)
+	- [Iterate over entities](#iterate-over-entities)
+		- [Iterate through entities from component names](#iterate-through-entities-from-component-names)
+		- [Get a set of entities from component names](#get-a-set-of-entities-from-component-names)
+		- [Component query rules for every()](#component-query-rules-for-every)
+- [Author](#author)
+- [License](#license)
 
 ### About
 
