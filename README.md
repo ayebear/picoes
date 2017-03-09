@@ -112,10 +112,10 @@ world.system(['position', 'velocity'], class {
 
 The following methods are called if defined:
 
-* init() - Called from world.init()
-* pre() - Called before every(), from world.run()
-* every(<components>, entity) - Called between pre and post, passes in entities matching specified components
-* post() - Called after every(), from world.run()
+* **`init()`** - Called from `world.init()`
+* **`pre()`** - Called before `every()`, from `world.run()`
+* **`every(...components, entity)`** - Called between `pre()` and `post()`, passes in entities matching specified components
+* **`post()`** - Called after `every()`, from `world.run()`
 
 #### Run systems
 
