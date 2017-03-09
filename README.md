@@ -4,7 +4,7 @@
 
 ### About
 
-Pico Entity System for JavaScript (ES6).
+Pico Entity System for JavaScript (ES6+).
 
 Read up on what an ECS is here: [https://en.wikipedia.org/wiki/Entity_component_system](https://en.wikipedia.org/wiki/Entity_component_system)
 
@@ -15,7 +15,7 @@ This entity system is designed to be as simple as possible, while still having u
 * Extremely fast entity querying support: O(1) average time
 * Strings as component keys
 * Access/create pattern, like a dictionary
-* ES6 style API
+* ES6+ style API
 * JSON serialization
 * Prototypes
 
@@ -42,7 +42,7 @@ assert(player.get('health').value === 60)
 
 ### Instructions
 
-Full API documentation will be available later, but here is a basic usage guide for now.
+Full API documentation might be available later, but here is a basic usage guide for now.
 
 #### Terminology
 
@@ -69,28 +69,15 @@ let world = new World()
 This registers a component called position.
 
 ```javascript
-world.component('position', function(x = 0, y = 0) {
-	this.x = x
-	this.y = y
+world.component('position', class {
+	constructor(x = 0, y = 0) {
+		this.x = x
+		this.y = y
+	}
 })
 ```
 
-You can also register components from objects, but then you cannot use the shorthand set() syntax. Internally, this data is stored as a JSON string, so keep that in mind when storing complex types.
-
-```javascript
-world.component('position', {
-	x: 0,
-	y: 0
-})
-```
-
-You can also make basic components without any properties. You can add properties to it later on though.
-
-```javascript
-world.component('position')
-```
-
-Finally, you do not need to actually register components, they are basically just templates to keep your data consistently structured.
+It is completely optional to register components. They may help structure your data, or provide basic methods to use with the components. Component definitions must be of type "function", which includes classes.
 
 #### Register systems
 
@@ -111,15 +98,24 @@ It is also possible to get the entire entity by adding it as the last parameter:
 
 ```javascript
 world.system(['position', 'velocity'], class {
-	every(position, velocity, ent) {
+	every(position, velocity, entity) {
 		position.x += velocity.x
 		position.y += velocity.y
-		if (ent.has('sprite')) {
-			ent.get('sprite').position = position
+		if (entity.has('sprite')) {
+			entity.get('sprite').position = position
 		}
 	}
 })
 ```
+
+#### System methods
+
+The following methods are called if defined:
+
+* init() - Called from world.init()
+* pre() - Called before every(), from world.run()
+* every(<components>, entity) - Called between pre and post, passes in entities matching specified components
+* post() - Called after every(), from world.run()
 
 #### Run systems
 
@@ -286,7 +282,7 @@ PicoES uses a cached index, which is built on-demand. This means that the first 
 This works exactly the same as systems, and is actually used internally to run the every() method on systems.
 
 ```javascript
-world.every(['position', 'velocity'], (position, velocity, ent) => {
+world.every(['position', 'velocity'], (position, velocity, entity) => {
 	position.x += velocity.x
 	position.y += velocity.y
 })
