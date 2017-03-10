@@ -181,7 +181,7 @@ describe('World', function() {
 			entA.update('position', {x: 1, y: 1}).update('velocity', {x: 1, y: 0})
 			entB.update('position', {x: 30, y: 40}).update('velocity', {x: -1, y: 2})
 
-			world.init()
+			world.initialize()
 
 			assert(entA.get('position').x == 1 && entA.get('position').y == 1)
 			assert(entB.get('position').x == 30 && entB.get('position').y == 40)
@@ -206,7 +206,7 @@ describe('World', function() {
 				constructor() {
 					this.val = 10
 				}
-				init() {
+				initialize() {
 					++methodsCalled
 					assert(this.val === 10)
 				}
@@ -229,7 +229,7 @@ describe('World', function() {
 			world.system()
 
 			let ent = world.entity().set('position')
-			world.init()
+			world.initialize()
 			assert(methodsCalled == 1)
 			world.run()
 			assert(methodsCalled == 4)
@@ -274,7 +274,7 @@ describe('World', function() {
 			entA.update('position', {x: 1, y: 1}).update('velocity', {x: 1, y: 0})
 			entB.update('position', {x: 30, y: 40}).update('velocity', {x: -1, y: 2})
 
-			world.init()
+			world.initialize()
 
 			assert(entA.get('position').x == 1 && entA.get('position').y == 1)
 			assert(entB.get('position').x == 30 && entB.get('position').y == 40)
@@ -309,7 +309,7 @@ describe('World', function() {
 			})
 
 			// Test hash collisions
-			// Note: Seems to work, but will probably be slower due to combined results
+/*			world.every(['position:velocity'])
 			let count = 0
 			world.every(['position', 'velocity'], function(pos, vel, ent) {
 				assert(pos)
@@ -318,7 +318,15 @@ describe('World', function() {
 				assert(ent.has('position', 'velocity'))
 				++count
 			})
+			console.log(count)
 			assert(count === 1)
+
+			count = 0
+			let results = world.every(['position', 'velocity'])
+			for (let ent of results) {
+				++count
+			}
+			assert(count === 1)*/
 		})
 		it('test indexing with every()', function() {
 			let world = new World()

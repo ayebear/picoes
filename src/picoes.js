@@ -73,11 +73,11 @@ class World {
 		return undefined
 	}
 
-	// Calls init() on all systems
-	init() {
+	// Calls initialize() on all systems
+	initialize() {
 		for (let system of this.systems) {
-			if (isFunction(system.init)) {
-				system.init.call(system)
+			if (isFunction(system.initialize)) {
+				system.initialize.call(system)
 			}
 		}
 	}

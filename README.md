@@ -2,41 +2,19 @@
 
 [![Build Status](https://travis-ci.org/ayebear/picoes.svg?branch=master)](https://travis-ci.org/ayebear/picoes)
 
-**Table of contents**
+### Table Of Contents (WIP)
 
-- [About](#about)
-	- [Features](#features)
-	- [Example code usage](#example-code-usage)
-- [Instructions](#instructions)
-	- [Terminology](#terminology)
-	- [Create a world](#create-a-world)
-	- [Register components](#register-components)
-	- [Register systems](#register-systems)
-	- [System methods](#system-methods)
-	- [Run systems](#run-systems)
-	- [Create entities](#create-entities)
-	- [Use entities](#use-entities)
-		- [Check if a component exists](#check-if-a-component-exists)
-		- [Check if multiple components all exist](#check-if-multiple-components-all-exist)
-		- [Get a component](#get-a-component)
-		- [Modify a component](#modify-a-component)
-		- [Remove a component](#remove-a-component)
-	- [Destroy entities](#destroy-entities)
-	- [Destroy all entities in the world](#destroy-all-entities-in-the-world)
-	- [Seralization](#seralization)
-		- [Serialize an entity to a JSON string](#serialize-an-entity-to-a-json-string)
-		- [Deserialize an entity from a JSON string](#deserialize-an-entity-from-a-json-string)
-	- [Prototypes](#prototypes)
-		- [Register a prototype](#register-a-prototype)
-		- [Create an entity from a prototype](#create-an-entity-from-a-prototype)
-	- [Iterate over entities](#iterate-over-entities)
-		- [Iterate through entities from component names](#iterate-through-entities-from-component-names)
-		- [Get a set of entities from component names](#get-a-set-of-entities-from-component-names)
-		- [Component query rules for every()](#component-query-rules-for-every)
-- [Author](#author)
-- [License](#license)
+* [About](#about)
+	* [Features](#features)
+	* [Terminology](#terminology)
+	* [License](#license)
+	* [Author](#author)
+* [Instructions](#instructions)
+	* [Setup](#setup)
+	* [Examples](#examples)
+	* [Documentation](#documentation)
 
-### About
+## About
 
 Pico Entity System for JavaScript (ES6+).
 
@@ -44,7 +22,7 @@ Read up on what an ECS is here: [https://en.wikipedia.org/wiki/Entity_component_
 
 This entity system is designed to be as simple as possible, while still having useful features.
 
-#### Features
+### Features
 
 * Extremely fast entity querying support: O(1) average time
 * Strings as component keys
@@ -53,7 +31,35 @@ This entity system is designed to be as simple as possible, while still having u
 * JSON serialization
 * Prototypes
 
-#### Example code usage
+### Terminology
+
+* **Component:** Holds some related data
+	* Example: Position, Velocity, Health
+* **Entity:** Refers to a collection of components
+	* Example: Position + Health could represent a player
+* **Prototype:** A template of components used for creating entities
+	* Example: Player could contain Position, Velocity, and Health
+* **System:** Logic loop that processes entities
+	* Example: Movement system which handles positions and velocities
+* **World:** Lets you register components, systems, and prototypes in a self-contained object - which avoids the use of singletons. This is also where you can create entities from.
+
+### License
+
+MIT
+
+### Author
+
+Eric Hebert
+
+## Instructions
+
+### Setup
+
+```bash
+npm i -D picoes
+```
+
+### Examples
 
 ```javascript
 let world = new World()
@@ -74,23 +80,11 @@ world.every(['damages'], (amount) => {
 assert(player.get('health').value === 60)
 ```
 
-### Instructions
+### Documentation
 
-Full API documentation might be available later, but here is a basic usage guide for now.
+Generated documentation may be available here in the future.
 
-#### Terminology
-
-* **Component:** Holds some related data
-	* Example: Position, Velocity, Health
-* **Entity:** Refers to a collection of components
-	* Example: Position + Health could represent a player
-* **Prototype:** A template of components used for creating entities
-	* Example: Player could contain Position, Velocity, and Health
-* **System:** Logic loop that processes entities
-	* Example: Movement system which handles positions and velocities
-* **World:** Lets you register components, systems, and prototypes in a self-contained object - which avoids the use of singletons. This is also where you can create entities from.
-
-#### Create a world
+### Create a world
 
 ```javascript
 import {World} from 'picoes.js'
@@ -98,7 +92,7 @@ import {World} from 'picoes.js'
 let world = new World()
 ```
 
-#### Register components
+### Register components
 
 This registers a component called position.
 
@@ -113,7 +107,7 @@ world.component('position', class {
 
 It is completely optional to register components. They may help structure your data, or provide basic methods to use with the components. Component definitions must be of type "function", which includes classes.
 
-#### Register systems
+### Register systems
 
 This registers a basic movement system.
 
@@ -142,17 +136,17 @@ world.system(['position', 'velocity'], class {
 })
 ```
 
-#### System methods
+### System methods
 
 The following methods are called if defined:
 
-* **`init()`** - Called from `world.init()`
+* **`initialize()`** - Called from `world.initialize()`
 * **`pre()`** - Called before `every()`, from `world.run()`
 * **`every(...components, entity)`** - Called between `pre()` and `post()`.
 	* Called for each entity that matches all specified components.
 * **`post()`** - Called after `every()`, from `world.run()`
 
-#### Run systems
+### Run systems
 
 Run all systems in the order they were registered.
 
@@ -160,13 +154,13 @@ Run all systems in the order they were registered.
 world.run()
 ```
 
-Before running, you may initialize systems to call the init() method on them.
+Before running, you may initialize systems to call the initialize() method on them.
 
 ```javascript
-world.init()
+world.initialize()
 ```
 
-#### Create entities
+### Create entities
 
 This creates a new entity inside the world, and returns it.
 
@@ -174,21 +168,21 @@ This creates a new entity inside the world, and returns it.
 let entity = world.entity()
 ```
 
-#### Use entities
+### Use entities
 
-##### Check if a component exists
+#### Check if a component exists
 
 ```javascript
 entity.has('position')
 ```
 
-##### Check if multiple components all exist
+#### Check if multiple components all exist
 
 ```javascript
 entity.has('position', 'velocity', 'sprite')
 ```
 
-##### Get a component
+#### Get a component
 
 **Note:** This method will **not** automatically create the component if it doesn't exist.
 
@@ -198,11 +192,11 @@ let position = entity.get('position')
 let distance = position.x - someOtherPosition
 ```
 
-##### Modify a component
+#### Modify a component
 
 **Note:** The following methods will create the component if it does not already exist!
 
-###### Using access
+##### Using access
 
 Get component first to access or set any of its properties.
 
@@ -210,7 +204,7 @@ Get component first to access or set any of its properties.
 entity.access('position').x += 50
 ```
 
-###### Using set
+##### Using set
 
 Create or overwrite a component with the component's constructor.
 
@@ -218,7 +212,7 @@ Create or overwrite a component with the component's constructor.
 entity.set('position', 50)
 ```
 
-###### Using update
+##### Using update
 
 Update individual component properties from an object.
 
@@ -228,7 +222,7 @@ entity.update('position', {
 })
 ```
 
-##### Remove a component
+#### Remove a component
 
 Removes a component from an entity. Has no effect when it does not exist.
 
@@ -236,7 +230,7 @@ Removes a component from an entity. Has no effect when it does not exist.
 entity.remove('position')
 ```
 
-#### Destroy entities
+### Destroy entities
 
 Remove an entity from the world.
 
@@ -244,7 +238,7 @@ Remove an entity from the world.
 entity.destroy()
 ```
 
-#### Destroy all entities in the world
+### Destroy all entities in the world
 
 Remove all entities in a world instance, without getting rid of system/component definitions.
 
@@ -252,23 +246,23 @@ Remove all entities in a world instance, without getting rid of system/component
 world.clear()
 ```
 
-#### Seralization
+### Seralization
 
-##### Serialize an entity to a JSON string
+#### Serialize an entity to a JSON string
 
 ```javascript
 let str = entity.toJSON()
 ```
 
-##### Deserialize an entity from a JSON string
+#### Deserialize an entity from a JSON string
 
 ```javascript
 entity.fromJSON(data)
 ```
 
-#### Prototypes
+### Prototypes
 
-##### Register a prototype
+#### Register a prototype
 
 This will create a "prototype", which is a template for an entity to be created from.
 
@@ -300,7 +294,7 @@ let data = '{"Player": {"position": {}, "sprite": {"texture": "player.png"}}}'
 world.prototype(data)
 ```
 
-##### Create an entity from a prototype
+#### Create an entity from a prototype
 
 This will create an entity and initialize components based on the "Player" prototype that was registered. If no prototype exists of this name, an empty entity will be created instead.
 
@@ -308,11 +302,11 @@ This will create an entity and initialize components based on the "Player" proto
 world.entity('Player')
 ```
 
-#### Iterate over entities
+### Iterate over entities
 
 PicoES uses a cached index, which is built on-demand. This means that the first time a query is done internally, it will build an initial index. Every subsequent call will just return the entities already stored in the index. Whenever components or entities are added or removed, all of the indexes are updated with this change.
 
-##### Iterate through entities from component names
+#### Iterate through entities from component names
 
 This works exactly the same as systems, and is actually used internally to run the every() method on systems.
 
@@ -323,7 +317,7 @@ world.every(['position', 'velocity'], (position, velocity, entity) => {
 })
 ```
 
-##### Get a set of entities from component names
+#### Get a set of entities from component names
 
 The callback parameter in every() is optional. The return value can be used instead to get an iterator to the entities with the specified component names.
 
@@ -343,15 +337,8 @@ let entities = world.every([])
 
 Note that this applies to systems as well.
 
-##### Component query rules for every()
+#### Component query rules for every()
 
 * AND logic, but without exact matching
 * Above query **does** include entities such as ['position', 'velocity', 'sprite']
 * Above query **does not** include entities such as ['position', 'sprite']
-
-
-### Author
-Eric Hebert
-
-### License
-MIT
