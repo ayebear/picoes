@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/ayebear/picoes.svg?branch=master)](https://travis-ci.org/ayebear/picoes)
 
-### Table Of Contents (WIP)
+### Table Of Contents
 
 * [About](#about)
 	* [Features](#features)
@@ -13,6 +13,7 @@
 	* [Setup](#setup)
 	* [Examples](#examples)
 	* [Documentation](#documentation)
+* [Old Examples](#old-examples)
 
 ## About
 
@@ -83,6 +84,10 @@ assert(player.get('health').value === 60)
 ### Documentation
 
 Generated documentation may be available here in the future.
+
+## Old Examples
+
+I'll keep these here for now until the API documentation is complete.
 
 ### Create a world
 
