@@ -3,6 +3,23 @@ let es = require('../src/picoes.js')
 let assert = require('chai').assert
 let World = es.World
 
+function getSize(it) {
+	let num = 0
+	for (let elem of it) {
+		++num
+	}
+	return num
+}
+
+function has(it, target) {
+	for (let elem of it) {
+		if (elem.toString() == target.toString()) {
+			return true
+		}
+	}
+	return false
+}
+
 describe('World', function() {
 	describe('component()', function() {
 		it('define a component', function() {
@@ -172,6 +189,53 @@ describe('World', function() {
 
 			world.clear()
 			assert(spriteCount === 0)
+		})
+
+		it('test detach and attach', function() {
+			let spriteCount = 0
+			let world = new World()
+			world.component('sprite', class {
+				constructor() {
+					++spriteCount
+				}
+
+				onRemove() {
+					--spriteCount
+				}
+			})
+
+			let ent = world.entity().set('sprite').set('position', {x: 1})
+			assert(spriteCount === 1)
+
+			let ent2 = world.entity().set('sprite').set('position', {x: 2})
+			assert(spriteCount === 2)
+
+			// Test detaching
+			assert(ent.valid())
+			ent.detach()
+			assert(!ent.valid())
+			assert(spriteCount === 2)
+			assert(Object.keys(world.entities).length === 1)
+			assert(getSize(world.every(['position'])) === 1)
+			assert(ent.get('position').x === 1)
+
+			// Test attaching
+			ent.attach(world)
+			assert(ent.valid())
+			assert(spriteCount === 2)
+			assert(Object.keys(world.entities).length === 2)
+			assert(getSize(world.every(['position'])) === 2)
+			assert(ent.get('position').x === 1)
+
+			// Test edge cases
+			ent.detach()
+			assert(!ent.valid())
+			ent.detach()
+			assert(!ent.valid())
+			ent.attach()
+			assert(!ent.valid())
+			ent.attach(world)
+			assert(ent.valid())
 		})
 	})
 
@@ -380,23 +444,6 @@ describe('World', function() {
 			ent1.remove('sprite')
 			ent2.remove('sprite')
 			ent3.remove('sprite')
-
-			function getSize(it) {
-				let num = 0
-				for (let elem of it) {
-					++num
-				}
-				return num
-			}
-
-			function has(it, target) {
-				for (let elem of it) {
-					if (elem.toString() == target.toString()) {
-						return true
-					}
-				}
-				return false
-			}
 
 			// Query for all entities
 			let test = world.every([])

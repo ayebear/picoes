@@ -5,6 +5,7 @@ class Entity {
 		this.id = id
 		this.data = {}
 
+		// Add to the index, to update match all index
 		this.world.index.add(this)
 	}
 
@@ -96,7 +97,10 @@ class Entity {
 	destroy() {
 		if (this.id) {
 			this.removeAll()
+
+			// Remove from the index, to update match all index
 			this.world.index.remove(this)
+
 			delete this.world.entities[this.id]
 			this.id = undefined
 		}
@@ -133,6 +137,32 @@ class Entity {
 			}
 		}
 		return this
+	}
+
+	// Attaches a currently detached entity back to a world
+	// Note: Do not use detached entities, get() may be safe, but avoid calling other methods
+	// Note: The ID will be reassigned, so do not rely on this
+	attach(world) {
+		if (world && !this.valid()) {
+			// Assign new id, and reattach to world
+			this.world = world
+			this.id = this.world.idCounter++
+			this.world.entities[this.id] = this
+			this.world.index.addEntity(this)
+		}
+	}
+
+	// Removes this entity from the current world, without removing any components or data
+	// Note: Do not use detached entities, get() may be safe, but avoid calling other methods
+	// Note: The ID will be reassigned, so do not rely on this
+	detach() {
+		if (this.valid()) {
+			// Remove from current world
+			this.world.index.removeEntity(this)
+			delete this.world.entities[this.id]
+			this.id = undefined
+			this.world = undefined
+		}
 	}
 }
 

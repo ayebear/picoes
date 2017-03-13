@@ -47,28 +47,44 @@ class Index {
 	}
 
 	// Generic way to apply an operation to matching component groups
-	apply(componentName, callback) {
+	apply(componentNames, callback) {
 		for (let hash in this.index) {
 			let group = this.index[hash]
 
-			if (group.components.has(componentName) || (componentName == undefined && group.components.size == 0)) {
+			// Check if index group has any of the components that the entity has
+			let hasAny = componentNames.some(name => group.components.has(name))
+
+			// Check if the current index group is supposed to match all entities
+			let isMatchAllGroup = ((componentNames == undefined || componentNames.length === 0) && group.components.size == 0)
+
+			if (hasAny || isMatchAllGroup) {
 				callback(group.entities)
 			}
 		}
 	}
 
 	// Update an entity in the index (for creating components)
-	add(entity, componentName) {
-		this.apply(componentName, (entities) => {
+	add(entity, ...componentNames) {
+		this.apply(componentNames, (entities) => {
 			entities.set(entity.toString(), entity)
 		})
 	}
 
 	// Update an entity in the index (for removing components)
-	remove(entity, componentName) {
-		this.apply(componentName, (entities) => {
+	remove(entity, ...componentNames) {
+		this.apply(componentNames, (entities) => {
 			entities.delete(entity.toString())
 		})
+	}
+
+	// Add an entity and all of its components to the index
+	addEntity(entity) {
+		this.add(entity, ...Object.keys(entity.data))
+	}
+
+	// Remove an entity and all of its components from the index
+	removeEntity(entity) {
+		this.remove(entity, ...Object.keys(entity.data))
 	}
 }
 
