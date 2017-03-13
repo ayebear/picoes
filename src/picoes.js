@@ -21,6 +21,19 @@ class World {
 	// Removes all entities from the world
 	// Does not affect registered systems, components, or prototypes
 	clear() {
+		// Call onRemove on all components of all entities
+		for (let entityId in this.entities) {
+			let entity = this.entities[entityId]
+			for (let componentName in entity.data) {
+				// Get component, and call onRemove if it exists as a function
+				let component = entity.data[componentName]
+				if (typeof component.onRemove === 'function') {
+					component.onRemove()
+				}
+			}
+		}
+
+		// Clear entities
 		this.entities = {}
 		this.index.clear(this.entities)
 	}

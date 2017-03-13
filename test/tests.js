@@ -151,6 +151,28 @@ describe('World', function() {
 			})
 			assert(count === 0)
 		})
+		it('test clearing with onRemove', function() {
+			let spriteCount = 0
+			let world = new World()
+			world.component('sprite', class {
+				constructor() {
+					++spriteCount
+				}
+
+				onRemove() {
+					--spriteCount
+				}
+			})
+
+			let ent = world.entity().set('sprite')
+			assert(spriteCount === 1)
+
+			let ent2 = world.entity().set('sprite')
+			assert(spriteCount === 2)
+
+			world.clear()
+			assert(spriteCount === 0)
+		})
 	})
 
 	describe('system()', function() {
