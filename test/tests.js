@@ -1,7 +1,7 @@
 // import 'es.js'
-let es = require('../src/picoes.js')
+let World = require('../src/picoes.js').World
+let Entity = require('../src/entity.js').Entity
 let assert = require('chai').assert
-let World = es.World
 
 function getSize(it) {
 	let num = 0
@@ -190,7 +190,6 @@ describe('World', function() {
 			world.clear()
 			assert(spriteCount === 0)
 		})
-
 		it('test detach and attach', function() {
 			let spriteCount = 0
 			let world = new World()
@@ -236,6 +235,50 @@ describe('World', function() {
 			assert(!ent.valid())
 			ent.attach(world)
 			assert(ent.valid())
+		})
+		it('test detached entities', function() {
+			let world = new World()
+
+			let ent = world.entity()
+				.set('sprite', {texture: 'image.png'})
+				.set('position', 5)
+
+			assert(ent.valid())
+			assert(ent.has('sprite'))
+			assert(ent.has('position'))
+			assert(ent.get('sprite').texture === 'image.png')
+			assert(ent.get('position') === 5)
+
+			ent.detach()
+
+			assert(!ent.valid())
+			assert(ent.has('sprite'))
+			assert(ent.has('position'))
+			assert(ent.get('sprite').texture === 'image.png')
+			assert(ent.get('position') === 5)
+
+			ent.set('velocity', {x: 10})
+			assert(ent.has('velocity'))
+			assert(ent.get('velocity').x === 10)
+
+			ent.set('position', 6)
+			assert(ent.has('position'))
+			assert(ent.get('position') === 6)
+
+			ent.remove('position')
+			assert(!ent.has('position'))
+
+			// Create entity outside of the world
+			let ent2 = new Entity()
+			assert(!ent2.valid())
+			ent2.set('velocity', {x: 30})
+			ent2.set('position', 7)
+			assert(ent2.has('velocity', 'position'))
+			assert(ent2.get('velocity').x === 30)
+			assert(ent2.get('position') === 7)
+			ent2.removeAll()
+			assert(!ent2.has('velocity'))
+			assert(!ent2.has('position'))
 		})
 	})
 

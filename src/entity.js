@@ -6,7 +6,9 @@ class Entity {
 		this.data = {}
 
 		// Add to the index, to update match all index
-		this.world.index.add(this)
+		if (this.valid()) {
+			this.world.index.add(this)
+		}
 	}
 
 	// Returns true if the entity has ALL of the specified components
@@ -38,7 +40,7 @@ class Entity {
 	// Adds a new component, or overwrites an existing component
 	// ent.set('position', 1, 2)
 	set(component, ...args) {
-		if (component in this.world.components) {
+		if (this.valid() && component in this.world.components) {
 			// Use defined component template
 			this.data[component] = new this.world.components[component](...args)
 		} else if (args.length > 0) {
@@ -50,7 +52,9 @@ class Entity {
 		}
 
 		// Update the index with this new component
-		this.world.index.add(this, component)
+		if (this.valid()) {
+			this.world.index.add(this, component)
+		}
 
 		return this
 	}
@@ -74,7 +78,9 @@ class Entity {
 	remove(component) {
 		if (component in this.data) {
 
-			this.world.index.remove(this, component)
+			if (this.valid()) {
+				this.world.index.remove(this, component)
+			}
 
 			let comp = this.data[component]
 			if (typeof comp.onRemove === 'function') {
@@ -95,12 +101,13 @@ class Entity {
 
 	// Remove this entity and all of its components from the world
 	destroy() {
-		if (this.id) {
-			this.removeAll()
+		this.removeAll()
 
+		if (this.valid()) {
 			// Remove from the index, to update match all index
 			this.world.index.remove(this)
 
+			// Remove from world
 			delete this.world.entities[this.id]
 			this.id = undefined
 		}
