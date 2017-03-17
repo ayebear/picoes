@@ -76,9 +76,9 @@ class World {
 	// Registers a system to the world
 	// Returns its unique ID on success or undefined on failure
 	// world.system(class { every(ent) {} })
-	system(components, systemClass) {
+	system(components, systemClass, ...args) {
 		if (isFunction(systemClass)) {
-			let newSystem = new systemClass()
+			let newSystem = new systemClass(...args)
 			newSystem.components = components
 			this.systems.push(newSystem)
 			return this.systems.length - 1
