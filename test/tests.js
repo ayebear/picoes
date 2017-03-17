@@ -289,6 +289,17 @@ describe('World', function() {
 			world.system(['position'], class {})
 			assert(world.systems.length == 1)
 		})
+		it('define a system with arguments', function() {
+			let world = new World()
+			let velocitySystem = class {
+				constructor(maxVelocity) {
+					this.maxVelocity = maxVelocity
+				}
+			}
+			world.component('velocity')
+			world.system(['velocity'], velocitySystem, 3500)
+			assert(world.systems[0].maxVelocity === 3500)
+		})
 		it('system iteration', function() {
 			let world = new World()
 			world.component('position')
