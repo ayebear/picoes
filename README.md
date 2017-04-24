@@ -114,7 +114,7 @@ It is completely optional to register components. They may help structure your d
 
 ### Register systems
 
-This registers a basic movement system.
+This registers a basic movement system. PicoES will create an instance of the class for you, so do not try to pass in an already instantiated object.
 
 ```javascript
 world.system(['position', 'velocity'], class {
@@ -124,6 +124,8 @@ world.system(['position', 'velocity'], class {
 	}
 })
 ```
+
+This will loop through all entities in the world with both 'position' and 'velocity' components, whenever world.run() is called. The arguments of every() contain the actual component objects which you can read/modify.
 
 **Note:** Most edge cases are handled correctly. Deleting an entity that hasn't been iterated over yet, will not be iterated over. Also, entities that do not satisfy the condition of having all required components will not be included (even if it is changed during the loop). Newly added entities will not be included in the loop either.
 
@@ -141,15 +143,34 @@ world.system(['position', 'velocity'], class {
 })
 ```
 
+You can pass arguments to the constructors of systems:
+
+```javascript
+class MovementSystem {
+	constructor(factor) {
+		this.factor = factor
+	}
+
+	every(position, velocity, entity) {
+		position.x += velocity.x * factor
+		position.y += velocity.y * factor
+	}
+}
+
+world.system(['position', 'velocity'], MovementSystem, 1000)
+```
+
+This is more useful when your systems are generic and/or require some kind of context. You can also pass arguments to initialize() if you would like to do that later in the process.
+
 ### System methods
 
 The following methods are called if defined:
 
-* **`initialize()`** - Called from `world.initialize()`
-* **`pre()`** - Called before `every()`, from `world.run()`
-* **`every(...components, entity)`** - Called between `pre()` and `post()`.
+* **`initialize(...args)`** - Called from `world.initialize()`
+* **`pre(...args)`** - Called before `every()`, from `world.run()`
+* **`every(...components, entity, ...args)`** - Called between `pre()` and `post()`.
 	* Called for each entity that matches all specified components.
-* **`post()`** - Called after `every()`, from `world.run()`
+* **`post(...args)`** - Called after `every()`, from `world.run()`
 
 ### Run systems
 
@@ -164,6 +185,35 @@ Before running, you may initialize systems to call the initialize() method on th
 ```javascript
 world.initialize()
 ```
+
+You can pass arguments to all of these methods:
+
+```javascript
+world.initialize(renderer)
+
+world.run(dt)
+```
+
+The systems would need to be defined as such to accept these parameters:
+
+```javascript
+world.system(['position', 'velocity'], class {
+	initialize(renderer) {
+		this.renderer = renderer
+	}
+
+	pre(dt) {...}
+
+	every(position, velocity, entity, dt) {
+		position.x += velocity.x * dt
+		position.y += velocity.y * dt
+	}
+
+	post(dt) {...}
+})
+```
+
+Due to the nature of JavaScript, all of these are still optional - you don't need to define initialize, and you don't need to make it take any parameters.
 
 ### Create entities
 
