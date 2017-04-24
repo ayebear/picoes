@@ -87,28 +87,28 @@ class World {
 	}
 
 	// Calls initialize() on all systems
-	initialize() {
+	initialize(...args) {
 		for (let system of this.systems) {
 			if (isFunction(system.initialize)) {
-				system.initialize.call(system)
+				system.initialize.call(system, ...args)
 			}
 		}
 	}
 
 	// Calls pre, every, and post on all systems
-	run() {
+	run(...args) {
 		for (let system of this.systems) {
 			if (isFunction(system.pre)) {
-				system.pre.call(system)
+				system.pre.call(system, ...args)
 			}
 
 			// Run the "every" method in the system
 			if (isFunction(system.every)) {
-				this.every(system.components, system.every, system)
+				this.every(system.components, system.every, system, ...args)
 			}
 
 			if (isFunction(system.post)) {
-				system.post.call(system)
+				system.post.call(system, ...args)
 			}
 		}
 	}
@@ -117,7 +117,7 @@ class World {
 	// world.every(['comp'], comp => {comp.value = 0})
 	// Get an iterator for the entities
 	// let it = world.every(['comp'])
-	every(componentNames, callback, that) {
+	every(componentNames, callback, that, ...args) {
 		// Get indexed map of entities
 		let entities = this.index.query(componentNames)
 
@@ -131,8 +131,8 @@ class World {
 					// Get all components as an array
 					let comps = componentNames.map(name => ent.get(name))
 
-					// Add entity itself as the last parameter
-					comps.push(ent)
+					// Add entity itself then any additional arguments after the components
+					comps.push(ent, ...args)
 
 					// Expand array as parameters to the method
 					if (that === undefined) {

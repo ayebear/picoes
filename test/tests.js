@@ -295,17 +295,31 @@ describe('World', function() {
 				constructor(maxVelocity) {
 					this.maxVelocity = maxVelocity
 				}
+
+				initialize(canvas, textures) {
+					this.canvas = canvas
+					this.textures = textures
+				}
 			}
 			world.component('velocity')
 			world.system(['velocity'], velocitySystem, 3500)
 			assert(world.systems[0].maxVelocity === 3500)
+
+			world.initialize('someCanvas', ['textures.png'])
+			assert(world.systems[0].canvas === 'someCanvas')
+			assert(world.systems[0].textures[0] === 'textures.png')
 		})
 		it('system iteration', function() {
 			let world = new World()
 			world.component('position')
 			world.component('velocity')
 			world.system(['position', 'velocity'], class {
-				every(position, velocity, ent) {
+				pre(dt, total) {
+					assert(dt > 0)
+					assert(total > 0)
+				}
+
+				every(position, velocity, ent, dt, total) {
 					assert(position)
 					assert(velocity)
 					position.x += velocity.x
@@ -313,8 +327,19 @@ describe('World', function() {
 					assert(ent)
 					assert(ent.has('position'))
 					assert(ent.has('velocity'))
+					assert(dt > 0)
+					assert(total > 0)
+				}
+
+				post(dt, total) {
+					assert(dt > 0)
+					assert(total > 0)
 				}
 			})
+
+			let dt = 0.1667
+			let total = dt
+
 			let entA = world.entity()
 			let entB = world.entity()
 			let entC = world.entity()
@@ -326,12 +351,13 @@ describe('World', function() {
 			assert(entA.get('position').x == 1 && entA.get('position').y == 1)
 			assert(entB.get('position').x == 30 && entB.get('position').y == 40)
 
-			world.run()
+			world.run(dt, total)
 
 			assert(entA.get('position').x == 2 && entA.get('position').y == 1)
 			assert(entB.get('position').x == 29 && entB.get('position').y == 42)
 
-			world.run()
+			total += dt
+			world.run(dt, total)
 
 			assert(entA.get('position').x == 3 && entA.get('position').y == 1)
 			assert(entB.get('position').x == 28 && entB.get('position').y == 44)
