@@ -1,3 +1,5 @@
+let invoke = require('./utilities.js').invoke
+
 // Entity class used internally for keeping track of components
 class Entity {
 	constructor(world, id) {
@@ -43,6 +45,9 @@ class Entity {
 		if (this.valid() && component in this.world.components) {
 			// Use defined component template
 			this.data[component] = new this.world.components[component](...args)
+
+			// Call custom onCreate with this entity as a parameter
+			invoke(this.data[component], 'onCreate', this)
 		} else if (args.length > 0) {
 			// Use first argument as component value
 			this.data[component] = args[0]
@@ -82,10 +87,9 @@ class Entity {
 				this.world.index.remove(this, component)
 			}
 
-			let comp = this.data[component]
-			if (typeof comp.onRemove === 'function') {
-				comp.onRemove()
-			}
+			// Call custom onRemove
+			invoke(this.data[component], 'onRemove')
+
 			delete this.data[component]
 		}
 		return this

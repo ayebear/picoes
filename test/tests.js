@@ -168,6 +168,19 @@ describe('World', function() {
 			})
 			assert(count === 0)
 		})
+		it('test entity creation with onCreate', function() {
+			let world = new World()
+			world.component('sprite', class {
+				onCreate(entity) {
+					this.entity = entity
+					this.x = 1
+				}
+			})
+
+			let ent = world.entity().set('sprite')
+			assert(ent.get('sprite').entity === ent)
+			assert(ent.get('sprite').x === 1)
+		})
 		it('test clearing with onRemove', function() {
 			let spriteCount = 0
 			let world = new World()
@@ -216,6 +229,8 @@ describe('World', function() {
 			assert(spriteCount === 2)
 			assert(Object.keys(world.entities).length === 1)
 			assert(getSize(world.every(['position'])) === 1)
+			assert(world.get('position').length === 1)
+			assert(world.get('position')[0].get('position').x === 2)
 			assert(ent.get('position').x === 1)
 
 			// Test attaching
@@ -224,6 +239,7 @@ describe('World', function() {
 			assert(spriteCount === 2)
 			assert(Object.keys(world.entities).length === 2)
 			assert(getSize(world.every(['position'])) === 2)
+			assert(world.get('position').length === 2)
 			assert(ent.get('position').x === 1)
 
 			// Test edge cases

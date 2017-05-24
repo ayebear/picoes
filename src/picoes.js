@@ -1,3 +1,4 @@
+let invoke = require('./utilities.js').invoke
 let Entity = require('./entity.js').Entity
 let Index = require('./index.js').Index
 
@@ -78,8 +79,11 @@ class World {
 	// world.system(class { every(ent) {} })
 	system(components, systemClass, ...args) {
 		if (isFunction(systemClass)) {
+			// Create the system, and set the component array query
 			let newSystem = new systemClass(...args)
 			newSystem.components = components
+
+			// Add the system, return its ID
 			this.systems.push(newSystem)
 			return this.systems.length - 1
 		}
@@ -89,27 +93,21 @@ class World {
 	// Calls initialize() on all systems
 	initialize(...args) {
 		for (let system of this.systems) {
-			if (isFunction(system.initialize)) {
-				system.initialize.call(system, ...args)
-			}
+			invoke(system, 'initialize', ...args)
 		}
 	}
 
 	// Calls pre, every, and post on all systems
 	run(...args) {
 		for (let system of this.systems) {
-			if (isFunction(system.pre)) {
-				system.pre.call(system, ...args)
-			}
+			invoke(system, 'pre', ...args)
 
 			// Run the "every" method in the system
 			if (isFunction(system.every)) {
-				this.every(system.components, system.every, system, ...args)
+				this.every(system.components, system.every.bind(system), ...args)
 			}
 
-			if (isFunction(system.post)) {
-				system.post.call(system, ...args)
-			}
+			invoke(system, 'post', ...args)
 		}
 	}
 
@@ -117,7 +115,7 @@ class World {
 	// world.every(['comp'], comp => {comp.value = 0})
 	// Get an iterator for the entities
 	// let it = world.every(['comp'])
-	every(componentNames, callback, that, ...args) {
+	every(componentNames, callback, ...args) {
 		// Get indexed map of entities
 		let entities = this.index.query(componentNames)
 
@@ -131,20 +129,20 @@ class World {
 					// Get all components as an array
 					let comps = componentNames.map(name => ent.get(name))
 
-					// Add entity itself then any additional arguments after the components
-					comps.push(ent, ...args)
-
-					// Expand array as parameters to the method
-					if (that === undefined) {
-						callback(...comps)
-					} else {
-						callback.call(that, ...comps)
-					}
+					// Pass components, then the main entity, then any additional arguments
+					callback(...comps, ent, ...args)
 				}
 			}
 		}
 
 		return entities.values()
+	}
+
+	// Returns an array of entities with matching components
+	// Simplified version of every(), returns an actual array, and only takes component names as arguments
+	// world.get('player', 'sprite')
+	get(...componentNames) {
+		return [...this.every([...componentNames])]
 	}
 
 	// Registers entity prototype(s)
