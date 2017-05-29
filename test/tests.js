@@ -169,17 +169,30 @@ describe('World', function() {
 			assert(count === 0)
 		})
 		it('test entity creation with onCreate', function() {
+			let when = 0
 			let world = new World()
 			world.component('sprite', class {
-				onCreate(entity) {
+				constructor(texture, size) {
+					this.texture = texture
+					this.size = size
+					this.constructorCalled = ++when
+				}
+
+				onCreate(entity, texture, size) {
 					this.entity = entity
-					this.x = 1
+					this.onCreateCalled = ++when
+					assert(texture && texture === this.texture)
+					assert(size && size === this.size)
 				}
 			})
 
-			let ent = world.entity().set('sprite')
+			let ent = world.entity().set('sprite', 'test.png', 100)
+			assert(ent.get('sprite').constructorCalled === 1)
+			assert(ent.get('sprite').onCreateCalled === 2)
 			assert(ent.get('sprite').entity === ent)
-			assert(ent.get('sprite').x === 1)
+			assert(ent.get('sprite').texture === 'test.png')
+			assert(ent.get('sprite').size === 100)
+
 		})
 		it('test clearing with onRemove', function() {
 			let spriteCount = 0

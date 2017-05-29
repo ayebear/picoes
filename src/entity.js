@@ -47,7 +47,7 @@ class Entity {
 			this.data[component] = new this.world.components[component](...args)
 
 			// Call custom onCreate with this entity as a parameter
-			invoke(this.data[component], 'onCreate', this)
+			invoke(this.data[component], 'onCreate', this, ...args)
 		} else if (args.length > 0) {
 			// Use first argument as component value
 			this.data[component] = args[0]

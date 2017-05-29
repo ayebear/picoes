@@ -112,6 +112,54 @@ world.component('position', class {
 
 It is completely optional to register components. They may help structure your data, or provide basic methods to use with the components. Component definitions must be of type "function", which includes classes.
 
+#### onRemove
+
+This gets called when a component is removed:
+
+```javascript
+let removed = 0
+
+world.component('sprite', class {
+	onRemove() {
+		removed++
+	}
+})
+
+let entity = world.entity().set('sprite')
+
+assert(removed === 0)
+
+entity.remove('sprite')
+
+assert(removed === 1)
+```
+
+It also gets called when an entire entity is destroyed:
+
+```javascript
+let entity2 = world.entity().set('sprite')
+
+assert(removed === 1)
+
+entity2.destroy()
+
+assert(removed === 2)
+```
+
+#### onCreate
+
+This gets called immediately after the component is constructed. The first argument is always the parent entity, followed by the arguments passed into "set". It can be used as an alternative to the constructor, whenever you need access to the entity:
+
+```javascript
+world.component('player', class {
+	onCreate(entity, texture) {
+		entity.set('sprite', texture)
+	}
+})
+
+world.entity().set('player', 'player.png')
+```
+
 ### Register systems
 
 This registers a basic movement system. PicoES will create an instance of the class for you, so do not try to pass in an already instantiated object.
