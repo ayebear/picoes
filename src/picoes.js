@@ -130,7 +130,12 @@ class World {
 					let comps = componentNames.map(name => ent.get(name))
 
 					// Pass components, then the main entity, then any additional arguments
-					callback(...comps, ent, ...args)
+					let status = callback(...comps, ent, ...args)
+
+					// Stop the iteration when the callback returns false
+					if (status === false) {
+						break
+					}
 				}
 			}
 		}
