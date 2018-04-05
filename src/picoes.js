@@ -121,20 +121,18 @@ class World {
 		if (isFunction(callback)) {
 			// Go through the map of entities
 			for (let entity of entities.values()) {
+				// At this point, we can safely assume that all components exist, even if entities/components
+				// are deleted/modified during the loop, because JavaScript's MapIterator is smart enough.
 
-				// Ensure entity has all of these components by this point
-				if (entity.has(...componentNames)) {
+				// Get all components as an array
+				let components = componentNames.map(name => entity.get(name))
 
-					// Get all components as an array
-					let components = componentNames.map(name => entity.get(name))
+				// Pass components, then the main entity, then any additional arguments
+				let status = callback(...components, entity, ...args)
 
-					// Pass components, then the main entity, then any additional arguments
-					let status = callback(...components, entity, ...args)
-
-					// Stop the iteration when the callback returns false
-					if (status === false) {
-						break
-					}
+				// Stop the iteration when the callback returns false
+				if (status === false) {
+					break
 				}
 			}
 		}
