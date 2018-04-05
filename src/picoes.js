@@ -1,6 +1,6 @@
 let invoke = require('./utilities.js').invoke
 let Entity = require('./entity.js').Entity
-let Index = require('./index.js').Index
+let ComponentIndex = require('./component_index.js').ComponentIndex
 
 function isFunction(obj) {
 	return typeof obj === 'function'
@@ -16,7 +16,7 @@ class World {
 		this.idCounter = 1
 
 		// Maps entire queries to arrays of entities
-		this.index = new Index(this.entities)
+		this.index = new ComponentIndex(this.entities)
 	}
 
 	// Removes all entities from the world

@@ -1,4 +1,4 @@
-class Index {
+class ComponentIndex {
 	constructor(entities) {
 		this.clear(entities)
 	}
@@ -88,4 +88,4 @@ class Index {
 	}
 }
 
-exports.Index = Index
+exports.ComponentIndex = ComponentIndex
