@@ -25,12 +25,16 @@ This entity system is designed to be as simple as possible, while still having u
 
 ### Features
 
-* Extremely fast entity querying support: O(1) average time
+* High performance, memoized entity queries
+	* O(1) average time
+* All definitions are optional
+	* Can create components and entities in a world and query on them, without needing to define structured systems and components
 * Strings as component keys
-* Access/create pattern, like a dictionary
-* ES6+ style API
+	* No need to manually track component keys like many libraries
 * JSON serialization
+	* Useful for save data and networked applications
 * Prototypes
+	* Allows entity definitions to be data-driven, outside of code
 
 ### Terminology
 
@@ -56,16 +60,27 @@ Eric Hebert
 
 ### Setup
 
+You'll normally want to install PicoES as a dev dependency, and have it transpiled into the build of your application.
+
 ```bash
 npm i -D picoes
 ```
 
+### Documentation
+
+[PicoES Documentation](http://ayebear.com/picoes)
+
 ### Examples
 
+#### Anonymous components and systems
+
 ```javascript
+import { World } from 'picoes.js'
+
+// Create a world to store entities in
 let world = new World()
 
-// Create player
+// Create player with anonymous health component
 let player = world.entity().set('health', { value: 100 })
 
 // Create enemies
@@ -73,7 +88,7 @@ world.entity().set('damages', 10)
 world.entity().set('damages', 30)
 
 // Apply damage
-world.every(['damages'], (amount) => {
+world.every(['damages'], amount => {
 	player.get('health').value -= amount
 })
 
@@ -81,9 +96,39 @@ world.every(['damages'], (amount) => {
 assert(player.get('health').value === 60)
 ```
 
-### Documentation
+#### Component and system definitions
 
-Generated documentation may be available here in the future.
+```javascript
+import { World } from 'picoes.js'
+let world = new World()
+
+// Define components
+
+
+// Define systems
+
+
+// Create entities
+
+
+// Run systems
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Old Examples
 
