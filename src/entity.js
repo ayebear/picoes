@@ -14,40 +14,31 @@ class Entity {
 	}
 
 	// Returns true if the entity has ALL of the specified components
-	has(...args) {
-		let comps = [...args]
-		return comps.every((name) => {
-			return name in this.data
-		})
+	has(...components) {
+		return components.every(name => name in this.data)
 	}
 
 	// Returns a component by name (returns undefined if it doesn't exist)
-	// ent.get('position')
+	// entity.get('position')
 	get(component) {
-		if (this.has(component)) {
-			return this.data[component]
-		}
-		return undefined
+		return this.data[component]
 	}
 
 	// Returns a component by name (automatically created if it doesn't exist)
-	// ent.access('position')
-	access(component) {
+	// entity.access('position')
+	access(component, ...args) {
 		if (!this.has(component)) {
-			this.set(component)
+			this.set(component, ...args)
 		}
 		return this.data[component]
 	}
 
 	// Adds a new component, or overwrites an existing component
-	// ent.set('position', 1, 2)
+	// entity.set('position', 1, 2)
 	set(component, ...args) {
 		if (this.valid() && component in this.world.components) {
-			// Use defined component template
-			this.data[component] = new this.world.components[component](...args)
-
-			// Call custom onCreate with this entity as a parameter
-			invoke(this.data[component], 'onCreate', this, ...args)
+			// Use defined component template, passing entity as first parameter
+			this.data[component] = new this.world.components[component](this, ...args)
 		} else if (args.length > 0) {
 			// Use first argument as component value
 			this.data[component] = args[0]
@@ -65,11 +56,12 @@ class Entity {
 	}
 
 	// Updates component data from an object or other component
-	// ent.update('position', {x: 1, y: 2})
+	// Note: Works with setters too
+	// entity.update('position', {x: 1, y: 2})
 	update(component, data) {
 		let comp = this.access(component)
 
-		// Shallow copy properties of component
+		// Shallow set keys of the component
 		for (let key in data) {
 			comp[key] = data[key]
 		}
@@ -79,18 +71,20 @@ class Entity {
 
 	// Removes a component from the entity (no effect when it doesn't exist)
 	// Can specify an onRemove() method in your component which gets called before it is removed
-	// ent.remove('position')
-	remove(component) {
-		if (component in this.data) {
+	// entity.remove('position')
+	remove(...components) {
+		for (let component of components) {
+			if (component in this.data) {
 
-			if (this.valid()) {
-				this.world.index.remove(this, component)
+				if (this.valid()) {
+					this.world.index.remove(this, component)
+				}
+
+				// Call custom onRemove
+				invoke(this.data[component], 'onRemove')
+
+				delete this.data[component]
 			}
-
-			// Call custom onRemove
-			invoke(this.data[component], 'onRemove')
-
-			delete this.data[component]
 		}
 		return this
 	}
