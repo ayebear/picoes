@@ -28,7 +28,7 @@ class World {
 			for (let componentName in entity.data) {
 				// Get component, and call onRemove if it exists as a function
 				let component = entity.data[componentName]
-				if (typeof component.onRemove === 'function') {
+				if (isFunction(component.onRemove)) {
 					component.onRemove()
 				}
 			}
@@ -45,7 +45,7 @@ class World {
 	// world.component(class { constructor(a) {this.a = a} })
 	component(name, componentClass) {
 		// Only allow functions and classes to be components
-		if (typeof componentClass === 'function') {
+		if (isFunction(componentClass)) {
 			this.components[name] = componentClass
 			return name
 		}
@@ -57,7 +57,7 @@ class World {
 	// or world.entity('Player')
 	entity(name) {
 		let entId = this.idCounter++
-		let ent = new Entity(this, entId)
+		let entity = new Entity(this, entId)
 
 		// Use 'name' to get prototype data (if specified)
 		if (name && name in this.entityTemplates) {
@@ -66,17 +66,17 @@ class World {
 			for (let componentName in template) {
 				// Update component with data from template
 				let newComponentData = JSON.parse(template[componentName])
-				ent.update(componentName, newComponentData)
+				entity.update(componentName, newComponentData)
 			}
 		}
 
-		this.entities[entId] = ent
-		return ent
+		this.entities[entId] = entity
+		return entity
 	}
 
 	// Registers a system to the world
 	// Returns its unique ID on success or undefined on failure
-	// world.system(class { every(ent) {} })
+	// world.system(class { every(entity) {} })
 	system(components, systemClass, ...args) {
 		if (isFunction(systemClass)) {
 			// Create the system, and set the component array query
@@ -84,8 +84,7 @@ class World {
 			newSystem.components = components
 
 			// Add the system, return its ID
-			this.systems.push(newSystem)
-			return this.systems.length - 1
+			return this.systems.push(newSystem) - 1
 		}
 		return undefined
 	}
@@ -121,21 +120,19 @@ class World {
 
 		if (isFunction(callback)) {
 			// Go through the map of entities
-			for (let ent of entities.values()) {
+			for (let entity of entities.values()) {
+				// At this point, we can safely assume that all components exist, even if entities/components
+				// are deleted/modified during the loop, because JavaScript's MapIterator is smart enough.
 
-				// Ensure entity has all of these components by this point
-				if (ent.has(...componentNames)) {
+				// Get all components as an array
+				let components = componentNames.map(name => entity.get(name))
 
-					// Get all components as an array
-					let comps = componentNames.map(name => ent.get(name))
+				// Pass components, then the main entity, then any additional arguments
+				let status = callback(...components, entity, ...args)
 
-					// Pass components, then the main entity, then any additional arguments
-					let status = callback(...comps, ent, ...args)
-
-					// Stop the iteration when the callback returns false
-					if (status === false) {
-						break
-					}
+				// Stop the iteration when the callback returns false
+				if (status === false) {
+					break
 				}
 			}
 		}
@@ -147,7 +144,7 @@ class World {
 	// Simplified version of every(), returns an actual array, and only takes component names as arguments
 	// world.get('player', 'sprite')
 	get(...componentNames) {
-		return [...this.every([...componentNames])]
+		return [...this.every(componentNames)]
 	}
 
 	// Registers entity prototype(s)

@@ -22,7 +22,7 @@ class Index {
 
 	// Creates a hash from an array of component names
 	hashComponents(names) {
-		return names.concat().sort().join(':')
+		return JSON.stringify(names.concat().sort())
 	}
 
 	// Builds an initial index for a set of components
@@ -31,12 +31,12 @@ class Index {
 		let matchingEntities = new Map()
 
 		for (let entId in this.entities) {
-			let ent = this.entities[entId]
+			let entity = this.entities[entId]
 
 			// Ensure entity contains all specified components
-			if (ent.has(...componentNames)) {
+			if (entity.has(...componentNames)) {
 				// Add entity to index
-				matchingEntities.set(ent.toString(), ent)
+				matchingEntities.set(entity.toString(), entity)
 			}
 		}
 
