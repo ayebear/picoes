@@ -1,4 +1,4 @@
-let World = require('../index.js').World
+const { World } = require('../index.js')
 
 function getRandomInt(min, max) {
 	return Math.floor(Math.random() * (max - min)) + min

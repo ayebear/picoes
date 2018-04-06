@@ -1,7 +1,7 @@
 // import 'es.js'
-const World = require('../index.js').World
-const Entity = require('../src/entity.js').Entity
-const assert = require('chai').assert
+const { World } = require('../index.js')
+const { Entity } = require('../src/entity.js')
+const { assert } = require('chai')
 
 function getSize(it) {
 	let num = 0
