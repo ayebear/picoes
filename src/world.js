@@ -1,6 +1,6 @@
-let invoke = require('./utilities.js').invoke
-let Entity = require('./entity.js').Entity
-let ComponentIndex = require('./component_index.js').ComponentIndex
+const invoke = require('./utilities.js').invoke
+const Entity = require('./entity.js').Entity
+const ComponentIndex = require('./component_index.js').ComponentIndex
 
 function isFunction(obj) {
 	return typeof obj === 'function'

@@ -1,7 +1,7 @@
 // import 'es.js'
-let World = require('../src/picoes.js').World
-let Entity = require('../src/entity.js').Entity
-let assert = require('chai').assert
+const World = require('../index.js').World
+const Entity = require('../src/entity.js').Entity
+const assert = require('chai').assert
 
 function getSize(it) {
 	let num = 0
