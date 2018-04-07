@@ -1,7 +1,7 @@
 // import 'es.js'
 const { World } = require('../index.js')
 const { Entity } = require('../src/entity.js')
-const { assert } = require('chai')
+const { assert, expect } = require('chai')
 
 function getSize(it) {
 	let num = 0
@@ -620,6 +620,12 @@ describe('World', function() {
 			let ent = world.entity()
 			assert(Object.keys(world.entities).length == 1)
 			assert(ent.toString() == String(ent.id))
+		})
+		it('test if ID is read-only', function() {
+			let world = new World()
+			let ent = world.entity()
+			expect(() => ent.id = 5).to.throw()
+			assert(typeof ent.id === 'number' && ent.id === 1)
 		})
 		it('valid entities', function() {
 			let world = new World()

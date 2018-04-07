@@ -354,6 +354,18 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/entity.js~entity#id",
+    "class/src/entity.js~Entity.html#instance-get-id",
+    "src/entity.js~Entity#id",
+    "member"
+  ],
+  [
+    "src/entity.js~entity#id",
+    "class/src/entity.js~Entity.html#instance-set-id",
+    "src/entity.js~Entity#id",
+    "member"
+  ],
+  [
     "src/entity.js~entity#remove",
     "class/src/entity.js~Entity.html#instance-method-remove",
     "src/entity.js~Entity#remove",

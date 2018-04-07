@@ -20,9 +20,8 @@ class Entity {
 		/** @ignore */
 		this.world = world
 
-		// TODO: Make a getter for this, rename to _id. But NO setter, should be read-only.
 		/** @ignore */
-		this.id = id
+		this._id = id
 
 		/** @ignore */
 		this.data = {}
@@ -31,6 +30,24 @@ class Entity {
 		if (this.valid()) {
 			this.world.index.add(this)
 		}
+	}
+
+	/**
+	 * Return the entity ID.
+	 *
+	 * @return {number} Integer entity ID
+	 */
+	get id() {
+		return this._id
+	}
+
+	/**
+	 * ID is read-only, attempting to set it will throw an error.
+	 *
+	 * @private
+	 */
+	set id(id) {
+		throw new Error('Cannot set entity id')
 	}
 
 	/**
@@ -203,8 +220,8 @@ class Entity {
 			this.world.index.remove(this)
 
 			// Remove from world
-			delete this.world.entities[this.id]
-			this.id = undefined
+			delete this.world.entities[this._id]
+			this._id = undefined
 		}
 	}
 
@@ -219,7 +236,7 @@ class Entity {
 	valid() {
 		// Note: No need to actually look in the world for the ID, if entities are only ever copied by reference.
 		// If entities are ever deep/shallow copied, this function will need to check this to be more robust.
-		return this.world && this.id !== undefined
+		return this.world && this._id !== undefined
 	}
 
 	/**
@@ -231,7 +248,7 @@ class Entity {
 	 * @return {string} String representation of the entity ID.
 	 */
 	toString() {
-		return String(this.id)
+		return String(this._id)
 	}
 
 	/**
@@ -287,8 +304,8 @@ class Entity {
 		if (world && !this.valid()) {
 			// Assign new id, and reattach to world
 			this.world = world
-			this.id = this.world.idCounter++
-			this.world.entities[this.id] = this
+			this._id = this.world.idCounter++
+			this.world.entities[this._id] = this
 			this.world.index.addEntity(this)
 		}
 	}
@@ -306,8 +323,8 @@ class Entity {
 		if (this.valid()) {
 			// Remove from current world
 			this.world.index.removeEntity(this)
-			delete this.world.entities[this.id]
-			this.id = undefined
+			delete this.world.entities[this._id]
+			this._id = undefined
 			this.world = undefined
 		}
 	}
