@@ -1,20 +1,11 @@
 /** @ignore */
-const { invoke } = require('./utilities.js')
+const { invoke, isFunction } = require('./utilities.js')
 
 /** @ignore */
 const { Entity } = require('./entity.js')
 
 /** @ignore */
 const { ComponentIndex } = require('./component_index.js')
-
-/**
- * Determines if function.
- *
- * @ignore
- */
-function isFunction(obj) {
-	return typeof obj === 'function'
-}
 
 /**
  * Class for world.
@@ -28,10 +19,16 @@ class World {
 	constructor() {
 		/** @ignore */
 		this.systems = []
-		/** @ignore */
-		this.entities = {}
+
+		/**
+		 * Maps entity IDs to entities
+		 * @ignore
+		 */
+		this.entities = new Map()
+
 		/** @ignore */
 		this.components = {}
+
 		/** @ignore */
 		this.entityTemplates = {}
 
@@ -54,19 +51,16 @@ class World {
 	 */
 	clear() {
 		// Call onRemove on all components of all entities
-		for (let entityId in this.entities) {
-			let entity = this.entities[entityId]
+		for (const [entityId, entity] of this.entities) {
 			for (let componentName in entity.data) {
 				// Get component, and call onRemove if it exists as a function
 				let component = entity.data[componentName]
-				if (isFunction(component.onRemove)) {
-					component.onRemove()
-				}
+				invoke(component, 'onRemove')
 			}
 		}
 
 		// Clear entities
-		this.entities = {}
+		this.entities = new Map()
 		this.index.clear(this.entities)
 	}
 
@@ -114,8 +108,8 @@ class World {
 	 * @return {Entity} The new entity created
 	 */
 	entity(name) {
-		let entId = this.idCounter++
-		let entity = new Entity(this, entId)
+		let entityId = this.idCounter++
+		let entity = new Entity(this, entityId)
 
 		// Use 'name' to get prototype data (if specified)
 		if (name && name in this.entityTemplates) {
@@ -128,7 +122,7 @@ class World {
 			}
 		}
 
-		this.entities[entId] = entity
+		this.entities.set(entityId, entity)
 		return entity
 	}
 

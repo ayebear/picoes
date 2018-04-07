@@ -236,7 +236,7 @@ describe('World', function() {
 			ent.detach()
 			assert(!ent.valid())
 			assert(spriteCount === 2)
-			assert(Object.keys(world.entities).length === 1)
+			assert(world.entities.size === 1)
 			assert(getSize(world.every(['position'])) === 1)
 			assert(world.get('position').length === 1)
 			assert(world.get('position')[0].get('position').x === 2)
@@ -246,7 +246,7 @@ describe('World', function() {
 			ent.attach(world)
 			assert(ent.valid())
 			assert(spriteCount === 2)
-			assert(Object.keys(world.entities).length === 2)
+			assert(world.entities.size === 2)
 			assert(getSize(world.every(['position'])) === 2)
 			assert(world.get('position').length === 2)
 			assert(ent.get('position').x === 1)
@@ -618,7 +618,7 @@ describe('World', function() {
 			let world = new World()
 			world.component('position')
 			let ent = world.entity()
-			assert(Object.keys(world.entities).length == 1)
+			assert(world.entities.size == 1)
 			assert(ent.toString() == String(ent.id))
 		})
 		it('test if ID is read-only', function() {
@@ -650,7 +650,7 @@ describe('World', function() {
 			ent.set('position')
 			ent.get('position').val = 100
 
-			assert(Object.keys(world.entities).length == 1)
+			assert(world.entities.size == 1)
 			assert(Object.keys(world.components).length == 1)
 			assert(ent.has('position'))
 			assert(ent.get('position').val === 100)
@@ -658,7 +658,7 @@ describe('World', function() {
 
 			ent.destroy()
 
-			assert(Object.keys(world.entities).length == 0)
+			assert(world.entities.size == 0)
 			assert(Object.keys(world.components).length == 1)
 			assert(!ent.valid())
 			assert(!ent.has('position'))
@@ -666,7 +666,7 @@ describe('World', function() {
 			// Just for safe measure
 			ent.destroy()
 
-			assert(Object.keys(world.entities).length == 0)
+			assert(world.entities.size == 0)
 			assert(Object.keys(world.components).length == 1)
 			assert(!ent.valid())
 			assert(!ent.has('position'))

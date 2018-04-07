@@ -37,22 +37,13 @@
 
 <div class="content" data-ice="content"><h1 data-ice="title">src/world.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/** @ignore */
-const { invoke } = require(&apos;./utilities.js&apos;)
+const { invoke, isFunction } = require(&apos;./utilities.js&apos;)
 
 /** @ignore */
 const { Entity } = require(&apos;./entity.js&apos;)
 
 /** @ignore */
 const { ComponentIndex } = require(&apos;./component_index.js&apos;)
-
-/**
- * Determines if function.
- *
- * @ignore
- */
-function isFunction(obj) {
-	return typeof obj === &apos;function&apos;
-}
 
 /**
  * Class for world.
@@ -66,10 +57,16 @@ class World {
 	constructor() {
 		/** @ignore */
 		this.systems = []
-		/** @ignore */
-		this.entities = {}
+
+		/**
+		 * Maps entity IDs to entities
+		 * @ignore
+		 */
+		this.entities = new Map()
+
 		/** @ignore */
 		this.components = {}
+
 		/** @ignore */
 		this.entityTemplates = {}
 
@@ -92,19 +89,16 @@ class World {
 	 */
 	clear() {
 		// Call onRemove on all components of all entities
-		for (let entityId in this.entities) {
-			let entity = this.entities[entityId]
+		for (const [entityId, entity] of this.entities) {
 			for (let componentName in entity.data) {
 				// Get component, and call onRemove if it exists as a function
 				let component = entity.data[componentName]
-				if (isFunction(component.onRemove)) {
-					component.onRemove()
-				}
+				invoke(component, &apos;onRemove&apos;)
 			}
 		}
 
 		// Clear entities
-		this.entities = {}
+		this.entities = new Map()
 		this.index.clear(this.entities)
 	}
 
@@ -152,8 +146,8 @@ class World {
 	 * @return {Entity} The new entity created
 	 */
 	entity(name) {
-		let entId = this.idCounter++
-		let entity = new Entity(this, entId)
+		let entityId = this.idCounter++
+		let entity = new Entity(this, entityId)
 
 		// Use &apos;name&apos; to get prototype data (if specified)
 		if (name &amp;&amp; name in this.entityTemplates) {
@@ -166,7 +160,7 @@ class World {
 			}
 		}
 
-		this.entities[entId] = entity
+		this.entities.set(entityId, entity)
 		return entity
 	}
 

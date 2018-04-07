@@ -31,9 +31,7 @@ class ComponentIndex {
 	build(hash, componentNames) {
 		let matchingEntities = new Map()
 
-		for (let entId in this.entities) {
-			let entity = this.entities[entId]
-
+		for (const [entityId, entity] of this.entities) {
 			// Ensure entity contains all specified components
 			if (entity.has(...componentNames)) {
 				// Add entity to index
@@ -66,14 +64,14 @@ class ComponentIndex {
 
 	// Update an entity in the index (for creating components)
 	add(entity, ...componentNames) {
-		this.apply(componentNames, (entities) => {
+		this.apply(componentNames, entities => {
 			entities.set(entity.toString(), entity)
 		})
 	}
 
 	// Update an entity in the index (for removing components)
 	remove(entity, ...componentNames) {
-		this.apply(componentNames, (entities) => {
+		this.apply(componentNames, entities => {
 			entities.delete(entity.toString())
 		})
 	}
