@@ -133,25 +133,54 @@ class World {
 	 * @example
 	 * // Movement system
 	 * world.system(['position', 'velocity'], class {
+	 *      constructor(context) {
+	 *          // This is showing how you can optionally pass parameters to the system's constructor
+	 *          this.context = context
+	 *      }
 	 *      every(position, velocity, entity) {
 	 *          position.x += velocity.x
 	 *          position.y += velocity.y
 	 *      }
-	 *  })
+	 *  }, context)
 	 *
-	 * @param {Array}     components  - The list of components the system will process in every(). This follows the same logic as entity.has() and world.every().
-	 * @param {Function}  systemClass - The system class to instantiate. Can contain the following methods: constructor, initialize,
-	 * pre, every, post. Pre() and post() get called before and after every(), for each of the independent systems. See world.run()
-	 * for an example of the call order.
-	 * @param {...Object} [args]      - The arguments to forward to the system's constructors
+	 * @example
+	 * // System that doesn't use every()
+	 * world.system(class {
+	 *      constructor(context) {
+	 *          this.context = context
+	 *      }
+	 *      pre() {
+	 *          // Handle events or something
+	 *      }
+	 *  }, context)
+	 *
+	 * @param {...Object} args - Both signatures are accepted: (components, systemClass, ...args) or (systemClass, ...args).
+	 *
+	 * **[components]**: The list of components the system will process in every(). This follows the same logic as entity.has() and world.every().
+	 *
+	 * **{systemClass}**: The system class to instantiate. Can contain the following methods: constructor, initialize, pre, every, post. Pre() and post() get called before and after every(), for each of the independent systems. See world.run() for an example of the call order.
+	 *
+	 * **[...args]**: The arguments to forward to the system's constructors.
 	 *
 	 * @return {number} Unique ID of the system on success or undefined on failure
 	 */
-	system(components, systemClass, ...args) {
-		// TODO: Make components optional, and parameters more dynamic by only using ...args
+	system(...args) {
+		// Get components and systemClass from arguments
+		let components = []
+		let systemClass, rest
+		if (Array.isArray(args[0])) {
+			components = args[0]
+			systemClass = args[1]
+			rest = args.slice(2)
+		} else {
+			systemClass = args[0]
+			rest = args.slice(1)
+		}
+
+		// Make sure the system is valid
 		if (isFunction(systemClass)) {
 			// Create the system, and set the component array query
-			let newSystem = new systemClass(...args)
+			let newSystem = new systemClass(...rest)
 			newSystem.components = components
 
 			// Add the system, return its ID
@@ -183,8 +212,8 @@ class World {
 	 * @example
 	 * // Example flow of method call order:
 	 * // Setup systems:
-	 * world.system([], systemA)
-	 * world.system([], systemB)
+	 * world.system(systemA)
+	 * world.system(systemB)
 	 * // During world.run():
 	 * // systemA.pre()
 	 * // systemA.every() * number of entities

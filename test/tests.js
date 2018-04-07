@@ -487,6 +487,31 @@ describe('World', function() {
 			assert(entA.get('position').x == 3 && entA.get('position').y == 1)
 			assert(entB.get('position').x == 28 && entB.get('position').y == 44)
 		})
+		it('system variadic arguments with optional components', function() {
+			let world = new World()
+
+			// Test optional case
+			let created = false
+			world.system(class {
+				constructor(first, second) {
+					assert(first === 1)
+					assert(second === 2)
+					created = true
+				}
+			}, 1, 2)
+			assert(created)
+
+			// Test specified case
+			created = false
+			world.system(['whatever'], class {
+				constructor(first, second) {
+					assert(first === 1)
+					assert(second === 2)
+					created = true
+				}
+			}, 1, 2)
+			assert(created)
+		})
 		it('use the every() method', function() {
 			let world = new World()
 			let ent1 = world.entity().set('position').set('"velocity"')
@@ -603,7 +628,7 @@ describe('World', function() {
 			assert(count == 3)
 
 			count = 0
-			world.system([], class {
+			world.system(class {
 				every(ent) {
 					++count
 				}

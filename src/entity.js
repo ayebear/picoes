@@ -45,6 +45,8 @@ class Entity {
 	 * ID is read-only, attempting to set it will throw an error.
 	 *
 	 * @private
+	 *
+	 * @throws {Error} Cannot set entity id
 	 */
 	set id(id) {
 		throw new Error('Cannot set entity id')

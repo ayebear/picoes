@@ -365,7 +365,7 @@ Simplified version of every(), returns an actual array, and only takes component
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-method-system">system</a></span></span><span class="code" data-ice="signature">(components: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span>, systemClass: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></span>
+          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-method-system">system</a></span></span><span class="code" data-ice="signature">(args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></span>
         </p>
       </div>
       <div>
@@ -686,7 +686,7 @@ world.entity().set(&apos;myComponent&apos;, 10, 500)</code></pre>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber230">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber259">source</a></span></span>
     </span>
   </h3>
 
@@ -789,7 +789,7 @@ for (let entity of it) {...}</code></pre>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber267">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber296">source</a></span></span>
     </span>
   </h3>
 
@@ -871,7 +871,7 @@ Simplified version of every(), returns an actual array, and only takes component
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber171">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber200">source</a></span></span>
     </span>
   </h3>
 
@@ -939,7 +939,7 @@ Simplified version of every(), returns an actual array, and only takes component
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber287">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber316">source</a></span></span>
     </span>
   </h3>
 
@@ -1026,7 +1026,7 @@ being the prototype names. Can also be a JSON formatted string.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber198">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber227">source</a></span></span>
     </span>
   </h3>
 
@@ -1079,8 +1079,8 @@ being the prototype names. Can also be a JSON formatted string.</p>
       
       <pre class="prettyprint source-code"><code data-ice="exampleCode">// Example flow of method call order:
 // Setup systems:
-world.system([], systemA)
-world.system([], systemB)
+world.system(systemA)
+world.system(systemB)
 // During world.run():
 // systemA.pre()
 // systemA.every() * number of entities
@@ -1104,11 +1104,11 @@ world.system([], systemB)
     
     
     
-    <span class="code" data-ice="name">system</span><span class="code" data-ice="signature">(components: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span>, systemClass: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></span>
+    <span class="code" data-ice="name">system</span><span class="code" data-ice="signature">(args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber150">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber167">source</a></span></span>
     </span>
   </h3>
 
@@ -1130,26 +1130,13 @@ The order the systems get registered, is the order then run in.</p>
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" class="code" data-depth="0">components</td>
-      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>The list of components the system will process in every(). This follows the same logic as entity.has() and world.every().</p>
-</td>
-    </tr>
-<tr data-ice="property" data-depth="0">
-      <td data-ice="name" class="code" data-depth="0">systemClass</td>
-      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>The system class to instantiate. Can contain the following methods: constructor, initialize,
-pre, every, post. Pre() and post() get called before and after every(), for each of the independent systems. See world.run()
-for an example of the call order.</p>
-</td>
-    </tr>
-<tr data-ice="property" data-depth="0">
       <td data-ice="name" class="code" data-depth="0">args</td>
       <td data-ice="type" class="code">...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
-      <td data-ice="appendix"><ul><li>optional</li></ul></td>
-      <td data-ice="description"><p>The arguments to forward to the system&apos;s constructors</p>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>Both signatures are accepted: (components, systemClass, ...args) or (systemClass, ...args).</p>
+<p><strong>[components]</strong>: The list of components the system will process in every(). This follows the same logic as entity.has() and world.every().</p>
+<p><strong>{systemClass}</strong>: The system class to instantiate. Can contain the following methods: constructor, initialize, pre, every, post. Pre() and post() get called before and after every(), for each of the independent systems. See world.run() for an example of the call order.</p>
+<p><strong>[...args]</strong>: The arguments to forward to the system&apos;s constructors.</p>
 </td>
     </tr>
 </tbody>
@@ -1187,11 +1174,27 @@ for an example of the call order.</p>
       
       <pre class="prettyprint source-code"><code data-ice="exampleCode">// Movement system
 world.system([&apos;position&apos;, &apos;velocity&apos;], class {
+     constructor(context) {
+         // This is showing how you can optionally pass parameters to the system&apos;s constructor
+         this.context = context
+     }
      every(position, velocity, entity) {
          position.x += velocity.x
          position.y += velocity.y
      }
- })</code></pre>
+ }, context)</code></pre>
+    </div>
+<div class="example-doc" data-ice="exampleDoc">
+      
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">// System that doesn&apos;t use every()
+world.system(class {
+     constructor(context) {
+         this.context = context
+     }
+     pre() {
+         // Handle events or something
+     }
+ }, context)</code></pre>
     </div>
 </div>
 
