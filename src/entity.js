@@ -1,3 +1,4 @@
+/** @ignore */
 const { invoke } = require('./utilities.js')
 
 // Entity class used internally for keeping track of components

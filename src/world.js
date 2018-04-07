@@ -1,26 +1,55 @@
+/** @ignore */
 const { invoke } = require('./utilities.js')
+
+/** @ignore */
 const { Entity } = require('./entity.js')
+
+/** @ignore */
 const { ComponentIndex } = require('./component_index.js')
 
+/**
+ * Determines if function.
+ *
+ * @ignore
+ */
 function isFunction(obj) {
 	return typeof obj === 'function'
 }
 
+/**
+ * Class for world.
+ *
+ * @class      World (name)
+ */
 class World {
+	/**
+	 * Constructs an instance of the world.
+	 */
 	constructor() {
+		/** @private */
 		this.systems = []
+		/** @private */
 		this.entities = {}
+		/** @private */
 		this.components = {}
+		/** @private */
 		this.entityTemplates = {}
 
+		/** @private */
 		this.idCounter = 1
 
-		// Maps entire queries to arrays of entities
+		/**
+		 * Maps entire queries to arrays of entities
+		 * @private
+		 */
 		this.index = new ComponentIndex(this.entities)
 	}
 
-	// Removes all entities from the world
-	// Does not affect registered systems, components, or prototypes
+	/**
+	 * Removes all entities from the world
+	 *
+	 * Does not affect registered systems, components, or prototypes
+	 */
 	clear() {
 		// Call onRemove on all components of all entities
 		for (let entityId in this.entities) {
@@ -39,22 +68,41 @@ class World {
 		this.index.clear(this.entities)
 	}
 
-	// Registers a component type to the world
-	// Must be a function or class
-	// Returns the registered component name on success
-	// world.component(class { constructor(a) {this.a = a} })
+	/**
+	 * Registers a component type to the world
+	 *
+	 * @param {string}   name           - The name
+	 * @param {function} componentClass - The component class, must be a constructable class or function
+	 *
+	 * @example
+	 * world.component(class {
+	 *     constructor(entity, ...args) {
+	 *         this.entity = entity
+	 *     }
+	 * })
+	 *
+	 * @return {string} Registered component name on success, undefined on failure
+	 */
 	component(name, componentClass) {
 		// Only allow functions and classes to be components
 		if (isFunction(componentClass)) {
 			this.components[name] = componentClass
 			return name
 		}
-		return undefined
 	}
 
-	// Creates a new entity in the world
-	// world.entity()
-	// or world.entity('Player')
+	/**
+	 * Creates a new entity in the world
+	 *
+	 * @param {string} [name] - The prototype name to use
+	 *
+	 * @example
+	 * world.entity()
+	 * // or
+	 * world.entity('Player')
+	 *
+	 * @return {Entity} The new entity created
+	 */
 	entity(name) {
 		let entId = this.idCounter++
 		let entity = new Entity(this, entId)
@@ -74,9 +122,24 @@ class World {
 		return entity
 	}
 
-	// Registers a system to the world
-	// Returns its unique ID on success or undefined on failure
-	// world.system(class { every(entity) {} })
+	/**
+	 * Registers a system to the world
+	 *
+	 * @example
+	 * // Movement system
+	 * world.system(['position', 'velocity'], class {
+	 *      every(position, velocity, entity) {
+	 *          position.x += velocity.x
+	 *          position.y += velocity.y
+	 *      }
+	 *  })
+	 *
+	 * @param {Array}     components  - The list of components the system will process in every()
+	 * @param {Function}  systemClass - The system class to instantiate
+	 * @param {...Object} [args]      - The arguments to forward to the system's constructors
+	 *
+	 * @return {number} Unique ID of the system on success or undefined on failure
+	 */
 	system(components, systemClass, ...args) {
 		if (isFunction(systemClass)) {
 			// Create the system, and set the component array query
@@ -89,14 +152,22 @@ class World {
 		return undefined
 	}
 
-	// Calls initialize() on all systems
+	/**
+	 * Calls initialize() on all systems
+	 *
+	 * @param {...Object} [args] - The arguments to forward to the systems' initialize() methods
+	 */
 	initialize(...args) {
 		for (let system of this.systems) {
 			invoke(system, 'initialize', ...args)
 		}
 	}
 
-	// Calls pre, every, and post on all systems
+	/**
+	 * Calls pre(), every(), and post() on all systems
+	 *
+	 * @param {...Object} [args] - The arguments to forward to the systems' methods
+	 */
 	run(...args) {
 		for (let system of this.systems) {
 			invoke(system, 'pre', ...args)
@@ -110,10 +181,25 @@ class World {
 		}
 	}
 
-	// Iterate through entities with the specified components
-	// world.every(['comp'], comp => {comp.value = 0})
-	// Get an iterator for the entities
-	// let it = world.every(['comp'])
+	/**
+	 * Iterate through entities with the specified components
+	 *
+	 * @example
+	 * // Use a callback to process entities one-by-one
+	 * world.every(['comp'], comp => {comp.value = 0})
+	 *
+	 * @example
+	 * // Get an iterator for the entities
+	 * let it = world.every(['comp'])
+	 * for (let entity of it) {...}
+	 *
+	 * @param {Array}     componentNames - The component names to match entites with. This checks if the entity
+	 * has ALL of the specified components, but does not check for additional components.
+	 * @param {Function}  callback       - The callback to call for each entity. Takes (...components, entity, ...args).
+	 * @param {...Object} [args]         - Any additional arguments to pass to the callback.
+	 *
+	 * @return {MapIterator} An iterator to the entities themselves
+	 */
 	every(componentNames, callback, ...args) {
 		// Get indexed map of entities
 		let entities = this.index.query(componentNames)
@@ -140,18 +226,37 @@ class World {
 		return entities.values()
 	}
 
-	// Returns an array of entities with matching components
-	// Simplified version of every(), returns an actual array, and only takes component names as arguments
-	// world.get('player', 'sprite')
+	/**
+	 * Returns an array of entities with matching components
+	 * Simplified version of every(), returns an actual array, and only takes component names as arguments.
+	 *
+	 * @example
+	 * world.get('player', 'sprite')
+	 *
+	 * @param {Array} componentNames - The component names to match on. See every() for how this matches.
+	 *
+	 * @return {Array} Array of entities, instead of iterator like every().
+	 */
 	get(...componentNames) {
 		return [...this.every(componentNames)]
 	}
 
-	// Registers entity prototype(s)
-	// Must be either a string or an object
-	// Top level must be prototype names
-	// Note: Any existing prototype names that are the same will be overwritten
-	// Returns number of prototypes added
+	/**
+	 * Registers entity prototype(s). Any existing prototype names that are the same will be overwritten
+	 *
+	 * @example
+	 * world.prototype({
+	 *     Movable: {
+	 *         position: {},
+	 *         velocity: {}
+	 *     }
+	 * })
+	 *
+	 * @param {object} data - Object structure to register as a prototype. Should be a dictionary with the top level keys
+	 * being the prototype names. Can also be a JSON formatted string.
+	 *
+	 * @return {number} Number of prototypes added.
+	 */
 	prototype(data) {
 		let count = 0
 
