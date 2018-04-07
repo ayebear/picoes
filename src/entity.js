@@ -191,6 +191,9 @@ class Entity {
 	/**
 	 * Remove this entity and all of its components from the world. After an entity is destroyed, the object should be discarded,
 	 * and it is recommended to avoid re-using it.
+	 *
+	 * @example
+	 * entity.destroy()
 	 */
 	destroy() {
 		this.removeAll()
@@ -208,6 +211,9 @@ class Entity {
 	/**
 	 * Returns true if this is a valid, existing, and usable entity, which is attached to a world.
 	 *
+	 * @example
+	 * if (entity.valid()) {...}
+	 *
 	 * @return {boolean} true or false
 	 */
 	valid() {
@@ -219,6 +225,9 @@ class Entity {
 	/**
 	 * Returns unique entity ID as a string.
 	 *
+	 * @example
+	 * let entityId = entity.toString()
+	 *
 	 * @return {string} String representation of the entity ID.
 	 */
 	toString() {
@@ -229,6 +238,9 @@ class Entity {
 	 * Serializes entire entity and components to JSON.
 	 * Note: Defining toJSON methods in your components will override the built-in behavior.
 	 *
+	 * @example
+	 * let serializedEntity = entity.toJSON()
+	 *
 	 * @return {string} JSON encoded string
 	 */
 	toJSON() {
@@ -238,6 +250,9 @@ class Entity {
 	/**
 	 * Deserializes data from JSON, creating new components and overwriting existing components.
 	 * Note: Defining fromJSON methods in your components will override the built-in behavior.
+	 *
+	 * @example
+	 * entity.fromJSON(serializedEntity)
 	 *
 	 * @param {string} data - A JSON string containing component data to parse, and store in this entity.
 	 *
@@ -263,6 +278,9 @@ class Entity {
 	 * Note: Do not use detached entities, get() may be safe, but avoid calling other methods
 	 * Note: The ID will be reassigned, so do not rely on this
 	 *
+	 * @example
+	 * entity.attach(world)
+	 *
 	 * @param {World} world - The world to attach this entity to
 	 */
 	attach(world) {
@@ -280,6 +298,9 @@ class Entity {
 	 * It can be re-attached to another world (or the same world), using the attach() method.
 	 * Note: Do not use detached entities, get() may be safe, but avoid calling other methods
 	 * Note: The ID will be reassigned, so do not rely on this
+	 *
+	 * @example
+	 * entity.detach()
 	 */
 	detach() {
 		if (this.valid()) {

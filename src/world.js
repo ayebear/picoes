@@ -26,29 +26,31 @@ class World {
 	 * Constructs an instance of the world.
 	 */
 	constructor() {
-		/** @private */
+		/** @ignore */
 		this.systems = []
-		/** @private */
+		/** @ignore */
 		this.entities = {}
-		/** @private */
+		/** @ignore */
 		this.components = {}
-		/** @private */
+		/** @ignore */
 		this.entityTemplates = {}
 
-		/** @private */
+		/** @ignore */
 		this.idCounter = 1
 
 		/**
 		 * Maps entire queries to arrays of entities
-		 * @private
+		 * @ignore
 		 */
 		this.index = new ComponentIndex(this.entities)
 	}
 
 	/**
-	 * Removes all entities from the world
+	 * Removes all entities from the world.
+	 * Does not affect registered systems, components, or prototypes.
 	 *
-	 * Does not affect registered systems, components, or prototypes
+	 * @example
+	 * world.clear()
 	 */
 	clear() {
 		// Call onRemove on all components of all entities
@@ -69,17 +71,24 @@ class World {
 	}
 
 	/**
-	 * Registers a component type to the world
+	 * Registers a component type to the world. Components must be constructable. They are passed the entity first,
+	 * then the rest of the arguments from methods like entity.set(). Components also can have an onRemove() method.
 	 *
 	 * @param {string}   name           - The name
 	 * @param {function} componentClass - The component class, must be a constructable class or function
 	 *
 	 * @example
-	 * world.component(class {
-	 *     constructor(entity, ...args) {
+	 * world.component('myComponent', class {
+	 *     constructor(entity, some, args) {
 	 *         this.entity = entity
+	 *         this.some = some
+	 *         this.args = args
 	 *     }
 	 * })
+	 * // entity === the new entity object
+	 * // some === 10
+	 * // args === 500
+	 * world.entity().set('myComponent', 10, 500)
 	 *
 	 * @return {string} Registered component name on success, undefined on failure
 	 */
@@ -124,7 +133,8 @@ class World {
 	}
 
 	/**
-	 * Registers a system to the world
+	 * Registers a system to the world.
+	 * The order the systems get registered, is the order then run in.
 	 *
 	 * @example
 	 * // Movement system
@@ -144,6 +154,7 @@ class World {
 	 * @return {number} Unique ID of the system on success or undefined on failure
 	 */
 	system(components, systemClass, ...args) {
+		// TODO: Make components optional, and parameters more dynamic by only using ...args
 		if (isFunction(systemClass)) {
 			// Create the system, and set the component array query
 			let newSystem = new systemClass(...args)
@@ -176,7 +187,10 @@ class World {
 	 * world.run(deltaTime)
 	 *
 	 * @example
-	 * // Example flow of method call order given systemA and systemB:
+	 * // Example flow of method call order:
+	 * // Setup systems:
+	 * world.system([], systemA)
+	 * world.system([], systemB)
 	 * // During world.run():
 	 * // systemA.pre()
 	 * // systemA.every() * number of entities
