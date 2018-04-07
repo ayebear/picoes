@@ -4,7 +4,8 @@
   "description": "Pico Entity System for JavaScript (ES6).",
   "main": "./index.js",
   "scripts": {
-    "test": "node ./node_modules/.bin/istanbul cover _mocha -- -R spec"
+    "test": "node ./node_modules/.bin/istanbul cover _mocha -- -R spec",
+    "doc": "node ./node_modules/.bin/esdoc"
   },
   "repository": {
     "type": "git",

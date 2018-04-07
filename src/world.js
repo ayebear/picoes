@@ -98,7 +98,8 @@ class World {
 	 *
 	 * @example
 	 * world.entity()
-	 * // or
+	 *
+	 * @example
 	 * world.entity('Player')
 	 *
 	 * @return {Entity} The new entity created
@@ -134,8 +135,10 @@ class World {
 	 *      }
 	 *  })
 	 *
-	 * @param {Array}     components  - The list of components the system will process in every()
-	 * @param {Function}  systemClass - The system class to instantiate
+	 * @param {Array}     components  - The list of components the system will process in every(). This follows the same logic as entity.has() and world.every().
+	 * @param {Function}  systemClass - The system class to instantiate. Can contain the following methods: constructor, initialize,
+	 * pre, every, post. Pre() and post() get called before and after every(), for each of the independent systems. See world.run()
+	 * for an example of the call order.
 	 * @param {...Object} [args]      - The arguments to forward to the system's constructors
 	 *
 	 * @return {number} Unique ID of the system on success or undefined on failure
@@ -155,6 +158,9 @@ class World {
 	/**
 	 * Calls initialize() on all systems
 	 *
+	 * @example
+	 * world.initialize(renderContext)
+	 *
 	 * @param {...Object} [args] - The arguments to forward to the systems' initialize() methods
 	 */
 	initialize(...args) {
@@ -165,6 +171,19 @@ class World {
 
 	/**
 	 * Calls pre(), every(), and post() on all systems
+	 *
+	 * @example
+	 * world.run(deltaTime)
+	 *
+	 * @example
+	 * // Example flow of method call order given systemA and systemB:
+	 * // During world.run():
+	 * // systemA.pre()
+	 * // systemA.every() * number of entities
+	 * // systemA.post()
+	 * // systemB.pre()
+	 * // systemB.every() * number of entities
+	 * // systemB.post()
 	 *
 	 * @param {...Object} [args] - The arguments to forward to the systems' methods
 	 */
@@ -252,7 +271,7 @@ class World {
 	 *     }
 	 * })
 	 *
-	 * @param {object} data - Object structure to register as a prototype. Should be a dictionary with the top level keys
+	 * @param {Object} data - Object structure to register as a prototype. Should be a dictionary with the top level keys
 	 * being the prototype names. Can also be a JSON formatted string.
 	 *
 	 * @return {number} Number of prototypes added.

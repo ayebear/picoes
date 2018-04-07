@@ -621,6 +621,19 @@ describe('World', function() {
 			assert(Object.keys(world.entities).length == 1)
 			assert(ent.toString() == String(ent.id))
 		})
+		it('valid entities', function() {
+			let world = new World()
+			let entityA = world.entity().set('test')
+			let entityB = world.get('test')[0]
+			assert(entityA.valid())
+			assert(entityB.valid())
+			assert(entityA.id === entityB.id)
+			assert(entityA === entityB)
+
+			entityA.destroy()
+			assert(!entityA.valid())
+			assert(!entityB.valid())
+		})
 		it('remove an entity', function() {
 			let world = new World()
 			world.component('position', function(entity, x = 0, y = 0) {
