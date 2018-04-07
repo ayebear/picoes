@@ -1,10 +1,11 @@
 {
   "name": "picoes",
-  "version": "0.2.7",
+  "version": "0.3.0",
   "description": "Pico Entity System for JavaScript (ES6).",
-  "main": "./src/picoes.js",
+  "main": "./index.js",
   "scripts": {
-    "test": "node ./node_modules/.bin/istanbul cover _mocha -- -R spec"
+    "test": "node ./node_modules/.bin/istanbul cover _mocha -- -R spec",
+    "doc": "node ./node_modules/.bin/esdoc"
   },
   "repository": {
     "type": "git",
@@ -25,8 +26,16 @@
   },
   "homepage": "https://github.com/ayebear/picoes#readme",
   "devDependencies": {
-    "chai": "latest",
-    "istanbul": "latest",
-    "mocha": "latest"
+    "chai": "^4.1.2",
+    "istanbul": "^0.4.5",
+    "mocha": "^5.0.5"
+  },
+  "dependencies": {
+    "esdoc": "^1.0.4",
+    "esdoc-ecmascript-proposal-plugin": "^1.0.0",
+    "esdoc-flow-type-plugin": "^1.0.1",
+    "esdoc-standard-plugin": "^1.0.0",
+    "esdoc-undocumented-identifier-plugin": "^1.0.0",
+    "esdoc-unexported-identifier-plugin": "^1.0.0"
   }
 }

@@ -1,4 +1,4 @@
-let es = require('../src/picoes.js')
+const { World } = require('../index.js')
 
 function getRandomInt(min, max) {
 	return Math.floor(Math.random() * (max - min)) + min
@@ -6,7 +6,7 @@ function getRandomInt(min, max) {
 
 function runBenchmarks() {
 
-	let world = new es.World()
+	let world = new World()
 	world.component('compA', function(val) {
 		this.val = val
 	})
@@ -63,14 +63,14 @@ function runBenchmarks() {
 			start2 = new Date()
 		}
 
-		results = world.query(['compA', 'compB'])
-		results = world.query(['compA', 'compC', 'comp5'])
-		results = world.query(['compA', 'compC', 'comp6'])
-		results = world.query(['compA', 'compC', 'comp7'])
-		results = world.query(['compA', 'compC', 'comp8'])
-		results = world.query(['compA', 'compC', 'comp9'])
-		results = world.query(['compA', 'compC', 'comp10'])
-		results = world.query(['compA', 'compC', 'comp5', 'comp6', 'comp7'])
+		results = world.get(['compA', 'compB'])
+		results = world.get(['compA', 'compC', 'comp5'])
+		results = world.get(['compA', 'compC', 'comp6'])
+		results = world.get(['compA', 'compC', 'comp7'])
+		results = world.get(['compA', 'compC', 'comp8'])
+		results = world.get(['compA', 'compC', 'comp9'])
+		results = world.get(['compA', 'compC', 'comp10'])
+		results = world.get(['compA', 'compC', 'comp5', 'comp6', 'comp7'])
 	}
 
 	end = new Date()

@@ -1,5 +1,43 @@
-/** @ignore */
-const { invoke } = require('./utilities.js')
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/entity.js | picoes</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="Pico Entity System for JavaScript (ES6)."><meta property="twitter:card" content="summary"><meta property="twitter:title" content="picoes"><meta property="twitter:description" content="Pico Entity System for JavaScript (ES6)."></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/ayebear/picoes"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/entity.js~Entity.html">Entity</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/world.js~World.html">World</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/entity.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/** @ignore */
+const { invoke } = require(&apos;./utilities.js&apos;)
 
 /**
  * Entity class used for storing components.
@@ -39,21 +77,21 @@ class Entity {
 	 * If no component names are specified, this method returns true.
 	 *
 	 * @example
-	 * if (entity.has('position', 'velocity')) {...}
+	 * if (entity.has(&apos;position&apos;, &apos;velocity&apos;)) {...}
 	 *
 	 * @param {...string} [components] - The component names to check for
 	 *
 	 * @return {boolean} true or false
 	 */
 	has(...components) {
-		return components.every(name => name in this.data)
+		return components.every(name =&gt; name in this.data)
 	}
 
 	/**
-	 * Returns a component by name, or undefined if it doesn't exist
+	 * Returns a component by name, or undefined if it doesn&apos;t exist
 	 *
 	 * @example
-	 * let position = entity.get('position')
+	 * let position = entity.get(&apos;position&apos;)
 	 *
 	 * @param {string} component - The component name to get
 	 *
@@ -64,13 +102,13 @@ class Entity {
 	}
 
 	/**
-	 * Returns a component by name (automatically created if it doesn't exist)
+	 * Returns a component by name (automatically created if it doesn&apos;t exist)
 	 *
 	 * @example
-	 * let position = entity.access('position', 3, 4)
+	 * let position = entity.access(&apos;position&apos;, 3, 4)
 	 *
 	 * @param {string}    component - The component name to create/get
-	 * @param {...Object} [args]    - The arguments to forward to create the new component, only if it doesn't exist.
+	 * @param {...Object} [args]    - The arguments to forward to create the new component, only if it doesn&apos;t exist.
 	 *
 	 * @return {Object} Always returns either the existing component, or the newly created one.
 	 */
@@ -85,13 +123,13 @@ class Entity {
 	 * Adds a new component, or re-creates and overwrites an existing component
 	 *
 	 * @example
-	 * entity.set('position', 1, 2)
+	 * entity.set(&apos;position&apos;, 1, 2)
 	 *
 	 * @example
-	 * entity.set('anonymousComponent', { keys: 'values' })
+	 * entity.set(&apos;anonymousComponent&apos;, { keys: &apos;values&apos; })
 	 *
 	 * @example
-	 * entity.set('anotherAnonymousComponent', 'Any type of any value')
+	 * entity.set(&apos;anotherAnonymousComponent&apos;, &apos;Any type of any value&apos;)
 	 *
 	 * @param {string}    component - The component name to create. If there is a registered component for this name, then
 	 * its constructor will be called and an object of that type will be created.
@@ -101,10 +139,10 @@ class Entity {
 	 * @return {Object} The original entity that set() was called on, so that operations can be chained.
 	 */
 	set(component, ...args) {
-		if (this.valid() && component in this.world.components) {
+		if (this.valid() &amp;&amp; component in this.world.components) {
 			// Use defined component template, passing entity as first parameter
 			this.data[component] = new this.world.components[component](this, ...args)
-		} else if (args.length > 0) {
+		} else if (args.length &gt; 0) {
 			// Use first argument as component value
 			this.data[component] = args[0]
 		} else {
@@ -124,7 +162,7 @@ class Entity {
 	 * Updates component data from an object or other component. Similar to access() with a shallow merge applied after.
 	 *
 	 * @example
-	 * entity.update('position', { x: 1, y: 2 })
+	 * entity.update(&apos;position&apos;, { x: 1, y: 2 })
 	 *
 	 * @param {string} component - The component name to update
 	 * @param {Object} data      - The object or other component to merge into the specified component.
@@ -143,12 +181,12 @@ class Entity {
 	}
 
 	/**
-	 * Removes a component from the entity - has no effect when it doesn't exist.
+	 * Removes a component from the entity - has no effect when it doesn&apos;t exist.
 	 * Can specify an onRemove() method in your component which gets called before it is removed.
 	 * If nothing is specified, then nothing will be removed. Use removeAll() to remove all components.
 	 *
 	 * @example
-	 * entity.remove('position')
+	 * entity.remove(&apos;position&apos;)
 	 *
 	 * @param {...string} [components] - The component names to remove from the entity.
 	 *
@@ -164,7 +202,7 @@ class Entity {
 				}
 
 				// Call custom onRemove
-				invoke(this.data[component], 'onRemove')
+				invoke(this.data[component], &apos;onRemove&apos;)
 
 				delete this.data[component]
 			}
@@ -219,7 +257,7 @@ class Entity {
 	valid() {
 		// Note: No need to actually look in the world for the ID, if entities are only ever copied by reference.
 		// If entities are ever deep/shallow copied, this function will need to check this to be more robust.
-		return this.world && this.id !== undefined
+		return this.world &amp;&amp; this.id !== undefined
 	}
 
 	/**
@@ -264,7 +302,7 @@ class Entity {
 			let comp = this.access(name)
 
 			// Either call custom method or copy all properties
-			if (typeof comp.fromJSON === 'function') {
+			if (typeof comp.fromJSON === &apos;function&apos;) {
 				comp.fromJSON(parsed[name])
 			} else {
 				this.update(name, parsed[name])
@@ -284,7 +322,7 @@ class Entity {
 	 * @param {World} world - The world to attach this entity to
 	 */
 	attach(world) {
-		if (world && !this.valid()) {
+		if (world &amp;&amp; !this.valid()) {
 			// Assign new id, and reattach to world
 			this.world = world
 			this.id = this.world.idCounter++
@@ -314,3 +352,20 @@ class Entity {
 }
 
 exports.Entity = Entity
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.4)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>
