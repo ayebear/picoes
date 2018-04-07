@@ -129,6 +129,7 @@ world.prototype({
 })
 
 // Define movement system
+// Note: All system methods are optional, but they are included here to show the flow
 world.system(['position', 'velocity'], class {
 	constructor() {
 		console.log('constructor() called')
