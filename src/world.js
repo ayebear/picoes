@@ -1,20 +1,11 @@
 /** @ignore */
-const { invoke } = require('./utilities.js')
+const { invoke, isFunction } = require('./utilities.js')
 
 /** @ignore */
 const { Entity } = require('./entity.js')
 
 /** @ignore */
 const { ComponentIndex } = require('./component_index.js')
-
-/**
- * Determines if function.
- *
- * @ignore
- */
-function isFunction(obj) {
-	return typeof obj === 'function'
-}
 
 /**
  * Class for world.
@@ -28,10 +19,16 @@ class World {
 	constructor() {
 		/** @ignore */
 		this.systems = []
-		/** @ignore */
-		this.entities = {}
+
+		/**
+		 * Maps entity IDs to entities
+		 * @ignore
+		 */
+		this.entities = new Map()
+
 		/** @ignore */
 		this.components = {}
+
 		/** @ignore */
 		this.entityTemplates = {}
 
@@ -54,19 +51,16 @@ class World {
 	 */
 	clear() {
 		// Call onRemove on all components of all entities
-		for (let entityId in this.entities) {
-			let entity = this.entities[entityId]
+		for (const [entityId, entity] of this.entities) {
 			for (let componentName in entity.data) {
 				// Get component, and call onRemove if it exists as a function
 				let component = entity.data[componentName]
-				if (isFunction(component.onRemove)) {
-					component.onRemove()
-				}
+				invoke(component, 'onRemove')
 			}
 		}
 
 		// Clear entities
-		this.entities = {}
+		this.entities = new Map()
 		this.index.clear(this.entities)
 	}
 
@@ -114,8 +108,8 @@ class World {
 	 * @return {Entity} The new entity created
 	 */
 	entity(name) {
-		let entId = this.idCounter++
-		let entity = new Entity(this, entId)
+		let entityId = this.idCounter++
+		let entity = new Entity(this, entityId)
 
 		// Use 'name' to get prototype data (if specified)
 		if (name && name in this.entityTemplates) {
@@ -128,7 +122,7 @@ class World {
 			}
 		}
 
-		this.entities[entId] = entity
+		this.entities.set(entityId, entity)
 		return entity
 	}
 
@@ -139,25 +133,54 @@ class World {
 	 * @example
 	 * // Movement system
 	 * world.system(['position', 'velocity'], class {
+	 *      constructor(context) {
+	 *          // This is showing how you can optionally pass parameters to the system's constructor
+	 *          this.context = context
+	 *      }
 	 *      every(position, velocity, entity) {
 	 *          position.x += velocity.x
 	 *          position.y += velocity.y
 	 *      }
-	 *  })
+	 *  }, context)
 	 *
-	 * @param {Array}     components  - The list of components the system will process in every(). This follows the same logic as entity.has() and world.every().
-	 * @param {Function}  systemClass - The system class to instantiate. Can contain the following methods: constructor, initialize,
-	 * pre, every, post. Pre() and post() get called before and after every(), for each of the independent systems. See world.run()
-	 * for an example of the call order.
-	 * @param {...Object} [args]      - The arguments to forward to the system's constructors
+	 * @example
+	 * // System that doesn't use every()
+	 * world.system(class {
+	 *      constructor(context) {
+	 *          this.context = context
+	 *      }
+	 *      pre() {
+	 *          // Handle events or something
+	 *      }
+	 *  }, context)
+	 *
+	 * @param {...Object} args - Both signatures are accepted: (components, systemClass, ...args) or (systemClass, ...args).
+	 *
+	 * **[components]**: The list of components the system will process in every(). This follows the same logic as entity.has() and world.every().
+	 *
+	 * **{systemClass}**: The system class to instantiate. Can contain the following methods: constructor, initialize, pre, every, post. Pre() and post() get called before and after every(), for each of the independent systems. See world.run() for an example of the call order.
+	 *
+	 * **[...args]**: The arguments to forward to the system's constructors.
 	 *
 	 * @return {number} Unique ID of the system on success or undefined on failure
 	 */
-	system(components, systemClass, ...args) {
-		// TODO: Make components optional, and parameters more dynamic by only using ...args
+	system(...args) {
+		// Get components and systemClass from arguments
+		let components = []
+		let systemClass, rest
+		if (Array.isArray(args[0])) {
+			components = args[0]
+			systemClass = args[1]
+			rest = args.slice(2)
+		} else {
+			systemClass = args[0]
+			rest = args.slice(1)
+		}
+
+		// Make sure the system is valid
 		if (isFunction(systemClass)) {
 			// Create the system, and set the component array query
-			let newSystem = new systemClass(...args)
+			let newSystem = new systemClass(...rest)
 			newSystem.components = components
 
 			// Add the system, return its ID
@@ -189,8 +212,8 @@ class World {
 	 * @example
 	 * // Example flow of method call order:
 	 * // Setup systems:
-	 * world.system([], systemA)
-	 * world.system([], systemB)
+	 * world.system(systemA)
+	 * world.system(systemB)
 	 * // During world.run():
 	 * // systemA.pre()
 	 * // systemA.every() * number of entities

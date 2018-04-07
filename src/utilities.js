@@ -15,4 +15,14 @@ function invoke(object, method, ...args) {
 	}
 }
 
+/**
+ * Determines if function.
+ *
+ * @ignore
+ */
+function isFunction(obj) {
+	return typeof obj === 'function'
+}
+
 exports.invoke = invoke
+exports.isFunction = isFunction
