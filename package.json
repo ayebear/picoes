@@ -36,6 +36,7 @@
     "esdoc-flow-type-plugin": "^1.0.1",
     "esdoc-standard-plugin": "^1.0.0",
     "esdoc-undocumented-identifier-plugin": "^1.0.0",
-    "esdoc-unexported-identifier-plugin": "^1.0.0"
+    "esdoc-unexported-identifier-plugin": "^1.0.0",
+    "marked": "^0.3.9"
   }
 }
