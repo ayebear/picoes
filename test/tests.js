@@ -172,7 +172,7 @@ describe('World', function() {
 			let when = 0
 			let world = new World()
 			world.component('sprite', class {
-				constructor(entity, texture, size, invalid) {
+				onCreate(entity, texture, size, invalid) {
 					this.entity = entity
 					this.texture = texture
 					this.size = size
@@ -180,6 +180,9 @@ describe('World', function() {
 					assert(texture && texture === this.texture)
 					assert(size && size === this.size)
 					assert(invalid === undefined)
+
+					// Regression in 0.3.0, fixed in 0.3.1
+					assert(entity.get('sprite') === this)
 				}
 			})
 

@@ -35,7 +35,7 @@ class ComponentIndex {
 			// Ensure entity contains all specified components
 			if (entity.has(...componentNames)) {
 				// Add entity to index
-				matchingEntities.set(entity.toString(), entity)
+				matchingEntities.set(entity.id, entity)
 			}
 		}
 
@@ -65,14 +65,14 @@ class ComponentIndex {
 	// Update an entity in the index (for creating components)
 	add(entity, ...componentNames) {
 		this.apply(componentNames, entities => {
-			entities.set(entity.toString(), entity)
+			entities.set(entity.id, entity)
 		})
 	}
 
 	// Update an entity in the index (for removing components)
 	remove(entity, ...componentNames) {
 		this.apply(componentNames, entities => {
-			entities.delete(entity.toString())
+			entities.delete(entity.id)
 		})
 	}
 

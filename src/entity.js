@@ -113,7 +113,8 @@ class Entity {
 	 * entity.set('anotherAnonymousComponent', 'Any type of any value')
 	 *
 	 * @param {string}    component - The component name to create. If there is a registered component for this name, then
-	 * its constructor will be called and an object of that type will be created.
+	 * its constructor will be called with (entity, ...args) and an object of that type will be created. The onCreate method
+	 * gets called after the component is added to the entity. This method also gets passed the same parameters.
 	 * @param {...Object} [args]    - The arguments to forward to the registered component type. If the component type is
 	 * registered, then only the first additional argument will be used as the value of the entire component.
 	 *
@@ -121,8 +122,12 @@ class Entity {
 	 */
 	set(component, ...args) {
 		if (this.valid() && component in this.world.components) {
-			// Use defined component template, passing entity as first parameter
+			// Create component and store in entity
+			// Note: The entity parameter is dangerous to use, since the component hasn't been added to the entity yet
 			this.data[component] = new this.world.components[component](this, ...args)
+
+			// Call custom onCreate to initialize component, pass the entity (this), and any additional arguments passed into set()
+			invoke(this.data[component], 'onCreate', this, ...args)
 		} else if (args.length > 0) {
 			// Use first argument as component value
 			this.data[component] = args[0]

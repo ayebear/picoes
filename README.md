@@ -107,14 +107,14 @@ let world = new World()
 
 // Define position and velocity components
 world.component('position', class {
-	constructor(entity, x = 0, y = 0) {
+	onCreate(entity, x = 0, y = 0) {
 		this.x = x
 		this.y = y
 	}
 })
 
 world.component('velocity', class {
-	constructor(entity, x = 0, y = 0) {
+	onCreate(entity, x = 0, y = 0) {
 		this.x = x
 		this.y = y
 	}

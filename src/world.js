@@ -65,15 +65,19 @@ class World {
 	}
 
 	/**
-	 * Registers a component type to the world. Components must be constructable. They are passed the entity first,
-	 * then the rest of the arguments from methods like entity.set(). Components also can have an onRemove() method.
+	 * Registers a component type to the world. Components must be constructable. If the component has an onCreate(),
+	 * it is passed the entity first, then the rest of the arguments from methods like entity.set(). Also, components
+	 * can have an onRemove() method, which gets called when removing that component from an entity.
 	 *
 	 * @param {string}   name           - The name
 	 * @param {function} componentClass - The component class, must be a constructable class or function
 	 *
 	 * @example
 	 * world.component('myComponent', class {
-	 *     constructor(entity, some, args) {
+	 *     // It is highly recommended to use onCreate() over constructor(), because the component
+	 *     // will have already been added to the entity. In the constructor(), it is not safe to use
+	 *     // "entity" because it does not contain the current component while still in the constructor.
+	 *     onCreate(entity, some, args) {
 	 *         this.entity = entity
 	 *         this.some = some
 	 *         this.args = args
