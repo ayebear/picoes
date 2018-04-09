@@ -49,7 +49,7 @@ class ComponentIndex {
 	}
 
 	// Uses an existing index or builds a new index, to return entities with the specified components
-	query(componentNames) {
+	query(componentNames = []) {
 		let hash = this.hashComponents(componentNames)
 
 		if (hash in this.index) {
@@ -83,40 +83,41 @@ class ComponentIndex {
 		}
 	}
 
-	// Generic way to apply an operation to matching component groups
-	apply(componentNames, callback) {
-		for (let hash in this.index) {
-			let group = this.index[hash]
-
-			// Check if index group has any of the components that the entity has
-			let hasAny = componentNames.some(name =&gt; group.components.has(name))
-
-			// Check if the current index group is supposed to match all entities
-			let isMatchAllGroup = ((componentNames == undefined || componentNames.length === 0) &amp;&amp; group.components.size == 0)
-
-			if (hasAny || isMatchAllGroup) {
-				callback(group.entities)
-			}
-		}
-	}
-
-	// Update an entity in the index (for creating components)
-	add(entity, ...componentNames) {
-		this.apply(componentNames, entities =&gt; {
-			entities.set(entity.id, entity)
-		})
-	}
-
-	// Update an entity in the index (for removing components)
-	remove(entity, ...componentNames) {
-		this.apply(componentNames, entities =&gt; {
-			entities.delete(entity.id)
-		})
+	// Checks if the current index group is supposed to match all entities
+	isMatchAllGroup(componentNames, group) {
+		return (componentNames.length === 0 &amp;&amp; group.components.size === 0)
 	}
 
 	// Add an entity and all of its components to the index
 	addEntity(entity) {
-		this.add(entity, ...Object.keys(entity.data))
+		const componentNames = Object.keys(entity.data)
+
+		for (let hash in this.index) {
+			const group = this.index[hash]
+
+			// Check if the entity has all of the components of the index group
+			const hasAll = entity.has(...group.components)
+
+			// Add the entity
+			if (hasAll || this.isMatchAllGroup(componentNames, group)) {
+				group.entities.set(entity.id, entity)
+			}
+		}
+	}
+
+	// Remove certain components from the index for an entity
+	remove(entity, ...componentNames) {
+		for (let hash in this.index) {
+			const group = this.index[hash]
+
+			// Check if index group has any of the components that the entity has
+			const hasAny = componentNames.some(name =&gt; group.components.has(name))
+
+			// Remove the entity
+			if (hasAny || this.isMatchAllGroup(componentNames, group)) {
+				group.entities.delete(entity.id)
+			}
+		}
 	}
 
 	// Remove an entity and all of its components from the index

@@ -28,7 +28,7 @@ class Entity {
 
 		// Add to the index, to update match all index
 		if (this.valid()) {
-			this.world.index.add(this)
+			this.world.index.addEntity(this)
 		}
 	}
 
@@ -125,9 +125,6 @@ class Entity {
 			// Create component and store in entity
 			// Note: The entity parameter is dangerous to use, since the component hasn't been added to the entity yet
 			this.data[component] = new this.world.components[component](this, ...args)
-
-			// Call custom onCreate to initialize component, pass the entity (this), and any additional arguments passed into set()
-			invoke(this.data[component], 'onCreate', this, ...args)
 		} else if (args.length > 0) {
 			// Use first argument as component value
 			this.data[component] = args[0]
@@ -138,8 +135,11 @@ class Entity {
 
 		// Update the index with this new component
 		if (this.valid()) {
-			this.world.index.add(this, component)
+			this.world.index.addEntity(this)
 		}
+
+		// Call custom onCreate to initialize component, pass the entity (this), and any additional arguments passed into set()
+		invoke(this.data[component], 'onCreate', this, ...args)
 
 		return this
 	}
@@ -182,14 +182,15 @@ class Entity {
 		for (let component of components) {
 			if (component in this.data) {
 
+				// Call custom onRemove
+				invoke(this.data[component], 'onRemove')
+
 				// Remove from index
 				if (this.valid()) {
 					this.world.index.remove(this, component)
 				}
 
-				// Call custom onRemove
-				invoke(this.data[component], 'onRemove')
-
+				// Remove from entity
 				delete this.data[component]
 			}
 		}
@@ -208,7 +209,11 @@ class Entity {
 	 */
 	removeAll() {
 		this.remove(...Object.keys(this.data))
-		this.data = {}
+
+		if (Object.keys(this.data).length > 0) {
+			throw new Error('Failed to remove all components. Components must have been added during the removeAll().')
+		}
+
 		return this
 	}
 
