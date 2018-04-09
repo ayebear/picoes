@@ -490,6 +490,161 @@ describe('World', function() {
 			assert(entA.get('position').x == 3 && entA.get('position').y == 1)
 			assert(entB.get('position').x == 28 && entB.get('position').y == 44)
 		})
+		it('adding entities to index', function() {
+			let world = new World()
+			world.entity().set('a').set('b')
+			assert(world.get('a', 'b').length === 1)
+			world.get('a', 'b')[0].destroy()
+			assert(world.get('a', 'b').length === 0)
+			world.entity().set('a')
+			assert(world.get('a', 'b').length === 0)
+			world.entity().set('b')
+			assert(world.get('a', 'b').length === 0)
+			world.entity().set('b').set('a')
+			assert(world.get('a', 'b').length === 1)
+		})
+		it('onRemove edge cases', function() {
+			let world = new World()
+
+			world.component('position', class {
+				onCreate(entity, value) {
+					this.entity = entity
+					this.value = value
+				}
+
+				onRemove() {
+					this.entity.set('somethingElse')
+				}
+			})
+
+			let entity = world.entity().set('position')
+
+			expect(() => entity.destroy()).to.throw()
+		})
+		it('indexing edge cases', function() {
+			// This test was to discover the "adding entities to index" and "onRemove edge cases" tests above
+			// Keeping it in case there are other problems in the future
+			let world = new World()
+
+			let g = { count: 0 }
+
+			// Define components
+			world.component('position', class {
+				onCreate(entity, x = 0, y = 0) {
+					this.entity = entity
+					this.x = x
+					this.y = y
+				}
+			})
+			world.component('velocity', class {
+				onCreate(entity, x = 0, y = 0) {
+					this.entity = entity
+					this.x = x
+					this.y = y
+				}
+			})
+			world.component('sprite', class {
+				onCreate(entity, texture) {
+					this.entity = entity
+					this.texture = texture
+				}
+
+				onRemove() {
+					g.entity.set('sideEffect', ++g.count)
+				}
+			})
+
+			const REPEAT = 3
+
+			for (let i = 0; i < REPEAT; ++i) {
+
+				g.count = 0
+
+				// Create test entities
+				world.entity().set('noOtherComponents', 0)
+				world.entity().set('position', 1)
+				g.entity = world.entity().set('velocity', 2)
+				world.entity().set('sprite', 'three')
+				world.entity().set('position', 4).set('velocity', 4)
+				world.entity().set('position', 5).set('velocity', 5).set('sprite', 'five')
+				world.entity().set('position', 6).set('sprite', 'six')
+				world.entity().set('velocity', 7).set('sprite', 'seven')
+
+				// Ensure initial indexes are good
+				for (let i = 0; i < REPEAT; ++i) {
+					assert(world.get('noOtherComponents').length === 1)
+					assert(world.get('sideEffect').length === 0)
+					assert(world.get('sprite').length === 4)
+					assert(world.get('velocity').length === 4)
+					assert(world.get().length === 8)
+					assert(world.get('position').length === 4)
+					assert(world.get('position', 'velocity').length === 2)
+					assert(world.get('position', 'sprite').length === 2)
+					assert(world.get('position', 'velocity', 'sprite').length === 1)
+					assert(world.get('velocity', 'sprite').length === 2)
+				}
+
+				// Remove test entities, create more test entities
+				let count = 0
+				world.every(['sprite'], (sprite, entity) => { ++count; entity.destroy() })
+				assert(count === 4)
+
+				count = 0
+				world.every(['sprite'], (sprite, entity) => { ++count; entity.destroy() })
+				assert(count === 0)
+
+
+				assert(g.count === 4)
+
+				// Ensure indexes are still good
+				for (let i = 0; i < REPEAT; ++i) {
+					assert(world.get().length === 4)
+					assert(world.get('noOtherComponents').length === 1)
+					assert(world.get('sideEffect').length === 1)
+					assert(world.get('sprite').length === 0)
+					assert(world.get('velocity').length === 2)
+					assert(world.get('position').length === 2)
+				}
+
+				count = 0
+				world.every(['velocity'], (velocity, entity) => { ++count; entity.destroy() })
+				assert(count === 2)
+
+				count = 0
+				world.every(['velocity'], (velocity, entity) => { ++count; entity.destroy() })
+				assert(count === 0)
+
+				// Ensure indexes are still good
+				for (let i = 0; i < REPEAT; ++i) {
+					assert(world.get().length === 2)
+					assert(world.get('noOtherComponents').length === 1)
+					assert(world.get('sideEffect').length === 0)
+					assert(world.get('sprite').length === 0)
+					assert(world.get('velocity').length === 0)
+					assert(world.get('position').length === 1)
+				}
+
+				count = 0
+				world.every(['position'], (position, entity) => { ++count; entity.destroy() })
+				assert(count === 1)
+
+				count = 0
+				world.every(['position'], (position, entity) => { ++count; entity.destroy() })
+				assert(count === 0)
+
+				world.get('noOtherComponents')[0].destroy()
+
+				// Ensure new indexes are good
+				for (let i = 0; i < REPEAT; ++i) {
+					assert(world.get().length === 0)
+					assert(world.get('noOtherComponents').length === 0)
+					assert(world.get('sideEffect').length === 0)
+					assert(world.get('sprite').length === 0)
+					assert(world.get('velocity').length === 0)
+					assert(world.get('position').length === 0)
+				}
+			}
+		})
 		it('system variadic arguments with optional components', function() {
 			let world = new World()
 
