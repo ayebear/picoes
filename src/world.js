@@ -5,8 +5,7 @@ const { invoke, isFunction } = require('./utilities.js')
 const { Entity } = require('./entity.js')
 
 /** @ignore */
-// const { SimpleIndex } = require('./simple_index.js')
-const { MemoizedQueryIndex } = require('./memoized_query_index.js')
+const { SimpleIndex } = require('./simple_index.js')
 
 /**
  * Class for world.
@@ -19,7 +18,7 @@ class World {
 	 *
 	 * @param      {Function}  [indexer=SimpleIndex]  The indexer to use. Default is SimpleIndex. Can use MemoizedQueryIndex if better querying performance is needed, for increased component creation/removal costs.
 	 */
-	constructor(indexer = MemoizedQueryIndex) {
+	constructor(indexer = SimpleIndex) {
 		/** @ignore */
 		this.systems = []
 
