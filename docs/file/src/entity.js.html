@@ -30,6 +30,8 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/entity.js~Entity.html">Entity</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/memoized_query_index.js~MemoizedQueryIndex.html">MemoizedQueryIndex</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/simple_index.js~SimpleIndex.html">SimpleIndex</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/world.js~World.html">World</a></span></span></li>
 </ul>
 </div>
@@ -173,7 +175,7 @@ class Entity {
 
 		// Update the index with this new component
 		if (this.valid()) {
-			this.world.index.addEntity(this)
+			this.world.index.add(this, component)
 		}
 
 		// Call custom onCreate to initialize component, pass the entity (this), and any additional arguments passed into set()
@@ -246,9 +248,9 @@ class Entity {
 	 * @return {Object} The original entity that removeAll() was called on, so that operations can be chained.
 	 */
 	removeAll() {
-		this.remove(...Object.keys(this.data))
+		this.remove(...this.components)
 
-		if (Object.keys(this.data).length &gt; 0) {
+		if (this.components.length &gt; 0) {
 			throw new Error(&apos;Failed to remove all components. Components must have been added during the removeAll().&apos;)
 		}
 
@@ -266,13 +268,27 @@ class Entity {
 		this.removeAll()
 
 		if (this.valid()) {
-			// Remove from the index, to update match all index
-			this.world.index.remove(this)
+			// Remove entity from the index, to update match all index
+			this.world.index.removeEntity(this)
 
 			// Remove from world
 			this.world.entities.delete(this._id)
 			this._id = undefined
 		}
+	}
+
+	/**
+	 * Returns an array of component names this entity currently has.
+	 *
+	 * @return {Array&lt;String&gt;} Array of component names.
+	 */
+	get components() {
+		return Object.keys(this.data)
+	}
+
+	/** @ignore */
+	set components(c) {
+		throw new Error(&apos;Cannot set components in this way. See entity.set().&apos;)
 	}
 
 	/**

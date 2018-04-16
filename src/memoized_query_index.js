@@ -1,29 +1,44 @@
-/** @ignore */
-class ComponentIndex {
-	constructor(entities) {
-		this.clear(entities)
+/**
+ * An alternative indexer class to SimpleIndex. This has true O(1) queries (when memoized), for the cost
+ * of slower component add/remove operations. As more queries are made, the slower add/remove become.
+ *
+ * @class      MemoizedQueryIndex (name)
+ */
+class MemoizedQueryIndex {
+	constructor(world) {
+		this.world = world
+		this.clear()
 	}
 
 	// Removes everything from the index
-	clear(entities) {
-		this.entities = entities
+	clear() {
 		this.index = {}
 	}
 
 	// Uses an existing index or builds a new index, to return entities with the specified components
-	query(componentNames = []) {
+	*query(...componentNames) {
+		// Return all entities
+		if (componentNames.length === 0) {
+			yield* this.world.entities.values()
+			return
+		}
+
+		// Hash the component list
 		let hash = this.hashComponents(componentNames)
 
+		// Return already existing index
 		if (hash in this.index) {
-			return this.index[hash].entities
-		} else {
-			return this.build(hash, componentNames).entities
+			yield* this.index[hash].entities.values()
+			return
 		}
+
+		// Build new index for this component list
+		yield* this.build(hash, componentNames).entities.values()
 	}
 
 	// Creates a hash from an array of component names
 	hashComponents(names) {
-		return JSON.stringify(names.concat().sort())
+		return JSON.stringify(names.sort())
 	}
 
 	// Builds an initial index for a set of components
@@ -31,7 +46,7 @@ class ComponentIndex {
 	build(hash, componentNames) {
 		let matchingEntities = new Map()
 
-		for (const [entityId, entity] of this.entities) {
+		for (const [entityId, entity] of this.world.entities) {
 			// Ensure entity contains all specified components
 			if (entity.has(...componentNames)) {
 				// Add entity to index
@@ -45,26 +60,22 @@ class ComponentIndex {
 		}
 	}
 
-	// Checks if the current index group is supposed to match all entities
-	isMatchAllGroup(componentNames, group) {
-		return (componentNames.length === 0 && group.components.size === 0)
-	}
-
-	// Add an entity and all of its components to the index
-	addEntity(entity) {
-		const componentNames = Object.keys(entity.data)
-
+	// Must use all component names
+	add(entity) {
 		for (let hash in this.index) {
 			const group = this.index[hash]
 
 			// Check if the entity has all of the components of the index group
-			const hasAll = entity.has(...group.components)
-
-			// Add the entity
-			if (hasAll || this.isMatchAllGroup(componentNames, group)) {
+			if (entity.has(...group.components)) {
+				// Add the entity
 				group.entities.set(entity.id, entity)
 			}
 		}
+	}
+
+	// Add an entity and all of its components to the index
+	addEntity(entity) {
+		this.add(entity)
 	}
 
 	// Remove certain components from the index for an entity
@@ -73,10 +84,8 @@ class ComponentIndex {
 			const group = this.index[hash]
 
 			// Check if index group has any of the components that the entity has
-			const hasAny = componentNames.some(name => group.components.has(name))
-
-			// Remove the entity
-			if (hasAny || this.isMatchAllGroup(componentNames, group)) {
+			if (componentNames.some(name => group.components.has(name))) {
+				// Remove the entity
 				group.entities.delete(entity.id)
 			}
 		}
@@ -84,8 +93,8 @@ class ComponentIndex {
 
 	// Remove an entity and all of its components from the index
 	removeEntity(entity) {
-		this.remove(entity, ...Object.keys(entity.data))
+		this.remove(entity, ...entity.components)
 	}
 }
 
-exports.ComponentIndex = ComponentIndex
+exports.MemoizedQueryIndex = MemoizedQueryIndex

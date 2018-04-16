@@ -30,6 +30,8 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/entity.js~Entity.html">Entity</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/memoized_query_index.js~MemoizedQueryIndex.html">MemoizedQueryIndex</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/simple_index.js~SimpleIndex.html">SimpleIndex</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/world.js~World.html">World</a></span></span></li>
 </ul>
 </div>
@@ -95,7 +97,7 @@
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-constructor-constructor">constructor</a></span></span><span class="code" data-ice="signature">()</span>
+          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-constructor-constructor">constructor</a></span></span><span class="code" data-ice="signature">(indexer: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>)</span>
         </p>
       </div>
       <div>
@@ -398,11 +400,11 @@ Simplified version of every(), returns an actual array, and only takes component
     
     
     
-    <span class="code" data-ice="name">constructor</span><span class="code" data-ice="signature">()</span>
+    <span class="code" data-ice="name">constructor</span><span class="code" data-ice="signature">(indexer: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber19">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber21">source</a></span></span>
     </span>
   </h3>
 
@@ -414,7 +416,25 @@ Simplified version of every(), returns an actual array, and only takes component
 
   
 
-  <div data-ice="properties">
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">indexer</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li>
+<li>default: SimpleIndex</li></ul></td>
+      <td data-ice="description"><p>The indexer to use. Default is SimpleIndex. Can use MemoizedQueryIndex if better querying performance is needed, for increased component creation/removal costs.</p>
+</td>
+    </tr>
+</tbody>
+  </table>
+</div>
 </div>
 
   
@@ -450,7 +470,7 @@ Simplified version of every(), returns an actual array, and only takes component
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber52">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber54">source</a></span></span>
     </span>
   </h3>
 
@@ -502,7 +522,7 @@ Does not affect registered systems, components, or prototypes.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber93">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber95">source</a></span></span>
     </span>
   </h3>
 
@@ -605,7 +625,7 @@ world.entity().set(&apos;myComponent&apos;, 10, 500)</code></pre>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber114">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber116">source</a></span></span>
     </span>
   </h3>
 
@@ -690,7 +710,7 @@ world.entity().set(&apos;myComponent&apos;, 10, 500)</code></pre>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber263">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber265">source</a></span></span>
     </span>
   </h3>
 
@@ -743,7 +763,7 @@ has ALL of the specified components, but does not check for additional component
       <tbody>
         <tr>
           <td class="return-type code" data-ice="returnType"><span>MapIterator</span></td>
-          <td class="return-desc" data-ice="returnDescription"><p>An iterator to the entities themselves</p>
+          <td class="return-desc" data-ice="returnDescription"><p>If no callback specified, then a generator to the entities themselves. Otherwise, returns undefined.</p>
 </td>
         </tr>
       </tbody>
@@ -875,7 +895,7 @@ Simplified version of every(), returns an actual array, and only takes component
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber204">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber206">source</a></span></span>
     </span>
   </h3>
 
@@ -1030,7 +1050,7 @@ being the prototype names. Can also be a JSON formatted string.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber231">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber233">source</a></span></span>
     </span>
   </h3>
 
@@ -1112,7 +1132,7 @@ world.system(systemB)
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber171">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber173">source</a></span></span>
     </span>
   </h3>
 

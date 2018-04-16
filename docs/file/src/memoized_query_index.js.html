@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/memoized_query_index.js | picoes</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="Pico Entity System for JavaScript (ES6)."><meta property="twitter:card" content="summary"><meta property="twitter:title" content="picoes"><meta property="twitter:description" content="Pico Entity System for JavaScript (ES6)."></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/ayebear/picoes"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/entity.js~Entity.html">Entity</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/memoized_query_index.js~MemoizedQueryIndex.html">MemoizedQueryIndex</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/simple_index.js~SimpleIndex.html">SimpleIndex</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/world.js~World.html">World</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/memoized_query_index.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+ * An alternative indexer class to SimpleIndex. This has true O(1) queries (when memoized), for the cost
+ * of slower component add/remove operations. As more queries are made, the slower add/remove become.
+ *
+ * @class      MemoizedQueryIndex (name)
+ */
+class MemoizedQueryIndex {
+	constructor(world) {
+		this.world = world
+		this.clear()
+	}
+
+	// Removes everything from the index
+	clear() {
+		this.index = {}
+	}
+
+	// Uses an existing index or builds a new index, to return entities with the specified components
+	*query(...componentNames) {
+		// Return all entities
+		if (componentNames.length === 0) {
+			yield* this.world.entities.values()
+			return
+		}
+
+		// Hash the component list
+		let hash = this.hashComponents(componentNames)
+
+		// Return already existing index
+		if (hash in this.index) {
+			yield* this.index[hash].entities.values()
+			return
+		}
+
+		// Build new index for this component list
+		yield* this.build(hash, componentNames).entities.values()
+	}
+
+	// Creates a hash from an array of component names
+	hashComponents(names) {
+		return JSON.stringify(names.sort())
+	}
+
+	// Builds an initial index for a set of components
+	// These indexes are expected to be updated when doing entity/component operations
+	build(hash, componentNames) {
+		let matchingEntities = new Map()
+
+		for (const [entityId, entity] of this.world.entities) {
+			// Ensure entity contains all specified components
+			if (entity.has(...componentNames)) {
+				// Add entity to index
+				matchingEntities.set(entity.id, entity)
+			}
+		}
+
+		return this.index[hash] = {
+			components: new Set(componentNames),
+			entities: matchingEntities
+		}
+	}
+
+	// Must use all component names
+	add(entity) {
+		for (let hash in this.index) {
+			const group = this.index[hash]
+
+			// Check if the entity has all of the components of the index group
+			if (entity.has(...group.components)) {
+				// Add the entity
+				group.entities.set(entity.id, entity)
+			}
+		}
+	}
+
+	// Add an entity and all of its components to the index
+	addEntity(entity) {
+		this.add(entity)
+	}
+
+	// Remove certain components from the index for an entity
+	remove(entity, ...componentNames) {
+		for (let hash in this.index) {
+			const group = this.index[hash]
+
+			// Check if index group has any of the components that the entity has
+			if (componentNames.some(name =&gt; group.components.has(name))) {
+				// Remove the entity
+				group.entities.delete(entity.id)
+			}
+		}
+	}
+
+	// Remove an entity and all of its components from the index
+	removeEntity(entity) {
+		this.remove(entity, ...entity.components)
+	}
+}
+
+exports.MemoizedQueryIndex = MemoizedQueryIndex
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.4)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>
