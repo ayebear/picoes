@@ -1915,7 +1915,7 @@
     "__docId__": 107,
     "kind": "file",
     "name": "src/world.js",
-    "content": "/** @ignore */\nconst { invoke, isFunction } = require('./utilities.js')\n\n/** @ignore */\nconst { Entity } = require('./entity.js')\n\n/** @ignore */\n// const { SimpleIndex } = require('./simple_index.js')\nconst { MemoizedQueryIndex } = require('./memoized_query_index.js')\n\n/**\n * Class for world.\n *\n * @class      World (name)\n */\nclass World {\n\t/**\n\t * Constructs an instance of the world.\n\t *\n\t * @param      {Function}  [indexer=SimpleIndex]  The indexer to use. Default is SimpleIndex. Can use MemoizedQueryIndex if better querying performance is needed, for increased component creation/removal costs.\n\t */\n\tconstructor(indexer = MemoizedQueryIndex) {\n\t\t/** @ignore */\n\t\tthis.systems = []\n\n\t\t/**\n\t\t * Maps entity IDs to entities\n\t\t * @ignore\n\t\t */\n\t\tthis.entities = new Map()\n\n\t\t/** @ignore */\n\t\tthis.components = {}\n\n\t\t/** @ignore */\n\t\tthis.entityTemplates = {}\n\n\t\t/** @ignore */\n\t\tthis.idCounter = 1\n\n\t\t/**\n\t\t * Maps entire queries to arrays of entities\n\t\t * @ignore\n\t\t */\n\t\tthis.index = new indexer(this)\n\t}\n\n\t/**\n\t * Removes all entities from the world.\n\t * Does not affect registered systems, components, or prototypes.\n\t *\n\t * @example\n\t * world.clear()\n\t */\n\tclear() {\n\t\t// Call onRemove on all components of all entities\n\t\tfor (const [entityId, entity] of this.entities) {\n\t\t\tfor (let componentName in entity.data) {\n\t\t\t\t// Get component, and call onRemove if it exists as a function\n\t\t\t\tlet component = entity.data[componentName]\n\t\t\t\tinvoke(component, 'onRemove')\n\t\t\t}\n\t\t}\n\n\t\t// Clear entities\n\t\tthis.entities = new Map()\n\t\tthis.index.clear()\n\t}\n\n\t/**\n\t * Registers a component type to the world. Components must be constructable. If the component has an onCreate(),\n\t * it is passed the entity first, then the rest of the arguments from methods like entity.set(). Also, components\n\t * can have an onRemove() method, which gets called when removing that component from an entity.\n\t *\n\t * @param {string}   name           - The name\n\t * @param {function} componentClass - The component class, must be a constructable class or function\n\t *\n\t * @example\n\t * world.component('myComponent', class {\n\t *     // It is highly recommended to use onCreate() over constructor(), because the component\n\t *     // will have already been added to the entity. In the constructor(), it is not safe to use\n\t *     // \"entity\" because it does not contain the current component while still in the constructor.\n\t *     onCreate(entity, some, args) {\n\t *         this.entity = entity\n\t *         this.some = some\n\t *         this.args = args\n\t *     }\n\t * })\n\t * // entity === the new entity object\n\t * // some === 10\n\t * // args === 500\n\t * world.entity().set('myComponent', 10, 500)\n\t *\n\t * @return {string} Registered component name on success, undefined on failure\n\t */\n\tcomponent(name, componentClass) {\n\t\t// Only allow functions and classes to be components\n\t\tif (isFunction(componentClass)) {\n\t\t\tthis.components[name] = componentClass\n\t\t\treturn name\n\t\t}\n\t}\n\n\t/**\n\t * Creates a new entity in the world\n\t *\n\t * @param {string} [name] - The prototype name to use\n\t *\n\t * @example\n\t * world.entity()\n\t *\n\t * @example\n\t * world.entity('Player')\n\t *\n\t * @return {Entity} The new entity created\n\t */\n\tentity(name) {\n\t\tlet entityId = this.idCounter++\n\t\tlet entity = new Entity(this, entityId)\n\n\t\t// Use 'name' to get prototype data (if specified)\n\t\tif (name && name in this.entityTemplates) {\n\t\t\t// Add all components from prototype\n\t\t\tlet template = this.entityTemplates[name]\n\t\t\tfor (let componentName in template) {\n\t\t\t\t// Update component with data from template\n\t\t\t\tlet newComponentData = JSON.parse(template[componentName])\n\t\t\t\tentity.update(componentName, newComponentData)\n\t\t\t}\n\t\t}\n\n\t\tthis.entities.set(entityId, entity)\n\t\treturn entity\n\t}\n\n\t/**\n\t * Registers a system to the world.\n\t * The order the systems get registered, is the order then run in.\n\t *\n\t * @example\n\t * // Movement system\n\t * world.system(['position', 'velocity'], class {\n\t *      constructor(context) {\n\t *          // This is showing how you can optionally pass parameters to the system's constructor\n\t *          this.context = context\n\t *      }\n\t *      every(position, velocity, entity) {\n\t *          position.x += velocity.x\n\t *          position.y += velocity.y\n\t *      }\n\t *  }, context)\n\t *\n\t * @example\n\t * // System that doesn't use every()\n\t * world.system(class {\n\t *      constructor(context) {\n\t *          this.context = context\n\t *      }\n\t *      pre() {\n\t *          // Handle events or something\n\t *      }\n\t *  }, context)\n\t *\n\t * @param {...Object} args - Both signatures are accepted: (components, systemClass, ...args) or (systemClass, ...args).\n\t *\n\t * **[components]**: The list of components the system will process in every(). This follows the same logic as entity.has() and world.every().\n\t *\n\t * **{systemClass}**: The system class to instantiate. Can contain the following methods: constructor, initialize, pre, every, post. Pre() and post() get called before and after every(), for each of the independent systems. See world.run() for an example of the call order.\n\t *\n\t * **[...args]**: The arguments to forward to the system's constructors.\n\t *\n\t * @return {number} Unique ID of the system on success or undefined on failure\n\t */\n\tsystem(...args) {\n\t\t// Get components and systemClass from arguments\n\t\tlet components = []\n\t\tlet systemClass, rest\n\t\tif (Array.isArray(args[0])) {\n\t\t\tcomponents = args[0]\n\t\t\tsystemClass = args[1]\n\t\t\trest = args.slice(2)\n\t\t} else {\n\t\t\tsystemClass = args[0]\n\t\t\trest = args.slice(1)\n\t\t}\n\n\t\t// Make sure the system is valid\n\t\tif (isFunction(systemClass)) {\n\t\t\t// Create the system, and set the component array query\n\t\t\tlet newSystem = new systemClass(...rest)\n\t\t\tnewSystem.components = components\n\n\t\t\t// Add the system, return its ID\n\t\t\treturn this.systems.push(newSystem) - 1\n\t\t}\n\t\treturn undefined\n\t}\n\n\t/**\n\t * Calls initialize() on all systems\n\t *\n\t * @example\n\t * world.initialize(renderContext)\n\t *\n\t * @param {...Object} [args] - The arguments to forward to the systems' initialize() methods\n\t */\n\tinitialize(...args) {\n\t\tfor (let system of this.systems) {\n\t\t\tinvoke(system, 'initialize', ...args)\n\t\t}\n\t}\n\n\t/**\n\t * Calls pre(), every(), and post() on all systems\n\t *\n\t * @example\n\t * world.run(deltaTime)\n\t *\n\t * @example\n\t * // Example flow of method call order:\n\t * // Setup systems:\n\t * world.system(systemA)\n\t * world.system(systemB)\n\t * // During world.run():\n\t * // systemA.pre()\n\t * // systemA.every() * number of entities\n\t * // systemA.post()\n\t * // systemB.pre()\n\t * // systemB.every() * number of entities\n\t * // systemB.post()\n\t *\n\t * @param {...Object} [args] - The arguments to forward to the systems' methods\n\t */\n\trun(...args) {\n\t\tfor (let system of this.systems) {\n\t\t\tinvoke(system, 'pre', ...args)\n\n\t\t\t// Run the \"every\" method in the system\n\t\t\tif (isFunction(system.every)) {\n\t\t\t\tthis.every(system.components, system.every.bind(system), ...args)\n\t\t\t}\n\n\t\t\tinvoke(system, 'post', ...args)\n\t\t}\n\t}\n\n\t/**\n\t * Iterate through entities with the specified components\n\t *\n\t * @example\n\t * // Use a callback to process entities one-by-one\n\t * world.every(['comp'], comp => {comp.value = 0})\n\t *\n\t * @example\n\t * // Get an iterator for the entities\n\t * let it = world.every(['comp'])\n\t * for (let entity of it) {...}\n\t *\n\t * @param {Array}     componentNames - The component names to match entites with. This checks if the entity\n\t * has ALL of the specified components, but does not check for additional components.\n\t * @param {Function}  callback       - The callback to call for each entity. Takes (...components, entity, ...args).\n\t * @param {...Object} [args]         - Any additional arguments to pass to the callback.\n\t *\n\t * @return {MapIterator} If no callback specified, then a generator to the entities themselves. Otherwise, returns undefined.\n\t */\n\tevery(componentNames, callback, ...args) {\n\t\t// Get indexed map of entities\n\t\tlet entities = this.index.query(...componentNames)\n\n\t\tif (isFunction(callback)) {\n\t\t\t// Go through the map of entities\n\t\t\tfor (let entity of entities) {\n\n\t\t\t\t// Get all components as an array\n\t\t\t\tlet components = componentNames.map(name => entity.get(name))\n\n\t\t\t\t// Pass components, then the main entity, then any additional arguments\n\t\t\t\tlet status = callback(...components, entity, ...args)\n\n\t\t\t\t// Stop the iteration when the callback returns false\n\t\t\t\tif (status === false) {\n\t\t\t\t\tbreak\n\t\t\t\t}\n\t\t\t}\n\t\t} else {\n\t\t\treturn entities\n\t\t}\n\t}\n\n\t/**\n\t * Returns an array of entities with matching components\n\t * Simplified version of every(), returns an actual array, and only takes component names as arguments.\n\t *\n\t * @example\n\t * world.get('player', 'sprite')\n\t *\n\t * @param {Array} componentNames - The component names to match on. See every() for how this matches.\n\t *\n\t * @return {Array} Array of entities, instead of iterator like every().\n\t */\n\tget(...componentNames) {\n\t\treturn [...this.every(componentNames)]\n\t}\n\n\t/**\n\t * Registers entity prototype(s). Any existing prototype names that are the same will be overwritten\n\t *\n\t * @example\n\t * world.prototype({\n\t *     Movable: {\n\t *         position: {},\n\t *         velocity: {}\n\t *     }\n\t * })\n\t *\n\t * @param {Object} data - Object structure to register as a prototype. Should be a dictionary with the top level keys\n\t * being the prototype names. Can also be a JSON formatted string.\n\t *\n\t * @return {number} Number of prototypes added.\n\t */\n\tprototype(data) {\n\t\tlet count = 0\n\n\t\t// Convert to an object when given a string\n\t\tif (typeof data === 'string') {\n\t\t\tdata = JSON.parse(data)\n\t\t}\n\n\t\t// Data must be an object at this point\n\t\tif (typeof data === 'object') {\n\t\t\t// Iterate through prototype names\n\t\t\tfor (let protoName in data) {\n\t\t\t\tlet inputObject = data[protoName]\n\t\t\t\tlet protoObject = {}\n\t\t\t\t// Iterate through component names\n\t\t\t\tfor (let compName in inputObject) {\n\t\t\t\t\t// Store strings of each component\n\t\t\t\t\tprotoObject[compName] = JSON.stringify(inputObject[compName])\n\t\t\t\t}\n\t\t\t\tthis.entityTemplates[protoName] = protoObject\n\t\t\t\t++count\n\t\t\t}\n\t\t}\n\n\t\treturn count\n\t}\n}\n\nexports.World = World\n",
+    "content": "/** @ignore */\nconst { invoke, isFunction } = require('./utilities.js')\n\n/** @ignore */\nconst { Entity } = require('./entity.js')\n\n/** @ignore */\nconst { SimpleIndex } = require('./simple_index.js')\n\n/**\n * Class for world.\n *\n * @class      World (name)\n */\nclass World {\n\t/**\n\t * Constructs an instance of the world.\n\t *\n\t * @param      {Function}  [indexer=SimpleIndex]  The indexer to use. Default is SimpleIndex. Can use MemoizedQueryIndex if better querying performance is needed, for increased component creation/removal costs.\n\t */\n\tconstructor(indexer = SimpleIndex) {\n\t\t/** @ignore */\n\t\tthis.systems = []\n\n\t\t/**\n\t\t * Maps entity IDs to entities\n\t\t * @ignore\n\t\t */\n\t\tthis.entities = new Map()\n\n\t\t/** @ignore */\n\t\tthis.components = {}\n\n\t\t/** @ignore */\n\t\tthis.entityTemplates = {}\n\n\t\t/** @ignore */\n\t\tthis.idCounter = 1\n\n\t\t/**\n\t\t * Maps entire queries to arrays of entities\n\t\t * @ignore\n\t\t */\n\t\tthis.index = new indexer(this)\n\t}\n\n\t/**\n\t * Removes all entities from the world.\n\t * Does not affect registered systems, components, or prototypes.\n\t *\n\t * @example\n\t * world.clear()\n\t */\n\tclear() {\n\t\t// Call onRemove on all components of all entities\n\t\tfor (const [entityId, entity] of this.entities) {\n\t\t\tfor (let componentName in entity.data) {\n\t\t\t\t// Get component, and call onRemove if it exists as a function\n\t\t\t\tlet component = entity.data[componentName]\n\t\t\t\tinvoke(component, 'onRemove')\n\t\t\t}\n\t\t}\n\n\t\t// Clear entities\n\t\tthis.entities = new Map()\n\t\tthis.index.clear()\n\t}\n\n\t/**\n\t * Registers a component type to the world. Components must be constructable. If the component has an onCreate(),\n\t * it is passed the entity first, then the rest of the arguments from methods like entity.set(). Also, components\n\t * can have an onRemove() method, which gets called when removing that component from an entity.\n\t *\n\t * @param {string}   name           - The name\n\t * @param {function} componentClass - The component class, must be a constructable class or function\n\t *\n\t * @example\n\t * world.component('myComponent', class {\n\t *     // It is highly recommended to use onCreate() over constructor(), because the component\n\t *     // will have already been added to the entity. In the constructor(), it is not safe to use\n\t *     // \"entity\" because it does not contain the current component while still in the constructor.\n\t *     onCreate(entity, some, args) {\n\t *         this.entity = entity\n\t *         this.some = some\n\t *         this.args = args\n\t *     }\n\t * })\n\t * // entity === the new entity object\n\t * // some === 10\n\t * // args === 500\n\t * world.entity().set('myComponent', 10, 500)\n\t *\n\t * @return {string} Registered component name on success, undefined on failure\n\t */\n\tcomponent(name, componentClass) {\n\t\t// Only allow functions and classes to be components\n\t\tif (isFunction(componentClass)) {\n\t\t\tthis.components[name] = componentClass\n\t\t\treturn name\n\t\t}\n\t}\n\n\t/**\n\t * Creates a new entity in the world\n\t *\n\t * @param {string} [name] - The prototype name to use\n\t *\n\t * @example\n\t * world.entity()\n\t *\n\t * @example\n\t * world.entity('Player')\n\t *\n\t * @return {Entity} The new entity created\n\t */\n\tentity(name) {\n\t\tlet entityId = this.idCounter++\n\t\tlet entity = new Entity(this, entityId)\n\n\t\t// Use 'name' to get prototype data (if specified)\n\t\tif (name && name in this.entityTemplates) {\n\t\t\t// Add all components from prototype\n\t\t\tlet template = this.entityTemplates[name]\n\t\t\tfor (let componentName in template) {\n\t\t\t\t// Update component with data from template\n\t\t\t\tlet newComponentData = JSON.parse(template[componentName])\n\t\t\t\tentity.update(componentName, newComponentData)\n\t\t\t}\n\t\t}\n\n\t\tthis.entities.set(entityId, entity)\n\t\treturn entity\n\t}\n\n\t/**\n\t * Registers a system to the world.\n\t * The order the systems get registered, is the order then run in.\n\t *\n\t * @example\n\t * // Movement system\n\t * world.system(['position', 'velocity'], class {\n\t *      constructor(context) {\n\t *          // This is showing how you can optionally pass parameters to the system's constructor\n\t *          this.context = context\n\t *      }\n\t *      every(position, velocity, entity) {\n\t *          position.x += velocity.x\n\t *          position.y += velocity.y\n\t *      }\n\t *  }, context)\n\t *\n\t * @example\n\t * // System that doesn't use every()\n\t * world.system(class {\n\t *      constructor(context) {\n\t *          this.context = context\n\t *      }\n\t *      pre() {\n\t *          // Handle events or something\n\t *      }\n\t *  }, context)\n\t *\n\t * @param {...Object} args - Both signatures are accepted: (components, systemClass, ...args) or (systemClass, ...args).\n\t *\n\t * **[components]**: The list of components the system will process in every(). This follows the same logic as entity.has() and world.every().\n\t *\n\t * **{systemClass}**: The system class to instantiate. Can contain the following methods: constructor, initialize, pre, every, post. Pre() and post() get called before and after every(), for each of the independent systems. See world.run() for an example of the call order.\n\t *\n\t * **[...args]**: The arguments to forward to the system's constructors.\n\t *\n\t * @return {number} Unique ID of the system on success or undefined on failure\n\t */\n\tsystem(...args) {\n\t\t// Get components and systemClass from arguments\n\t\tlet components = []\n\t\tlet systemClass, rest\n\t\tif (Array.isArray(args[0])) {\n\t\t\tcomponents = args[0]\n\t\t\tsystemClass = args[1]\n\t\t\trest = args.slice(2)\n\t\t} else {\n\t\t\tsystemClass = args[0]\n\t\t\trest = args.slice(1)\n\t\t}\n\n\t\t// Make sure the system is valid\n\t\tif (isFunction(systemClass)) {\n\t\t\t// Create the system, and set the component array query\n\t\t\tlet newSystem = new systemClass(...rest)\n\t\t\tnewSystem.components = components\n\n\t\t\t// Add the system, return its ID\n\t\t\treturn this.systems.push(newSystem) - 1\n\t\t}\n\t\treturn undefined\n\t}\n\n\t/**\n\t * Calls initialize() on all systems\n\t *\n\t * @example\n\t * world.initialize(renderContext)\n\t *\n\t * @param {...Object} [args] - The arguments to forward to the systems' initialize() methods\n\t */\n\tinitialize(...args) {\n\t\tfor (let system of this.systems) {\n\t\t\tinvoke(system, 'initialize', ...args)\n\t\t}\n\t}\n\n\t/**\n\t * Calls pre(), every(), and post() on all systems\n\t *\n\t * @example\n\t * world.run(deltaTime)\n\t *\n\t * @example\n\t * // Example flow of method call order:\n\t * // Setup systems:\n\t * world.system(systemA)\n\t * world.system(systemB)\n\t * // During world.run():\n\t * // systemA.pre()\n\t * // systemA.every() * number of entities\n\t * // systemA.post()\n\t * // systemB.pre()\n\t * // systemB.every() * number of entities\n\t * // systemB.post()\n\t *\n\t * @param {...Object} [args] - The arguments to forward to the systems' methods\n\t */\n\trun(...args) {\n\t\tfor (let system of this.systems) {\n\t\t\tinvoke(system, 'pre', ...args)\n\n\t\t\t// Run the \"every\" method in the system\n\t\t\tif (isFunction(system.every)) {\n\t\t\t\tthis.every(system.components, system.every.bind(system), ...args)\n\t\t\t}\n\n\t\t\tinvoke(system, 'post', ...args)\n\t\t}\n\t}\n\n\t/**\n\t * Iterate through entities with the specified components\n\t *\n\t * @example\n\t * // Use a callback to process entities one-by-one\n\t * world.every(['comp'], comp => {comp.value = 0})\n\t *\n\t * @example\n\t * // Get an iterator for the entities\n\t * let it = world.every(['comp'])\n\t * for (let entity of it) {...}\n\t *\n\t * @param {Array}     componentNames - The component names to match entites with. This checks if the entity\n\t * has ALL of the specified components, but does not check for additional components.\n\t * @param {Function}  callback       - The callback to call for each entity. Takes (...components, entity, ...args).\n\t * @param {...Object} [args]         - Any additional arguments to pass to the callback.\n\t *\n\t * @return {MapIterator} If no callback specified, then a generator to the entities themselves. Otherwise, returns undefined.\n\t */\n\tevery(componentNames, callback, ...args) {\n\t\t// Get indexed map of entities\n\t\tlet entities = this.index.query(...componentNames)\n\n\t\tif (isFunction(callback)) {\n\t\t\t// Go through the map of entities\n\t\t\tfor (let entity of entities) {\n\n\t\t\t\t// Get all components as an array\n\t\t\t\tlet components = componentNames.map(name => entity.get(name))\n\n\t\t\t\t// Pass components, then the main entity, then any additional arguments\n\t\t\t\tlet status = callback(...components, entity, ...args)\n\n\t\t\t\t// Stop the iteration when the callback returns false\n\t\t\t\tif (status === false) {\n\t\t\t\t\tbreak\n\t\t\t\t}\n\t\t\t}\n\t\t} else {\n\t\t\treturn entities\n\t\t}\n\t}\n\n\t/**\n\t * Returns an array of entities with matching components\n\t * Simplified version of every(), returns an actual array, and only takes component names as arguments.\n\t *\n\t * @example\n\t * world.get('player', 'sprite')\n\t *\n\t * @param {Array} componentNames - The component names to match on. See every() for how this matches.\n\t *\n\t * @return {Array} Array of entities, instead of iterator like every().\n\t */\n\tget(...componentNames) {\n\t\treturn [...this.every(componentNames)]\n\t}\n\n\t/**\n\t * Registers entity prototype(s). Any existing prototype names that are the same will be overwritten\n\t *\n\t * @example\n\t * world.prototype({\n\t *     Movable: {\n\t *         position: {},\n\t *         velocity: {}\n\t *     }\n\t * })\n\t *\n\t * @param {Object} data - Object structure to register as a prototype. Should be a dictionary with the top level keys\n\t * being the prototype names. Can also be a JSON formatted string.\n\t *\n\t * @return {number} Number of prototypes added.\n\t */\n\tprototype(data) {\n\t\tlet count = 0\n\n\t\t// Convert to an object when given a string\n\t\tif (typeof data === 'string') {\n\t\t\tdata = JSON.parse(data)\n\t\t}\n\n\t\t// Data must be an object at this point\n\t\tif (typeof data === 'object') {\n\t\t\t// Iterate through prototype names\n\t\t\tfor (let protoName in data) {\n\t\t\t\tlet inputObject = data[protoName]\n\t\t\t\tlet protoObject = {}\n\t\t\t\t// Iterate through component names\n\t\t\t\tfor (let compName in inputObject) {\n\t\t\t\t\t// Store strings of each component\n\t\t\t\t\tprotoObject[compName] = JSON.stringify(inputObject[compName])\n\t\t\t\t}\n\t\t\t\tthis.entityTemplates[protoName] = protoObject\n\t\t\t\t++count\n\t\t\t}\n\t\t}\n\n\t\treturn count\n\t}\n}\n\nexports.World = World\n",
     "static": true,
     "longname": "/srv/http/picoes/src/world.js",
     "access": "public",
@@ -1965,16 +1965,16 @@
   {
     "__docId__": 110,
     "kind": "variable",
-    "name": "MemoizedQueryIndex",
+    "name": "SimpleIndex",
     "memberof": "src/world.js",
     "static": true,
-    "longname": "src/world.js~MemoizedQueryIndex",
+    "longname": "src/world.js~SimpleIndex",
     "access": "public",
     "export": false,
     "importPath": "picoes/src/world.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 9,
+    "lineNumber": 8,
     "ignore": true,
     "type": {
       "types": [
@@ -1994,7 +1994,7 @@
     "importPath": "picoes/src/world.js",
     "importStyle": null,
     "description": "Class for world.",
-    "lineNumber": 16,
+    "lineNumber": 15,
     "unknown": [
       {
         "tagName": "@class",
@@ -2014,7 +2014,7 @@
     "longname": "src/world.js~World#constructor",
     "access": "public",
     "description": "Constructs an instance of the world.",
-    "lineNumber": 22,
+    "lineNumber": 21,
     "params": [
       {
         "nullable": null,
@@ -2039,7 +2039,7 @@
     "longname": "src/world.js~World#systems",
     "access": "public",
     "description": null,
-    "lineNumber": 24,
+    "lineNumber": 23,
     "ignore": true,
     "type": {
       "types": [
@@ -2056,7 +2056,7 @@
     "longname": "src/world.js~World#entities",
     "access": "public",
     "description": "Maps entity IDs to entities",
-    "lineNumber": 30,
+    "lineNumber": 29,
     "ignore": true,
     "type": {
       "types": [
@@ -2073,7 +2073,7 @@
     "longname": "src/world.js~World#components",
     "access": "public",
     "description": null,
-    "lineNumber": 33,
+    "lineNumber": 32,
     "ignore": true,
     "type": {
       "types": [
@@ -2090,7 +2090,7 @@
     "longname": "src/world.js~World#entityTemplates",
     "access": "public",
     "description": null,
-    "lineNumber": 36,
+    "lineNumber": 35,
     "ignore": true,
     "type": {
       "types": [
@@ -2107,7 +2107,7 @@
     "longname": "src/world.js~World#idCounter",
     "access": "public",
     "description": null,
-    "lineNumber": 39,
+    "lineNumber": 38,
     "ignore": true,
     "type": {
       "types": [
@@ -2124,7 +2124,7 @@
     "longname": "src/world.js~World#index",
     "access": "public",
     "description": "Maps entire queries to arrays of entities",
-    "lineNumber": 45,
+    "lineNumber": 44,
     "ignore": true,
     "type": {
       "types": [
@@ -2146,7 +2146,7 @@
     "examples": [
       "world.clear()"
     ],
-    "lineNumber": 55,
+    "lineNumber": 54,
     "params": [],
     "return": null
   },
@@ -2164,7 +2164,7 @@
     "examples": [
       "world.component('myComponent', class {\n    // It is highly recommended to use onCreate() over constructor(), because the component\n    // will have already been added to the entity. In the constructor(), it is not safe to use\n    // \"entity\" because it does not contain the current component while still in the constructor.\n    onCreate(entity, some, args) {\n        this.entity = entity\n        this.some = some\n        this.args = args\n    }\n})\n// entity === the new entity object\n// some === 10\n// args === 500\nworld.entity().set('myComponent', 10, 500)"
     ],
-    "lineNumber": 96,
+    "lineNumber": 95,
     "params": [
       {
         "nullable": null,
@@ -2211,7 +2211,7 @@
       "world.entity()",
       "world.entity('Player')"
     ],
-    "lineNumber": 117,
+    "lineNumber": 116,
     "params": [
       {
         "nullable": null,
@@ -2248,7 +2248,7 @@
       "// Movement system\nworld.system(['position', 'velocity'], class {\n     constructor(context) {\n         // This is showing how you can optionally pass parameters to the system's constructor\n         this.context = context\n     }\n     every(position, velocity, entity) {\n         position.x += velocity.x\n         position.y += velocity.y\n     }\n }, context)",
       "// System that doesn't use every()\nworld.system(class {\n     constructor(context) {\n         this.context = context\n     }\n     pre() {\n         // Handle events or something\n     }\n }, context)"
     ],
-    "lineNumber": 174,
+    "lineNumber": 173,
     "params": [
       {
         "nullable": null,
@@ -2284,7 +2284,7 @@
     "examples": [
       "world.initialize(renderContext)"
     ],
-    "lineNumber": 207,
+    "lineNumber": 206,
     "params": [
       {
         "nullable": null,
@@ -2314,7 +2314,7 @@
       "world.run(deltaTime)",
       "// Example flow of method call order:\n// Setup systems:\nworld.system(systemA)\nworld.system(systemB)\n// During world.run():\n// systemA.pre()\n// systemA.every() * number of entities\n// systemA.post()\n// systemB.pre()\n// systemB.every() * number of entities\n// systemB.post()"
     ],
-    "lineNumber": 234,
+    "lineNumber": 233,
     "params": [
       {
         "nullable": null,
@@ -2344,7 +2344,7 @@
       "// Use a callback to process entities one-by-one\nworld.every(['comp'], comp => {comp.value = 0})",
       "// Get an iterator for the entities\nlet it = world.every(['comp'])\nfor (let entity of it) {...}"
     ],
-    "lineNumber": 266,
+    "lineNumber": 265,
     "params": [
       {
         "nullable": null,
@@ -2400,7 +2400,7 @@
     "examples": [
       "world.get('player', 'sprite')"
     ],
-    "lineNumber": 301,
+    "lineNumber": 300,
     "params": [
       {
         "nullable": null,
@@ -2436,7 +2436,7 @@
     "examples": [
       "world.prototype({\n    Movable: {\n        position: {},\n        velocity: {}\n    }\n})"
     ],
-    "lineNumber": 321,
+    "lineNumber": 320,
     "params": [
       {
         "nullable": null,
