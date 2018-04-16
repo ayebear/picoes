@@ -6,6 +6,18 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
+    "picoes/src/memoized_query_index.js~memoizedqueryindex",
+    "class/src/memoized_query_index.js~MemoizedQueryIndex.html",
+    "<span>MemoizedQueryIndex</span> <span class=\"search-result-import-path\">picoes/src/memoized_query_index.js</span>",
+    "class"
+  ],
+  [
+    "picoes/src/simple_index.js~simpleindex",
+    "class/src/simple_index.js~SimpleIndex.html",
+    "<span>SimpleIndex</span> <span class=\"search-result-import-path\">picoes/src/simple_index.js</span>",
+    "class"
+  ],
+  [
     "picoes/src/world.js~world",
     "class/src/world.js~World.html",
     "<span>World</span> <span class=\"search-result-import-path\">picoes/src/world.js</span>",
@@ -294,12 +306,6 @@ window.esdocSearchIndex = [
     "external"
   ],
   [
-    "src/component_index.js",
-    "file/src/component_index.js.html",
-    "src/component_index.js",
-    "file"
-  ],
-  [
     "src/entity.js",
     "file/src/entity.js.html",
     "src/entity.js",
@@ -316,6 +322,12 @@ window.esdocSearchIndex = [
     "class/src/entity.js~Entity.html#instance-method-attach",
     "src/entity.js~Entity#attach",
     "method"
+  ],
+  [
+    "src/entity.js~entity#components",
+    "class/src/entity.js~Entity.html#instance-get-components",
+    "src/entity.js~Entity#components",
+    "member"
   ],
   [
     "src/entity.js~entity#constructor",
@@ -355,13 +367,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/entity.js~entity#id",
-    "class/src/entity.js~Entity.html#instance-get-id",
+    "class/src/entity.js~Entity.html#instance-set-id",
     "src/entity.js~Entity#id",
     "member"
   ],
   [
     "src/entity.js~entity#id",
-    "class/src/entity.js~Entity.html#instance-set-id",
+    "class/src/entity.js~Entity.html#instance-get-id",
     "src/entity.js~Entity#id",
     "member"
   ],
@@ -406,6 +418,144 @@ window.esdocSearchIndex = [
     "class/src/entity.js~Entity.html#instance-method-valid",
     "src/entity.js~Entity#valid",
     "method"
+  ],
+  [
+    "src/memoized_query_index.js",
+    "file/src/memoized_query_index.js.html",
+    "src/memoized_query_index.js",
+    "file"
+  ],
+  [
+    "src/memoized_query_index.js~memoizedqueryindex#add",
+    "class/src/memoized_query_index.js~MemoizedQueryIndex.html#instance-method-add",
+    "src/memoized_query_index.js~MemoizedQueryIndex#add",
+    "method"
+  ],
+  [
+    "src/memoized_query_index.js~memoizedqueryindex#addentity",
+    "class/src/memoized_query_index.js~MemoizedQueryIndex.html#instance-method-addEntity",
+    "src/memoized_query_index.js~MemoizedQueryIndex#addEntity",
+    "method"
+  ],
+  [
+    "src/memoized_query_index.js~memoizedqueryindex#build",
+    "class/src/memoized_query_index.js~MemoizedQueryIndex.html#instance-method-build",
+    "src/memoized_query_index.js~MemoizedQueryIndex#build",
+    "method"
+  ],
+  [
+    "src/memoized_query_index.js~memoizedqueryindex#clear",
+    "class/src/memoized_query_index.js~MemoizedQueryIndex.html#instance-method-clear",
+    "src/memoized_query_index.js~MemoizedQueryIndex#clear",
+    "method"
+  ],
+  [
+    "src/memoized_query_index.js~memoizedqueryindex#constructor",
+    "class/src/memoized_query_index.js~MemoizedQueryIndex.html#instance-constructor-constructor",
+    "src/memoized_query_index.js~MemoizedQueryIndex#constructor",
+    "method"
+  ],
+  [
+    "src/memoized_query_index.js~memoizedqueryindex#hashcomponents",
+    "class/src/memoized_query_index.js~MemoizedQueryIndex.html#instance-method-hashComponents",
+    "src/memoized_query_index.js~MemoizedQueryIndex#hashComponents",
+    "method"
+  ],
+  [
+    "src/memoized_query_index.js~memoizedqueryindex#index",
+    "class/src/memoized_query_index.js~MemoizedQueryIndex.html#instance-member-index",
+    "src/memoized_query_index.js~MemoizedQueryIndex#index",
+    "member"
+  ],
+  [
+    "src/memoized_query_index.js~memoizedqueryindex#query",
+    "class/src/memoized_query_index.js~MemoizedQueryIndex.html#instance-method-query",
+    "src/memoized_query_index.js~MemoizedQueryIndex#query",
+    "method"
+  ],
+  [
+    "src/memoized_query_index.js~memoizedqueryindex#remove",
+    "class/src/memoized_query_index.js~MemoizedQueryIndex.html#instance-method-remove",
+    "src/memoized_query_index.js~MemoizedQueryIndex#remove",
+    "method"
+  ],
+  [
+    "src/memoized_query_index.js~memoizedqueryindex#removeentity",
+    "class/src/memoized_query_index.js~MemoizedQueryIndex.html#instance-method-removeEntity",
+    "src/memoized_query_index.js~MemoizedQueryIndex#removeEntity",
+    "method"
+  ],
+  [
+    "src/memoized_query_index.js~memoizedqueryindex#world",
+    "class/src/memoized_query_index.js~MemoizedQueryIndex.html#instance-member-world",
+    "src/memoized_query_index.js~MemoizedQueryIndex#world",
+    "member"
+  ],
+  [
+    "src/simple_index.js",
+    "file/src/simple_index.js.html",
+    "src/simple_index.js",
+    "file"
+  ],
+  [
+    "src/simple_index.js~simpleindex#access",
+    "class/src/simple_index.js~SimpleIndex.html#instance-method-access",
+    "src/simple_index.js~SimpleIndex#access",
+    "method"
+  ],
+  [
+    "src/simple_index.js~simpleindex#add",
+    "class/src/simple_index.js~SimpleIndex.html#instance-method-add",
+    "src/simple_index.js~SimpleIndex#add",
+    "method"
+  ],
+  [
+    "src/simple_index.js~simpleindex#addentity",
+    "class/src/simple_index.js~SimpleIndex.html#instance-method-addEntity",
+    "src/simple_index.js~SimpleIndex#addEntity",
+    "method"
+  ],
+  [
+    "src/simple_index.js~simpleindex#clear",
+    "class/src/simple_index.js~SimpleIndex.html#instance-method-clear",
+    "src/simple_index.js~SimpleIndex#clear",
+    "method"
+  ],
+  [
+    "src/simple_index.js~simpleindex#constructor",
+    "class/src/simple_index.js~SimpleIndex.html#instance-constructor-constructor",
+    "src/simple_index.js~SimpleIndex#constructor",
+    "method"
+  ],
+  [
+    "src/simple_index.js~simpleindex#index",
+    "class/src/simple_index.js~SimpleIndex.html#instance-member-index",
+    "src/simple_index.js~SimpleIndex#index",
+    "member"
+  ],
+  [
+    "src/simple_index.js~simpleindex#query",
+    "class/src/simple_index.js~SimpleIndex.html#instance-method-query",
+    "src/simple_index.js~SimpleIndex#query",
+    "method"
+  ],
+  [
+    "src/simple_index.js~simpleindex#remove",
+    "class/src/simple_index.js~SimpleIndex.html#instance-method-remove",
+    "src/simple_index.js~SimpleIndex#remove",
+    "method"
+  ],
+  [
+    "src/simple_index.js~simpleindex#removeentity",
+    "class/src/simple_index.js~SimpleIndex.html#instance-method-removeEntity",
+    "src/simple_index.js~SimpleIndex#removeEntity",
+    "method"
+  ],
+  [
+    "src/simple_index.js~simpleindex#world",
+    "class/src/simple_index.js~SimpleIndex.html#instance-member-world",
+    "src/simple_index.js~SimpleIndex#world",
+    "member"
   ],
   [
     "src/utilities.js",

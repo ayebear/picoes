@@ -30,6 +30,8 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/entity.js~Entity.html">Entity</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/memoized_query_index.js~MemoizedQueryIndex.html">MemoizedQueryIndex</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/simple_index.js~SimpleIndex.html">SimpleIndex</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/world.js~World.html">World</a></span></span></li>
 </ul>
 </div>
@@ -43,7 +45,8 @@ const { invoke, isFunction } = require(&apos;./utilities.js&apos;)
 const { Entity } = require(&apos;./entity.js&apos;)
 
 /** @ignore */
-const { ComponentIndex } = require(&apos;./component_index.js&apos;)
+// const { SimpleIndex } = require(&apos;./simple_index.js&apos;)
+const { MemoizedQueryIndex } = require(&apos;./memoized_query_index.js&apos;)
 
 /**
  * Class for world.
@@ -53,8 +56,10 @@ const { ComponentIndex } = require(&apos;./component_index.js&apos;)
 class World {
 	/**
 	 * Constructs an instance of the world.
+	 *
+	 * @param      {Function}  [indexer=SimpleIndex]  The indexer to use. Default is SimpleIndex. Can use MemoizedQueryIndex if better querying performance is needed, for increased component creation/removal costs.
 	 */
-	constructor() {
+	constructor(indexer = MemoizedQueryIndex) {
 		/** @ignore */
 		this.systems = []
 
@@ -77,7 +82,7 @@ class World {
 		 * Maps entire queries to arrays of entities
 		 * @ignore
 		 */
-		this.index = new ComponentIndex(this.entities)
+		this.index = new indexer(this)
 	}
 
 	/**
@@ -99,7 +104,7 @@ class World {
 
 		// Clear entities
 		this.entities = new Map()
-		this.index.clear(this.entities)
+		this.index.clear()
 	}
 
 	/**
@@ -296,17 +301,15 @@ class World {
 	 * @param {Function}  callback       - The callback to call for each entity. Takes (...components, entity, ...args).
 	 * @param {...Object} [args]         - Any additional arguments to pass to the callback.
 	 *
-	 * @return {MapIterator} An iterator to the entities themselves
+	 * @return {MapIterator} If no callback specified, then a generator to the entities themselves. Otherwise, returns undefined.
 	 */
 	every(componentNames, callback, ...args) {
 		// Get indexed map of entities
-		let entities = this.index.query(componentNames)
+		let entities = this.index.query(...componentNames)
 
 		if (isFunction(callback)) {
 			// Go through the map of entities
-			for (let entity of entities.values()) {
-				// At this point, we can safely assume that all components exist, even if entities/components
-				// are deleted/modified during the loop, because JavaScript&apos;s MapIterator is smart enough.
+			for (let entity of entities) {
 
 				// Get all components as an array
 				let components = componentNames.map(name =&gt; entity.get(name))
@@ -319,9 +322,9 @@ class World {
 					break
 				}
 			}
+		} else {
+			return entities
 		}
-
-		return entities.values()
 	}
 
 	/**

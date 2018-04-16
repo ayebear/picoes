@@ -135,7 +135,7 @@ class Entity {
 
 		// Update the index with this new component
 		if (this.valid()) {
-			this.world.index.addEntity(this)
+			this.world.index.add(this, component)
 		}
 
 		// Call custom onCreate to initialize component, pass the entity (this), and any additional arguments passed into set()
@@ -208,9 +208,9 @@ class Entity {
 	 * @return {Object} The original entity that removeAll() was called on, so that operations can be chained.
 	 */
 	removeAll() {
-		this.remove(...Object.keys(this.data))
+		this.remove(...this.components)
 
-		if (Object.keys(this.data).length > 0) {
+		if (this.components.length > 0) {
 			throw new Error('Failed to remove all components. Components must have been added during the removeAll().')
 		}
 
@@ -228,13 +228,27 @@ class Entity {
 		this.removeAll()
 
 		if (this.valid()) {
-			// Remove from the index, to update match all index
-			this.world.index.remove(this)
+			// Remove entity from the index, to update match all index
+			this.world.index.removeEntity(this)
 
 			// Remove from world
 			this.world.entities.delete(this._id)
 			this._id = undefined
 		}
+	}
+
+	/**
+	 * Returns an array of component names this entity currently has.
+	 *
+	 * @return {Array<String>} Array of component names.
+	 */
+	get components() {
+		return Object.keys(this.data)
+	}
+
+	/** @ignore */
+	set components(c) {
+		throw new Error('Cannot set components in this way. See entity.set().')
 	}
 
 	/**

@@ -30,12 +30,10 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/entity.js~Entity.html">Entity</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/memoized_query_index.js~MemoizedQueryIndex.html">MemoizedQueryIndex</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/simple_index.js~SimpleIndex.html">SimpleIndex</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/world.js~World.html">World</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isFunction">isFunction</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-invoke">invoke</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ComponentIndex">ComponentIndex</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-Entity">Entity</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-invoke">invoke</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-minIndexReducer">minIndexReducer</a></span></span></li>
 </ul>
 </div>
 </nav>
@@ -59,7 +57,7 @@
           
           
           
-          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-isFunction">isFunction</a></span></span><span class="code" data-ice="signature">(obj: <span>*</span>): <span>*</span></span>
+          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-minIndexReducer">minIndexReducer</a></span></span><span class="code" data-ice="signature">(minIndex: <span>*</span>, value: <span>*</span>, index: <span>*</span>, values: <span>*</span>)</span>
         </p>
       </div>
       <div>
@@ -79,18 +77,18 @@
 <div data-ice="details"><h2 data-ice="title">Static Public </h2>
 
 <div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="static-function-isFunction">
+  <h3 data-ice="anchor" id="static-function-minIndexReducer">
     <span class="access" data-ice="access">public</span>
     
     
     
     
     
-    <span class="code" data-ice="name">isFunction</span><span class="code" data-ice="signature">(obj: <span>*</span>): <span>*</span></span>
+    <span class="code" data-ice="name">minIndexReducer</span><span class="code" data-ice="signature">(minIndex: <span>*</span>, value: <span>*</span>, index: <span>*</span>, values: <span>*</span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber5">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/simple_index.js.html#lineNumber2">source</a></span></span>
     </span>
   </h3>
 
@@ -110,7 +108,25 @@
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" class="code" data-depth="0">obj</td>
+      <td data-ice="name" class="code" data-depth="0">minIndex</td>
+      <td data-ice="type" class="code"><span>*</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">value</td>
+      <td data-ice="type" class="code"><span>*</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">index</td>
+      <td data-ice="type" class="code"><span>*</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">values</td>
       <td data-ice="type" class="code"><span>*</span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
@@ -120,19 +136,7 @@
 </div>
 </div>
 
-  <div class="return-params" data-ice="returnParams">
-    <h4>Return:</h4>
-    <table>
-      <tbody>
-        <tr>
-          <td class="return-type code" data-ice="returnType"><span>*</span></td>
-          
-        </tr>
-      </tbody>
-    </table>
-    <div data-ice="returnProperties">
-</div>
-  </div>
+  
 
   
 

@@ -5,7 +5,8 @@ const { invoke, isFunction } = require('./utilities.js')
 const { Entity } = require('./entity.js')
 
 /** @ignore */
-const { ComponentIndex } = require('./component_index.js')
+// const { SimpleIndex } = require('./simple_index.js')
+const { MemoizedQueryIndex } = require('./memoized_query_index.js')
 
 /**
  * Class for world.
@@ -15,8 +16,10 @@ const { ComponentIndex } = require('./component_index.js')
 class World {
 	/**
 	 * Constructs an instance of the world.
+	 *
+	 * @param      {Function}  [indexer=SimpleIndex]  The indexer to use. Default is SimpleIndex. Can use MemoizedQueryIndex if better querying performance is needed, for increased component creation/removal costs.
 	 */
-	constructor() {
+	constructor(indexer = MemoizedQueryIndex) {
 		/** @ignore */
 		this.systems = []
 
@@ -39,7 +42,7 @@ class World {
 		 * Maps entire queries to arrays of entities
 		 * @ignore
 		 */
-		this.index = new ComponentIndex(this.entities)
+		this.index = new indexer(this)
 	}
 
 	/**
@@ -61,7 +64,7 @@ class World {
 
 		// Clear entities
 		this.entities = new Map()
-		this.index.clear(this.entities)
+		this.index.clear()
 	}
 
 	/**
@@ -258,17 +261,15 @@ class World {
 	 * @param {Function}  callback       - The callback to call for each entity. Takes (...components, entity, ...args).
 	 * @param {...Object} [args]         - Any additional arguments to pass to the callback.
 	 *
-	 * @return {MapIterator} An iterator to the entities themselves
+	 * @return {MapIterator} If no callback specified, then a generator to the entities themselves. Otherwise, returns undefined.
 	 */
 	every(componentNames, callback, ...args) {
 		// Get indexed map of entities
-		let entities = this.index.query(componentNames)
+		let entities = this.index.query(...componentNames)
 
 		if (isFunction(callback)) {
 			// Go through the map of entities
-			for (let entity of entities.values()) {
-				// At this point, we can safely assume that all components exist, even if entities/components
-				// are deleted/modified during the loop, because JavaScript's MapIterator is smart enough.
+			for (let entity of entities) {
 
 				// Get all components as an array
 				let components = componentNames.map(name => entity.get(name))
@@ -281,9 +282,9 @@ class World {
 					break
 				}
 			}
+		} else {
+			return entities
 		}
-
-		return entities.values()
 	}
 
 	/**
