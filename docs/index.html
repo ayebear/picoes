@@ -57,23 +57,31 @@
 <p>Read up on what an ECS is here: <a href="https://en.wikipedia.org/wiki/Entity_component_system">https://en.wikipedia.org/wiki/Entity_component_system</a></p>
 <p>This entity system is designed to be as simple as possible, while still having useful features.</p>
 <h3 id="features">Features</h3><ul>
-<li>High performance, memoized entity queries<ul>
-<li>O(1) average time</li>
+<li><strong>High performance indexing options</strong><ul>
+<li>SimpleIndex (Default): O(1) component add/remove, O(m) query time<ul>
+<li>Where <code>m</code> is the smallest size component index</li>
 </ul>
 </li>
-<li>All definitions are optional<ul>
+<li>MemoizedQueryIndex: O(q) component add/remove, O(1) average query time (memoized), O(n) worst query time (initial)<ul>
+<li>Where <code>q</code> is the total number of memoized queries</li>
+</ul>
+</li>
+<li><em>Note: Above time complexities are amortized assuming the number of components used is a known constant</em></li>
+</ul>
+</li>
+<li><strong>No formal declarations required</strong><ul>
 <li>Can create components and entities in a world and query on them, without needing to define structured systems and components</li>
 </ul>
 </li>
-<li>Strings as component keys<ul>
+<li><strong>Strings as component keys</strong><ul>
 <li>No need to manually track component keys like many libraries</li>
 </ul>
 </li>
-<li>JSON serialization<ul>
+<li><strong>JSON serialization</strong><ul>
 <li>Useful for save data and networked applications</li>
 </ul>
 </li>
-<li>Prototypes<ul>
+<li><strong>Prototypes</strong><ul>
 <li>Allows entity definitions to be data-driven, outside of code</li>
 </ul>
 </li>

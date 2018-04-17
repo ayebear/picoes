@@ -24,15 +24,19 @@ This entity system is designed to be as simple as possible, while still having u
 
 ### Features
 
-* High performance, memoized entity queries
-	* O(1) average time
-* All definitions are optional
+* **High performance indexing options**
+	* SimpleIndex (Default): O(1) component add/remove, O(m) query time
+		* Where `m` is the smallest size component index
+	* MemoizedQueryIndex: O(q) component add/remove, O(1) average query time (memoized), O(n) worst query time (initial)
+		* Where `q` is the total number of memoized queries
+	* *Note: Above time complexities are amortized assuming the number of components used is a known constant*
+* **No formal declarations required**
 	* Can create components and entities in a world and query on them, without needing to define structured systems and components
-* Strings as component keys
+* **Strings as component keys**
 	* No need to manually track component keys like many libraries
-* JSON serialization
+* **JSON serialization**
 	* Useful for save data and networked applications
-* Prototypes
+* **Prototypes**
 	* Allows entity definitions to be data-driven, outside of code
 
 ### Terminology
