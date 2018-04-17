@@ -64,9 +64,11 @@
 </li>
 <li>MemoizedQueryIndex: O(q) component add/remove, O(1) average query time (memoized), O(n) worst query time (initial)<ul>
 <li>Where <code>q</code> is the total number of memoized queries</li>
+<li>And <code>n</code> is the total number of entities</li>
 </ul>
 </li>
 <li><em>Note: Above time complexities are amortized assuming the number of components used is a known constant</em></li>
+<li>Can also write your own and pass it to the World constructor! Needs clear, add, remove, and query.</li>
 </ul>
 </li>
 <li><strong>No formal declarations required</strong><ul>

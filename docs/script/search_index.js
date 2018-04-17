@@ -367,13 +367,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/entity.js~entity#id",
-    "class/src/entity.js~Entity.html#instance-set-id",
+    "class/src/entity.js~Entity.html#instance-get-id",
     "src/entity.js~Entity#id",
     "member"
   ],
   [
     "src/entity.js~entity#id",
-    "class/src/entity.js~Entity.html#instance-get-id",
+    "class/src/entity.js~Entity.html#instance-set-id",
     "src/entity.js~Entity#id",
     "member"
   ],
@@ -432,12 +432,6 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/memoized_query_index.js~memoizedqueryindex#addentity",
-    "class/src/memoized_query_index.js~MemoizedQueryIndex.html#instance-method-addEntity",
-    "src/memoized_query_index.js~MemoizedQueryIndex#addEntity",
-    "method"
-  ],
-  [
     "src/memoized_query_index.js~memoizedqueryindex#build",
     "class/src/memoized_query_index.js~MemoizedQueryIndex.html#instance-method-build",
     "src/memoized_query_index.js~MemoizedQueryIndex#build",
@@ -480,12 +474,6 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/memoized_query_index.js~memoizedqueryindex#removeentity",
-    "class/src/memoized_query_index.js~MemoizedQueryIndex.html#instance-method-removeEntity",
-    "src/memoized_query_index.js~MemoizedQueryIndex#removeEntity",
-    "method"
-  ],
-  [
     "src/memoized_query_index.js~memoizedqueryindex#world",
     "class/src/memoized_query_index.js~MemoizedQueryIndex.html#instance-member-world",
     "src/memoized_query_index.js~MemoizedQueryIndex#world",
@@ -507,12 +495,6 @@ window.esdocSearchIndex = [
     "src/simple_index.js~simpleindex#add",
     "class/src/simple_index.js~SimpleIndex.html#instance-method-add",
     "src/simple_index.js~SimpleIndex#add",
-    "method"
-  ],
-  [
-    "src/simple_index.js~simpleindex#addentity",
-    "class/src/simple_index.js~SimpleIndex.html#instance-method-addEntity",
-    "src/simple_index.js~SimpleIndex#addEntity",
     "method"
   ],
   [
@@ -543,12 +525,6 @@ window.esdocSearchIndex = [
     "src/simple_index.js~simpleindex#remove",
     "class/src/simple_index.js~SimpleIndex.html#instance-method-remove",
     "src/simple_index.js~SimpleIndex#remove",
-    "method"
-  ],
-  [
-    "src/simple_index.js~simpleindex#removeentity",
-    "class/src/simple_index.js~SimpleIndex.html#instance-method-removeEntity",
-    "src/simple_index.js~SimpleIndex#removeEntity",
     "method"
   ],
   [

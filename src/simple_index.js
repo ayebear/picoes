@@ -55,22 +55,11 @@ class SimpleIndex {
 		}
 	}
 
-	// TODO: Remove these from the index classes, have Entity pass whatever is needed
-	// Add an entity and all of its components to the index
-	addEntity(entity) {
-		this.add(entity, ...entity.components)
-	}
-
 	// Remove certain components from the index for an entity
 	remove(entity, ...componentNames) {
 		for (let component of componentNames) {
 			this.access(component).delete(entity.id)
 		}
-	}
-
-	// Remove an entity and all of its components from the index
-	removeEntity(entity) {
-		this.remove(entity, ...entity.components)
 	}
 }
 

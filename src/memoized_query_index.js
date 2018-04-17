@@ -60,7 +60,7 @@ class MemoizedQueryIndex {
 		}
 	}
 
-	// Must use all component names
+	// Must use all component names from entity
 	add(entity) {
 		for (let hash in this.index) {
 			const group = this.index[hash]
@@ -71,11 +71,6 @@ class MemoizedQueryIndex {
 				group.entities.set(entity.id, entity)
 			}
 		}
-	}
-
-	// Add an entity and all of its components to the index
-	addEntity(entity) {
-		this.add(entity)
 	}
 
 	// Remove certain components from the index for an entity
@@ -89,11 +84,6 @@ class MemoizedQueryIndex {
 				group.entities.delete(entity.id)
 			}
 		}
-	}
-
-	// Remove an entity and all of its components from the index
-	removeEntity(entity) {
-		this.remove(entity, ...entity.components)
 	}
 }
 

@@ -29,7 +29,9 @@ This entity system is designed to be as simple as possible, while still having u
 		* Where `m` is the smallest size component index
 	* MemoizedQueryIndex: O(q) component add/remove, O(1) average query time (memoized), O(n) worst query time (initial)
 		* Where `q` is the total number of memoized queries
+		* And `n` is the total number of entities
 	* *Note: Above time complexities are amortized assuming the number of components used is a known constant*
+	* Can also write your own and pass it to the World constructor! Needs clear, add, remove, and query.
 * **No formal declarations required**
 	* Can create components and entities in a world and query on them, without needing to define structured systems and components
 * **Strings as component keys**

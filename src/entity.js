@@ -25,11 +25,6 @@ class Entity {
 
 		/** @ignore */
 		this.data = {}
-
-		// Add to the index, to update match all index
-		if (this.valid()) {
-			this.world.index.addEntity(this)
-		}
 	}
 
 	/**
@@ -228,9 +223,6 @@ class Entity {
 		this.removeAll()
 
 		if (this.valid()) {
-			// Remove entity from the index, to update match all index
-			this.world.index.removeEntity(this)
-
 			// Remove from world
 			this.world.entities.delete(this._id)
 			this._id = undefined
@@ -332,7 +324,7 @@ class Entity {
 			this.world = world
 			this._id = this.world.idCounter++
 			this.world.entities.set(this._id, this)
-			this.world.index.addEntity(this)
+			this.world.index.add(this, ...this.components)
 		}
 	}
 
@@ -348,7 +340,7 @@ class Entity {
 	detach() {
 		if (this.valid()) {
 			// Remove from current world
-			this.world.index.removeEntity(this)
+			this.world.index.remove(this, ...this.components)
 			this.world.entities.delete(this._id)
 			this._id = undefined
 			this.world = undefined
