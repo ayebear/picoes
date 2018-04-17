@@ -1,6 +1,6 @@
 {
-  "coverage": "70%",
-  "expectCount": 70,
+  "coverage": "74.24%",
+  "expectCount": 66,
   "actualCount": 49,
   "files": {
     "src/entity.js": {
@@ -9,7 +9,7 @@
       "undocumentLines": []
     },
     "src/memoized_query_index.js": {
-      "expectCount": 12,
+      "expectCount": 10,
       "actualCount": 1,
       "undocumentLines": [
         8,
@@ -20,13 +20,11 @@
         40,
         46,
         64,
-        77,
-        82,
-        95
+        77
       ]
     },
     "src/simple_index.js": {
-      "expectCount": 12,
+      "expectCount": 10,
       "actualCount": 2,
       "undocumentLines": [
         14,
@@ -36,9 +34,7 @@
         25,
         30,
         52,
-        60,
-        65,
-        72
+        59
       ]
     },
     "src/utilities.js": {
