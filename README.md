@@ -67,6 +67,14 @@ Eric Hebert
 
 You'll normally want to install PicoES as a dev dependency, and have it transpiled into the build of your application.
 
+#### Yarn
+
+```bash
+yarn add --dev picoes
+```
+
+#### NPM
+
 ```bash
 npm i -D picoes
 ```
