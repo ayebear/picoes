@@ -5,7 +5,8 @@
   "main": "./index.js",
   "scripts": {
     "test": "jest --coverage",
-    "doc": "node ./node_modules/.bin/esdoc"
+    "doc": "node ./node_modules/.bin/esdoc",
+    "deploy": "gh-pages -d docs"
   },
   "repository": {
     "type": "git",
@@ -32,6 +33,7 @@
     "esdoc-standard-plugin": "^1.0.0",
     "esdoc-undocumented-identifier-plugin": "^1.0.0",
     "esdoc-unexported-identifier-plugin": "^1.0.0",
+    "gh-pages": "^2.1.1",
     "jest": "^24.9.0"
   },
   "dependencies": {}
