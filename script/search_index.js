@@ -6,28 +6,10 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
-    "picoes/src/benchmarks.js~memoizedqueryindex",
-    "variable/index.html#static-variable-MemoizedQueryIndex",
-    "<span>MemoizedQueryIndex</span> <span class=\"search-result-import-path\">picoes/src/benchmarks.js</span>",
-    "variable"
-  ],
-  [
     "picoes/src/memoized_query_index.js~memoizedqueryindex",
     "class/src/memoized_query_index.js~MemoizedQueryIndex.html",
     "<span>MemoizedQueryIndex</span> <span class=\"search-result-import-path\">picoes/src/memoized_query_index.js</span>",
     "class"
-  ],
-  [
-    "picoes/src/test_utils.js~memoizedqueryindex",
-    "variable/index.html#static-variable-MemoizedQueryIndex",
-    "<span>MemoizedQueryIndex</span> <span class=\"search-result-import-path\">picoes/src/test_utils.js</span>",
-    "variable"
-  ],
-  [
-    "picoes/src/benchmarks.js~simpleindex",
-    "variable/index.html#static-variable-SimpleIndex",
-    "<span>SimpleIndex</span> <span class=\"search-result-import-path\">picoes/src/benchmarks.js</span>",
-    "variable"
   ],
   [
     "picoes/src/simple_index.js~simpleindex",
@@ -36,64 +18,10 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
-    "picoes/src/test_utils.js~simpleindex",
-    "variable/index.html#static-variable-SimpleIndex",
-    "<span>SimpleIndex</span> <span class=\"search-result-import-path\">picoes/src/test_utils.js</span>",
-    "variable"
-  ],
-  [
-    "picoes/src/benchmarks.js~world",
-    "variable/index.html#static-variable-World",
-    "<span>World</span> <span class=\"search-result-import-path\">picoes/src/benchmarks.js</span>",
-    "variable"
-  ],
-  [
-    "picoes/src/test_utils.js~world",
-    "variable/index.html#static-variable-World",
-    "<span>World</span> <span class=\"search-result-import-path\">picoes/src/test_utils.js</span>",
-    "variable"
-  ],
-  [
     "picoes/src/world.js~world",
     "class/src/world.js~World.html",
     "<span>World</span> <span class=\"search-result-import-path\">picoes/src/world.js</span>",
     "class"
-  ],
-  [
-    "picoes/src/test_utils.js~assert",
-    "function/index.html#static-function-assert",
-    "<span>assert</span> <span class=\"search-result-import-path\">picoes/src/test_utils.js</span>",
-    "function"
-  ],
-  [
-    "picoes/src/test_utils.js~getsize",
-    "function/index.html#static-function-getSize",
-    "<span>getSize</span> <span class=\"search-result-import-path\">picoes/src/test_utils.js</span>",
-    "function"
-  ],
-  [
-    "picoes/src/test_utils.js~has",
-    "function/index.html#static-function-has",
-    "<span>has</span> <span class=\"search-result-import-path\">picoes/src/test_utils.js</span>",
-    "function"
-  ],
-  [
-    "picoes/src/test_utils.js~indexers",
-    "variable/index.html#static-variable-indexers",
-    "<span>indexers</span> <span class=\"search-result-import-path\">picoes/src/test_utils.js</span>",
-    "variable"
-  ],
-  [
-    "picoes/src/benchmarks.js~runbenchmarks",
-    "function/index.html#static-function-runBenchmarks",
-    "<span>runBenchmarks</span> <span class=\"search-result-import-path\">picoes/src/benchmarks.js</span>",
-    "function"
-  ],
-  [
-    "picoes/src/test_utils.js~testindexers",
-    "function/index.html#static-function-testIndexers",
-    "<span>testIndexers</span> <span class=\"search-result-import-path\">picoes/src/test_utils.js</span>",
-    "function"
   ],
   [
     "src/.external-ecmascript.js~array",
@@ -378,12 +306,6 @@ window.esdocSearchIndex = [
     "external"
   ],
   [
-    "src/benchmarks.js",
-    "file/src/benchmarks.js.html",
-    "src/benchmarks.js",
-    "file"
-  ],
-  [
     "src/entity.js",
     "file/src/entity.js.html",
     "src/entity.js",
@@ -610,12 +532,6 @@ window.esdocSearchIndex = [
     "class/src/simple_index.js~SimpleIndex.html#instance-member-world",
     "src/simple_index.js~SimpleIndex#world",
     "member"
-  ],
-  [
-    "src/test_utils.js",
-    "file/src/test_utils.js.html",
-    "src/test_utils.js",
-    "file"
   ],
   [
     "src/utilities.js",
