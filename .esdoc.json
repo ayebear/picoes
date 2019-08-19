@@ -34,5 +34,8 @@
 	],
 	"includes": [
 		"./*.js"
+	],
+	"excludes": [
+		"(test|benchmarks)"
 	]
 }
