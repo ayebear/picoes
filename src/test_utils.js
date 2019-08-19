@@ -21,7 +21,7 @@ function has(it, target) {
 }
 
 function testIndexers(callback) {
-	return function() {
+	return () => {
 		for (let indexer of indexers) {
 			callback(new World(indexer))
 		}
