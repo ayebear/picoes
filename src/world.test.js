@@ -689,9 +689,9 @@ test('system: use the every() method', testIndexers(world => {
 	assert(count === 1)
 
 	// Passing callbacks cause the return value to be undefined
-	results = world.every(['position'], () => true)
+	results = world.every(['position'], () => {})
 	assert(results === undefined)
-	results = world.every([], () => true)
+	results = world.every([], () => {})
 	assert(results === undefined)
 
 	// Test breaking out of the loop
