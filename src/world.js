@@ -245,8 +245,11 @@ class World {
 
 				let postStatus = invoke(system, 'post', ...args)
 
-				status = preStatus || everyStatus || postStatus
+				status = status || preStatus || everyStatus || postStatus
 			}
+
+			// Clear args after first run, so re-runs can be identified
+			args = []
 		}
 	}
 
