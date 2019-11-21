@@ -1,3 +1,4 @@
+const { World } = require('../index.js')
 const { Entity } = require('./entity.js')
 const {
     getSize,
@@ -5,6 +6,12 @@ const {
     testIndexers,
     assert
 } = require('./test_utils.js')
+
+test('world: create a world', () => {
+	const world = new World()
+	assert(world instanceof World)
+	assert(typeof world.component === 'function')
+})
 
 test('component: define a component', testIndexers(world => {
 	world.component('position', function(entity, x = 0, y = 0) {
