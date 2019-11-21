@@ -128,6 +128,37 @@ test('entity: get and set components', testIndexers(world => {
 	assert(ent.get('invalid2')[0] === 'test')
 }))
 
+test('entity: setRaw', testIndexers(world => {
+	world.component('position', function(entity, x = 0, y = 0) {
+		this.x = x
+		this.y = y
+	})
+	let ent = world.entity()
+	ent.set('position', 10, 20)
+	assert(ent.has('position'))
+	assert(ent.get('position').x === 10)
+	assert(ent.get('position').y === 20)
+	
+	// Set raw tests
+	const previous = ent.get('position')
+	ent.remove('position')
+	assert(!ent.has('position'))
+	
+	ent.setRaw('position', previous)
+	
+	assert(ent.has('position'))
+	assert(ent.get('position').x === 10)
+	assert(ent.get('position').y === 20)
+	
+	// Invalid entity
+	ent.remove('position')
+	ent.detach()
+	ent.setRaw('position', previous)
+	assert(ent.has('position'))
+	assert(ent.get('position').x === 10)
+	assert(ent.get('position').y === 20)
+}))
+
 test('entity: remove components', testIndexers(world => {
 	world.component('position')
 	world.component('velocity')
