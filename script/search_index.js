@@ -367,13 +367,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/entity.js~entity#id",
-    "class/src/entity.js~Entity.html#instance-get-id",
+    "class/src/entity.js~Entity.html#instance-set-id",
     "src/entity.js~Entity#id",
     "member"
   ],
   [
     "src/entity.js~entity#id",
-    "class/src/entity.js~Entity.html#instance-set-id",
+    "class/src/entity.js~Entity.html#instance-get-id",
     "src/entity.js~Entity#id",
     "member"
   ],
@@ -393,6 +393,12 @@ window.esdocSearchIndex = [
     "src/entity.js~entity#set",
     "class/src/entity.js~Entity.html#instance-method-set",
     "src/entity.js~Entity#set",
+    "method"
+  ],
+  [
+    "src/entity.js~entity#setraw",
+    "class/src/entity.js~Entity.html#instance-method-setRaw",
+    "src/entity.js~Entity#setRaw",
     "method"
   ],
   [

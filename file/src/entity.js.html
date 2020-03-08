@@ -180,6 +180,29 @@ class Entity {
 	}
 
 	/**
+	 * Sets a component value directly. The onCreate method is not called, and it is expected that you pass an already initialized component.
+	 *
+	 * @example
+	 * entity.set(&apos;position&apos;, position)
+	 *
+	 * @param {string} component - The component name to set.
+	 * @param {Object} value - Should be a previous component instance, or whatever is expected for the component name.
+	 *
+	 * @return {Object} The original entity that set() was called on, so that operations can be chained.
+	 */
+	setRaw(component, value) {
+		// Directly set value
+		this.data[component] = value
+
+		// Update the index with this new component
+		if (this.valid()) {
+			this.world.index.add(this, component)
+		}
+
+		return this
+	}
+
+	/**
 	 * Updates component data from an object or other component. Similar to access() with a shallow merge applied after.
 	 *
 	 * @example

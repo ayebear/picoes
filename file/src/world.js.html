@@ -250,7 +250,7 @@ class World {
 	}
 
 	/**
-	 * Calls pre(), every(), and post() on all systems
+	 * Calls pre(), every(), and post() on all systems. These methods can return true to cause an additional rerun of all systems.
 	 *
 	 * @example
 	 * world.run(deltaTime)
@@ -271,15 +271,25 @@ class World {
 	 * @param {...Object} [args] - The arguments to forward to the systems&apos; methods
 	 */
 	run(...args) {
-		for (let system of this.systems) {
-			invoke(system, &apos;pre&apos;, ...args)
+		let status = true
+		while (status) {
+			status = undefined
+			for (let system of this.systems) {
+				let preStatus = invoke(system, &apos;pre&apos;, ...args)
 
-			// Run the &quot;every&quot; method in the system
-			if (isFunction(system.every)) {
-				this.every(system.components, system.every.bind(system), ...args)
+				// Run the &quot;every&quot; method in the system
+				let everyStatus
+				if (isFunction(system.every)) {
+					everyStatus = this.every(system.components, system.every.bind(system), ...args)
+				}
+
+				let postStatus = invoke(system, &apos;post&apos;, ...args)
+
+				status = status || preStatus || everyStatus || postStatus
 			}
 
-			invoke(system, &apos;post&apos;, ...args)
+			// Clear args after first run, so re-runs can be identified
+			args = []
 		}
 	}
 
@@ -308,22 +318,22 @@ class World {
 
 		if (isFunction(callback)) {
 			// Go through the map of entities
+			let status
 			for (let entity of entities) {
-
 				// Get all components as an array
 				let components = componentNames.map(name =&gt; entity.get(name))
 
 				// Pass components, then the main entity, then any additional arguments
-				let status = callback(...components, entity, ...args)
+				status = callback(...components, entity, ...args)
 
 				// Stop the iteration when the callback returns false
 				if (status === false) {
 					break
 				}
 			}
-		} else {
-			return entities
+			return status
 		}
+		return entities
 	}
 
 	/**

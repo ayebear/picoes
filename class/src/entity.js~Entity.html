@@ -525,6 +525,35 @@ If nothing is specified, then nothing will be removed. Use removeAll() to remove
           
           
           
+          <span class="code" data-ice="name"><span><a href="class/src/entity.js~Entity.html#instance-method-setRaw">setRaw</a></span></span><span class="code" data-ice="signature">(component: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, value: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Sets a component value directly.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
           <span class="code" data-ice="name"><span><a href="class/src/entity.js~Entity.html#instance-method-toJSON">toJSON</a></span></span><span class="code" data-ice="signature">(): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></span>
         </p>
       </div>
@@ -721,7 +750,7 @@ Also, do not shallow/deep copy entity objects, only pass around references.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber237">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber260">source</a></span></span>
     </span>
   </h3>
 
@@ -984,7 +1013,7 @@ Also, do not shallow/deep copy entity objects, only pass around references.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber321">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber344">source</a></span></span>
     </span>
   </h3>
 
@@ -1054,7 +1083,7 @@ Note: The ID will be reassigned, so do not rely on this</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber222">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber245">source</a></span></span>
     </span>
   </h3>
 
@@ -1106,7 +1135,7 @@ and it is recommended to avoid re-using it.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber340">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber363">source</a></span></span>
     </span>
   </h3>
 
@@ -1160,7 +1189,7 @@ Note: The ID will be reassigned, so do not rely on this</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber296">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber319">source</a></span></span>
     </span>
   </h3>
 
@@ -1406,7 +1435,7 @@ If no component names are specified, this method returns true.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber176">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber199">source</a></span></span>
     </span>
   </h3>
 
@@ -1489,7 +1518,7 @@ If nothing is specified, then nothing will be removed. Use removeAll() to remove
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber205">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber228">source</a></span></span>
     </span>
   </h3>
 
@@ -1641,6 +1670,94 @@ registered, then only the first additional argument will be used as the value of
   
 </div>
 <div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-setRaw">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">setRaw</span><span class="code" data-ice="signature">(component: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, value: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber153">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Sets a component value directly. The onCreate method is not called, and it is expected that you pass an already initialized component.</p>
+</div>
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">component</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>The component name to set.</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">value</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>Should be a previous component instance, or whatever is expected for the component name.</p>
+</td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+          <td class="return-desc" data-ice="returnDescription"><p>The original entity that set() was called on, so that operations can be chained.</p>
+</td>
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  <div data-ice="example">
+    <h4>Example:</h4>
+    
+  <div class="example-doc" data-ice="exampleDoc">
+      
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">entity.set(&apos;position&apos;, position)</code></pre>
+    </div>
+</div>
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
   <h3 data-ice="anchor" id="instance-method-toJSON">
     <span class="access" data-ice="access">public</span>
     
@@ -1652,7 +1769,7 @@ registered, then only the first additional argument will be used as the value of
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber281">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber304">source</a></span></span>
     </span>
   </h3>
 
@@ -1717,7 +1834,7 @@ Note: Defining toJSON methods in your components will override the built-in beha
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber268">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber291">source</a></span></span>
     </span>
   </h3>
 
@@ -1781,7 +1898,7 @@ Note: Defining toJSON methods in your components will override the built-in beha
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber153">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber176">source</a></span></span>
     </span>
   </h3>
 
@@ -1869,7 +1986,7 @@ Note: Defining toJSON methods in your components will override the built-in beha
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber254">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber277">source</a></span></span>
     </span>
   </h3>
 
