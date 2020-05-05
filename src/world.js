@@ -265,7 +265,7 @@ class World {
 	 * let it = world.every(['comp'])
 	 * for (let entity of it) {...}
 	 *
-	 * @param {Array}     componentNames - The component names to match entites with. This checks if the entity
+	 * @param {Array}     componentNames - The component names to match entities with. This checks if the entity
 	 * has ALL of the specified components, but does not check for additional components.
 	 * @param {Function}  callback       - The callback to call for each entity. Takes (...components, entity, ...args).
 	 * @param {...Object} [args]         - Any additional arguments to pass to the callback.
