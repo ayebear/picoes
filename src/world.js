@@ -137,28 +137,39 @@ class World {
 	 * The order the systems get registered, is the order then run in.
 	 *
 	 * @example
-	 * // Movement system
-	 * world.system(['position', 'velocity'], class {
-	 *      constructor(context) {
-	 *          // This is showing how you can optionally pass parameters to the system's constructor
-	 *          this.context = context
-	 *      }
-	 *      every(position, velocity, entity) {
-	 *          position.x += velocity.x
-	 *          position.y += velocity.y
-	 *      }
-	 *  }, context)
-	 *
-	 * @example
-	 * // System that doesn't use every()
-	 * world.system(class {
-	 *      constructor(context) {
-	 *          this.context = context
-	 *      }
-	 *      pre() {
-	 *          // Handle events or something
-	 *      }
-	 *  }, context)
+	 * // Movement system (basic example)
+	 * class MovementSystem {
+	 *   run(dt) {
+	 *     world.every(['position', 'velocity'], (position, velocity) => {
+	 *       position.x += velocity.x
+	 *       position.y += velocity.y
+	 *     })
+	 *   }
+	 * }
+	 * // Input system (advanced example)
+	 * class InputSystem {
+	 *   constructor(button) {
+	 *     // This is showing how you can optionally pass parameters to the system's constructor
+	 *     this.button = button
+	 *     // See world.setContext() for a simpler way to inject dependencies
+	 *   }
+	 *   run(dt) {
+	 *     if (this.button.isPressed()) {
+	 *       world.every(['controlled', 'velocity'], (controlled, velocity, entity) => {
+	 *         // Start moving all controlled entities to the right
+	 *         velocity.x = 1
+	 *         velocity.y = 0
+	 *         // Can also use the full entity here, in this case to add a new component
+	 *         entity.set('useFuel')
+	 *       })
+	 *     }
+	 *   }
+	 * }
+	 * // Register systems (this method)
+	 * world.system(InputSystem, button) // pass button to system constructor
+	 * world.system(MovementSystem)
+	 * // Run systems (can get dt or frame time)
+	 * world.run(1000.0 / 60.0)
 	 *
 	 * @param {...Object} args - Both signatures are accepted: (components, systemClass, ...args) or (systemClass, ...args).
 	 *
@@ -210,7 +221,7 @@ class World {
 	}
 
 	/**
-	 * Calls pre(), every(), and post() on all systems. These methods can return true to cause an additional rerun of all systems.
+	 * Calls run() on all systems. These methods can return true to cause an additional rerun of all systems.
 	 *
 	 * @example
 	 * world.run(deltaTime)
@@ -221,31 +232,20 @@ class World {
 	 * world.system(systemA)
 	 * world.system(systemB)
 	 * // During world.run():
-	 * // systemA.pre()
-	 * // systemA.every() * number of entities
-	 * // systemA.post()
-	 * // systemB.pre()
-	 * // systemB.every() * number of entities
-	 * // systemB.post()
+	 * // systemA.run()
+	 * // systemB.run()
 	 *
 	 * @param {...Object} [args] - The arguments to forward to the systems' methods
 	 */
 	run(...args) {
 		let status = true
+		// Continue rerunning while any systems return true
 		while (status) {
 			status = undefined
-			for (let system of this.systems) {
-				let preStatus = invoke(system, 'pre', ...args)
-
-				// Run the "every" method in the system
-				let everyStatus
-				if (isFunction(system.every)) {
-					everyStatus = this.every(system.components, system.every.bind(system), ...args)
-				}
-
-				let postStatus = invoke(system, 'post', ...args)
-
-				status = status || preStatus || everyStatus || postStatus
+			for (const system of this.systems) {
+				// Try to call the "run" method
+				const result = invoke(system, 'run', ...args)
+				status = status || result
 			}
 
 			// Clear args after first run, so re-runs can be identified
@@ -281,7 +281,7 @@ class World {
 			let status
 			for (let entity of entities) {
 				// Get all components as an array
-				let components = componentNames.map(name => entity.get(name))
+				let components = componentNames.map((name) => entity.get(name))
 
 				// Pass components, then the main entity, then any additional arguments
 				status = callback(...components, entity, ...args)
@@ -359,7 +359,9 @@ class World {
 				// Iterate through component names
 				for (let compName in inputObject) {
 					// Store strings of each component
-					protoObject[compName] = JSON.stringify(inputObject[compName])
+					protoObject[compName] = JSON.stringify(
+						inputObject[compName]
+					)
 				}
 				this.entityTemplates[protoName] = protoObject
 				++count
