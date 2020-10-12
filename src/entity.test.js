@@ -29,6 +29,16 @@ test('entity: valid entities', testIndexers(world => {
 	assert(!entityB.valid())
 }))
 
+test('entity: get entity by id', testIndexers(world => {
+	const entityA = world.entity().set('test')
+	const id = entityA.id
+	assert(world.getEntityById(id) === entityA)
+	assert(world.getEntityById(id).id === id)
+	entityA.destroy()
+	assert(world.getEntityById(id) === undefined)
+	assert(!entityA.valid())
+}))
+
 test('entity: remove an entity', testIndexers(world => {
 	world.component('position', function(entity, x = 0, y = 0) {
 		this.x = x

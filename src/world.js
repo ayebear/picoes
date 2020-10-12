@@ -312,6 +312,21 @@ class World {
 	}
 
 	/**
+	 * Returns an entity by ID
+	 * Returns undefined if it doesn't exist
+	 *
+	 * @example
+	 * world.getEntityById(123)
+	 *
+	 * @param {number} entityId - The entity ID to lookup for the entity
+	 *
+	 * @return {Entity} Entity if found, otherwise undefined
+	 */
+	getEntityById(entityId) {
+		return this.entities.get(entityId)
+	}
+
+	/**
 	 * Registers entity prototype(s). Any existing prototype names that are the same will be overwritten
 	 *
 	 * @example
