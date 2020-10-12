@@ -195,6 +195,7 @@ class World {
 
 	/**
 	 * Calls run() on all systems. These methods can return true to cause an additional rerun of all systems.
+	 * Reruns will not receive the args passed into run(), as a way to identify reruns.
 	 *
 	 * @example
 	 * world.run(deltaTime)
@@ -227,37 +228,63 @@ class World {
 	}
 
 	/**
-	 * Iterate through entities with the specified components
+	 * Iterate through components and entities with all of the specified component names
 	 *
 	 * @example
 	 * // Use a callback to process entities one-by-one
-	 * world.every(['comp'], comp => {comp.value = 0})
+	 * world.each('comp', ({ comp }) => { comp.value = 0 })
 	 *
 	 * @example
 	 * // Get an iterator for the entities
-	 * let it = world.every(['comp'])
+	 * const it = world.every('comp')
 	 * for (let entity of it) {...}
+	 * 
+	 * @example
+	 * // Pass multiple components, arrays, use extra entity parameter,
+	 * // and destructure components outside the query
+	 * world.each('compA', ['more', 'comps'], 'compB', ({ compA, compC }, entity) => {
+	 *   if (compC) compC.foo(compC.bar)
+	 *   compA.foo = 'bar'
+	 *   entity.remove('compB')
+	 * })
 	 *
 	 * @param {Array}     componentNames - The component names to match entities with. This checks if the entity
 	 * has ALL of the specified components, but does not check for additional components.
-	 * @param {Function}  callback       - The callback to call for each entity. Takes (...components, entity, ...args).
-	 * @param {...Object} [args]         - Any additional arguments to pass to the callback.
+	 * @param {Function}  callback       - The callback to call for each entity. Takes (entity.data, entity).
+	 * Entity data is just an object of {[componentName]: [component]}, that can be destructured with syntax shown
+	 * in the examples.
 	 *
-	 * @return {MapIterator} If no callback specified, then a generator to the entities themselves. Otherwise, returns undefined.
+	 * @return {MapIterator} If no callback specified, then returns a generator to the entities themselves.
+	 * Otherwise, returns the last loop iteration status, returned by the callback.
 	 */
-	every(componentNames, callback, ...args) {
-		// Get indexed map of entities
-		let entities = this.index.query(...componentNames)
+	each(...args) {
+		// Gather component names and a callback (if any) from args
+		const compNames = []
+		let callback
+		for (const arg of args) {
+			if (typeof arg === 'string') {
+				compNames.push(arg)
+			} else if (typeof arg === 'function') {
+				callback = arg
+			} else if (Array.isArray(arg)) {
+				// Add 1-level deep arrays of strings as separate component names
+				for (const name of arg) {
+					compNames.push(name)
+				}
+			} else {
+				throw new Error(`Unknown argument ${arg} with type ${typeof arg} passed to world.each().`)
+			}
+		}
 
-		if (isFunction(callback)) {
+		// Get indexed map of entities
+		const entities = this.index.query(...compNames)
+
+		if (callback) {
 			// Go through the map of entities
 			let status
-			for (let entity of entities) {
-				// Get all components as an array
-				let components = componentNames.map((name) => entity.get(name))
-
-				// Pass components, then the main entity, then any additional arguments
-				status = callback(...components, entity, ...args)
+			for (const entity of entities) {
+				// Pass component data and the main entity
+				status = callback(entity.data, entity)
 
 				// Stop the iteration when the callback returns false
 				if (status === false) {
@@ -267,21 +294,6 @@ class World {
 			return status
 		}
 		return entities
-	}
-
-	/**
-	 * Returns an array of entities with matching components
-	 * Simplified version of every(), returns an actual array, and only takes component names as arguments.
-	 *
-	 * @example
-	 * world.get('player', 'sprite')
-	 *
-	 * @param {Array} componentNames - The component names to match on. See every() for how this matches.
-	 *
-	 * @return {Array} Array of entities, instead of iterator like every().
-	 */
-	get(...componentNames) {
-		return [...this.every(componentNames)]
 	}
 
 	/**
