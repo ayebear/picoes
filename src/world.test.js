@@ -308,20 +308,15 @@ test('system: define a system', testIndexers(world => {
 
 test('system: define a system with arguments', testIndexers(world => {
 	let velocitySystem = class {
-		constructor(maxVelocity) {
+		constructor(maxVelocity, canvas, textures) {
 			this.maxVelocity = maxVelocity
-		}
-
-		initialize(canvas, textures) {
 			this.canvas = canvas
 			this.textures = textures
 		}
 	}
 	world.component('velocity')
-	world.system(['velocity'], velocitySystem, 3500)
+	world.system(velocitySystem, 3500, 'someCanvas', ['textures.png'])
 	assert(world.systems[0].maxVelocity === 3500)
-
-	world.initialize('someCanvas', ['textures.png'])
 	assert(world.systems[0].canvas === 'someCanvas')
 	assert(world.systems[0].textures[0] === 'textures.png')
 }))
@@ -362,8 +357,6 @@ test('system: system iteration', testIndexers(world => {
 	entA.update('position', {x: 1, y: 1}).update('velocity', {x: 1, y: 0})
 	entB.update('position', {x: 30, y: 40}).update('velocity', {x: -1, y: 2})
 
-	world.initialize()
-
 	assert(entA.get('position').x == 1 && entA.get('position').y == 1)
 	assert(entB.get('position').x == 30 && entB.get('position').y == 40)
 
@@ -388,10 +381,6 @@ test('system: system methods', testIndexers(world => {
 		constructor() {
 			this.val = 10
 		}
-		initialize() {
-			++methodsCalled
-			assert(this.val === 10)
-		}
 		pre() {
 			++methodsCalled
 			assert(this.val === 10)
@@ -411,7 +400,6 @@ test('system: system methods', testIndexers(world => {
 	world.system()
 
 	let ent = world.entity().set('position')
-	world.initialize()
 	assert(methodsCalled == 1)
 	world.run()
 	assert(methodsCalled == 4)
@@ -462,8 +450,6 @@ test('system: system edge cases', testIndexers(world => {
 	let entC = world.entity()
 	entA.update('position', {x: 1, y: 1}).update('velocity', {x: 1, y: 0})
 	entB.update('position', {x: 30, y: 40}).update('velocity', {x: -1, y: 2})
-
-	world.initialize()
 
 	assert(entA.get('position').x == 1 && entA.get('position').y == 1)
 	assert(entB.get('position').x == 30 && entB.get('position').y == 40)

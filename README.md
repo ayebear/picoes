@@ -35,7 +35,7 @@ This entity system is designed to be as simple as possible, while still having u
 * **No formal declarations required**
 	* Can create components and entities in a world and query on them, without needing to define structured systems and components
 * **Strings as component keys**
-	* No need to manually track component keys like many libraries
+	* No need to manually define component keys like many libraries
 * **JSON serialization**
 	* Useful for save data and networked applications
 * **Prototypes**
@@ -149,10 +149,6 @@ world.system(['position', 'velocity'], class {
 		console.log('constructor() called')
 	}
 
-	initialize() {
-		console.log('initialize() called')
-	}
-
 	pre() {
 		console.log('pre() called')
 	}
@@ -188,9 +184,6 @@ entityA.get('position').x = 100
 entityA.update('velocity', { x: 10, y: 10 })
 entityB.update('velocity', { x: -10, y: -10 })
 
-// Initialize systems
-world.initialize()
-
 // Run systems
 world.run()
 
@@ -205,7 +198,6 @@ Expected output:
 
 ```
 constructor() called
-initialize() called
 pre() called
 every() called for entity 1
 every() called for entity 2

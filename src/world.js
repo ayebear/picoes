@@ -165,7 +165,7 @@ class World {
 	 *     }
 	 *   }
 	 * }
-	 * // Register systems (this method)
+	 * // Register systems in order (this method)
 	 * world.system(InputSystem, button) // pass button to system constructor
 	 * world.system(MovementSystem)
 	 * // Run systems (can get dt or frame time)
@@ -173,50 +173,23 @@ class World {
 	 *
 	 * @param {...Object} args - Both signatures are accepted: (components, systemClass, ...args) or (systemClass, ...args).
 	 *
-	 * **[components]**: The list of components the system will process in every(). This follows the same logic as entity.has() and world.every().
+	 * **{systemClass}**: The system class to instantiate. Can contain a constructor(), run(), or any other custom methods/properties.
 	 *
-	 * **{systemClass}**: The system class to instantiate. Can contain the following methods: constructor, initialize, pre, every, post. Pre() and post() get called before and after every(), for each of the independent systems. See world.run() for an example of the call order.
-	 *
-	 * **[...args]**: The arguments to forward to the system's constructors.
+	 * **[...args]**: The arguments to forward to the system's constructor.
 	 *
 	 * @return {number} Unique ID of the system on success or undefined on failure
 	 */
 	system(...args) {
-		// Get components and systemClass from arguments
-		let components = []
-		let systemClass, rest
-		if (Array.isArray(args[0])) {
-			components = args[0]
-			systemClass = args[1]
-			rest = args.slice(2)
-		} else {
-			systemClass = args[0]
-			rest = args.slice(1)
-		}
+		// Get systemClass and remaining args from args
+		const [systemClass, ...rest] = args
 
 		// Make sure the system is valid
 		if (isFunction(systemClass)) {
-			// Create the system, and set the component array query
-			let newSystem = new systemClass(...rest)
-			newSystem.components = components
+			// Create the system
+			const newSystem = new systemClass(...rest)
 
 			// Add the system, return its ID
 			return this.systems.push(newSystem) - 1
-		}
-		return undefined
-	}
-
-	/**
-	 * Calls initialize() on all systems
-	 *
-	 * @example
-	 * world.initialize(renderContext)
-	 *
-	 * @param {...Object} [args] - The arguments to forward to the systems' initialize() methods
-	 */
-	initialize(...args) {
-		for (let system of this.systems) {
-			invoke(system, 'initialize', ...args)
 		}
 	}
 
