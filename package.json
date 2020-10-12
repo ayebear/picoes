@@ -1,6 +1,6 @@
 {
   "name": "picoes",
-  "version": "0.5.3",
+  "version": "1.0.0",
   "description": "Pico Entity System for JavaScript (ES6).",
   "main": "./index.js",
   "scripts": {
