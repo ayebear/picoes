@@ -225,7 +225,7 @@ class World {
 			const newSystem = new systemClass(...rest)
 
 			// Inject context
-			this._injectContext(system)
+			this._injectContext(newSystem)
 
 			// Add the system, return its ID
 			return this.systems.push(newSystem) - 1
