@@ -207,22 +207,18 @@ class World {
 	 * // Run systems (can get dt or frame time)
 	 * world.run(1000.0 / 60.0)
 	 *
-	 * @param {...Object} args - Both signatures are accepted: (components, systemClass, ...args) or (systemClass, ...args).
-	 *
-	 * **{systemClass}**: The system class to instantiate. Can contain a constructor(), run(), or any other custom methods/properties.
-	 *
-	 * **[...args]**: The arguments to forward to the system's constructor.
+	 * @param {Function} systemClass - The system class to instantiate. Can contain a
+	 * constructor(), run(), or any other custom methods/properties.
+	 * 
+	 * @param {...Object} args - The arguments to forward to the system's constructor.
 	 *
 	 * @return {number} Unique ID of the system on success or undefined on failure
 	 */
-	system(...args) {
-		// Get systemClass and remaining args from args
-		const [systemClass, ...rest] = args
-
+	system(systemClass, ...args) {
 		// Make sure the system is valid
 		if (isFunction(systemClass)) {
 			// Create the system
-			const newSystem = new systemClass(...rest)
+			const newSystem = new systemClass(...args)
 
 			// Inject context
 			this._injectContext(newSystem)
@@ -287,13 +283,17 @@ class World {
 	 *   entity.remove('compB')
 	 * })
 	 *
-	 * @param {Array}     componentNames - The component names to match entities with. This checks if the entity
+	 * @param {...Object} args - Can pass component names, arrays of component names, and a callback,
+	 * in any order.
+	 * 
+	 * **{...string}**: The component names to match entities with. This checks if the entity
 	 * has ALL of the specified components, but does not check for additional components.
-	 * @param {Function}  callback       - The callback to call for each entity. Takes (entity.data, entity).
-	 * Entity data is just an object of {[componentName]: [component]}, that can be destructured with syntax shown
-	 * in the examples.
+	 * 
+	 * **{Function}**: The callback to call for each matched entity. Takes (entity.data, entity).
+	 * Entity data is an object of {[componentName]: [component]}, that can be destructured with syntax
+	 * shown in the examples.
 	 *
-	 * @return {MapIterator} If no callback specified, then returns a generator to the entities themselves.
+	 * @return {MapIterator} If no callback specified, then returns a one-time-use iterator to the entities.
 	 * Otherwise, returns the last loop iteration status, returned by the callback.
 	 */
 	each(...args) {
