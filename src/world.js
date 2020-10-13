@@ -42,6 +42,12 @@ class World {
 		 * @ignore
 		 */
 		this.index = new indexer(this)
+
+		/**
+		 * Context information
+		 */
+		this.contextData = undefined
+		this.contextKey = undefined
 	}
 
 	/**
@@ -133,6 +139,36 @@ class World {
 	}
 
 	/**
+	 * Sets a context object that is automatically injected into all existing and new systems.
+	 * Calling this multiple times will overwrite any previous contexts passed.
+	 *
+	 * @param {Object} [data] - The object to use as context to pass to systems
+	 * @param {string} [key] - The top-level key to inject into systems for the context object.
+	 * If no key is specified, then all the keys inside the context object will be spread into the
+	 * top-level of the system.
+	 *
+	 * @example
+	 * const state = { app: new PIXI.Application() }
+	 * const world = new World()
+	 * world.context(state) // systems can directly use this.app
+	 * world.system(...)
+	 *
+	 * @example
+	 * world.context(state, 'state') // systems use this.state.app
+	 *
+	 * @return {Entity} The new entity created
+	 */
+	context(data, key) {
+		this.contextData = data
+		this.contextKey = key
+
+		// Update existing systems' context
+		for (const system of this.systems) {
+			this._injectContext(system)
+		}
+	}
+
+	/**
 	 * Registers a system to the world.
 	 * The order the systems get registered, is the order then run in.
 	 *
@@ -151,7 +187,7 @@ class World {
 	 *   constructor(button) {
 	 *     // This is showing how you can optionally pass parameters to the system's constructor
 	 *     this.button = button
-	 *     // See world.setContext() for a simpler way to inject dependencies
+	 *     // See world.context() for a simpler way to inject dependencies
 	 *   }
 	 *   run(dt) {
 	 *     if (this.button.isPressed()) {
@@ -187,6 +223,9 @@ class World {
 		if (isFunction(systemClass)) {
 			// Create the system
 			const newSystem = new systemClass(...rest)
+
+			// Inject context
+			this._injectContext(system)
 
 			// Add the system, return its ID
 			return this.systems.push(newSystem) - 1
@@ -369,6 +408,22 @@ class World {
 		}
 
 		return count
+	}
+
+	/**
+	 * Injects context into a system based on current context state
+	 * @ignore
+	 */
+	_injectContext(system) {
+		if (this.contextData && this.contextKey) {
+			// Inject into specified key
+			system[this.contextKey] = this.contextData
+		} else if (this.contextData) {
+			// Inject as keys of context
+			for (const key in this.contextData) {
+				system[key] = this.contextData[key]
+			}
+		}
 	}
 }
 
