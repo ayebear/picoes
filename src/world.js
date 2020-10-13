@@ -140,9 +140,9 @@ class World {
 	 * // Movement system (basic example)
 	 * class MovementSystem {
 	 *   run(dt) {
-	 *     world.every(['position', 'velocity'], (position, velocity) => {
-	 *       position.x += velocity.x
-	 *       position.y += velocity.y
+	 *     world.each('position', 'velocity', ({ position, velocity }) => {
+	 *       position.x += velocity.x * dt
+	 *       position.y += velocity.y * dt
 	 *     })
 	 *   }
 	 * }
@@ -155,7 +155,7 @@ class World {
 	 *   }
 	 *   run(dt) {
 	 *     if (this.button.isPressed()) {
-	 *       world.every(['controlled', 'velocity'], (controlled, velocity, entity) => {
+	 *       world.each('controlled', 'velocity', ({ velocity }, entity) => {
 	 *         // Start moving all controlled entities to the right
 	 *         velocity.x = 1
 	 *         velocity.y = 0
