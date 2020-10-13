@@ -107,9 +107,11 @@ class Entity {
 	 * @example
 	 * entity.set('anotherAnonymousComponent', 'Any type of any value')
 	 *
-	 * @param {string}    component - The component name to create. If there is a registered component for this name, then
-	 * its constructor will be called with (entity, ...args) and an object of that type will be created. The onCreate method
-	 * gets called after the component is added to the entity. This method also gets passed the same parameters.
+	 * @param {string}    component - The component name to create. If there is a registered component for this name,
+	 * then its constructor will be called with (...args) and an object of that type will be created. The parent
+	 * entity reference gets injected into registered components after they are constructed. The onCreate method
+	 * gets called after the component is added to the entity, and after the entity is injected. This method
+	 * also gets passed the same parameters.
 	 * @param {...Object} [args]    - The arguments to forward to the registered component type. If the component type is
 	 * registered, then only the first additional argument will be used as the value of the entire component.
 	 *
@@ -118,8 +120,10 @@ class Entity {
 	set(component, ...args) {
 		if (this.valid() && component in this.world.components) {
 			// Create component and store in entity
-			// Note: The entity parameter is dangerous to use, since the component hasn't been added to the entity yet
-			this.data[component] = new this.world.components[component](this, ...args)
+			this.data[component] = new this.world.components[component](...args)
+			
+			// Inject parent entity into component
+			this.data[component].entity = this
 		} else if (args.length > 0) {
 			// Use first argument as component value
 			this.data[component] = args[0]
@@ -133,8 +137,8 @@ class Entity {
 			this.world.index.add(this, component)
 		}
 
-		// Call custom onCreate to initialize component, pass the entity (this), and any additional arguments passed into set()
-		invoke(this.data[component], 'onCreate', this, ...args)
+		// Call custom onCreate to initialize component, and any additional arguments passed into set()
+		invoke(this.data[component], 'onCreate', ...args)
 
 		return this
 	}

@@ -29,8 +29,18 @@ test('entity: valid entities', testIndexers(world => {
 	assert(!entityB.valid())
 }))
 
+test('entity: get entity by id', testIndexers(world => {
+	const entityA = world.entity().set('test')
+	const id = entityA.id
+	assert(world.getEntityById(id) === entityA)
+	assert(world.getEntityById(id).id === id)
+	entityA.destroy()
+	assert(world.getEntityById(id) === undefined)
+	assert(!entityA.valid())
+}))
+
 test('entity: remove an entity', testIndexers(world => {
-	world.component('position', function(entity, x = 0, y = 0) {
+	world.component('position', function(x = 0, y = 0) {
 		this.x = x
 		this.y = y
 	})
@@ -61,7 +71,7 @@ test('entity: remove an entity', testIndexers(world => {
 }))
 
 test('entity: get and set components', testIndexers(world => {
-	world.component('position', function(entity, x = 0, y = 0) {
+	world.component('position', function(x = 0, y = 0) {
 		this.x = x
 		this.y = y
 	})
@@ -129,7 +139,7 @@ test('entity: get and set components', testIndexers(world => {
 }))
 
 test('entity: setRaw', testIndexers(world => {
-	world.component('position', function(entity, x = 0, y = 0) {
+	world.component('position', function(x = 0, y = 0) {
 		this.x = x
 		this.y = y
 	})
@@ -209,7 +219,7 @@ test('entity: remove components', testIndexers(world => {
 }))
 
 test('entity: remove components - onRemove', testIndexers(world => {
-	world.component('test', function(entity, obj) {
+	world.component('test', function(obj) {
 		this.obj = obj
 		this.obj.created = true
 
@@ -260,7 +270,7 @@ test('entity: serialize components', testIndexers(world => {
 }))
 
 test('entity: serialize custom components', testIndexers(world => {
-	world.component('position', function(entity, x = 0, y = 0) {
+	world.component('position', function(x = 0, y = 0) {
 		this.x = x
 		this.y = y
 
@@ -289,7 +299,7 @@ test('entity: deserialize components', testIndexers(world => {
 }))
 
 test('entity: deserialize custom components', testIndexers(world => {
-	world.component('position', function(entity, x = 0, y = 0) {
+	world.component('position', function(x = 0, y = 0) {
 		this.x = x
 		this.y = y
 
@@ -326,7 +336,7 @@ test('entity: deserialize custom components', testIndexers(world => {
 
 test('entity: check for existence of components', testIndexers(world => {
 	// Test all component types
-	world.component('position', function(entity, x = 0, y = 0) {
+	world.component('position', function(x = 0, y = 0) {
 		this.x = x
 		this.y = y
 	})
@@ -348,7 +358,7 @@ test('entity: check for existence of components', testIndexers(world => {
 	assert(!ent.has('anonymous', 'invalid'))
 	assert(!ent.has('invalid'))
 
-	// This behavior is important for every/systems to work properly when no components are specified
+	// This behavior is important for world.each to work properly when no components are specified
 	// Basically, it should return all entities when nothing is specified
 	assert(ent.has())
 	let ent2 = world.entity()
@@ -358,7 +368,7 @@ test('entity: check for existence of components', testIndexers(world => {
 
 test('entity: register and use prototypes', testIndexers(world => {
 	// Test all three component types
-	world.component('position', function(entity, x = 0, y = 0) {
+	world.component('position', function(x = 0, y = 0) {
 		this.x = x
 		this.y = y
 	})

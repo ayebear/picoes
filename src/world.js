@@ -42,6 +42,12 @@ class World {
 		 * @ignore
 		 */
 		this.index = new indexer(this)
+
+		/**
+		 * Context information
+		 */
+		this.contextData = undefined
+		this.contextKey = undefined
 	}
 
 	/**
@@ -133,84 +139,98 @@ class World {
 	}
 
 	/**
+	 * Sets a context object that is automatically injected into all existing and new systems.
+	 * Calling this multiple times will overwrite any previous contexts passed.
+	 *
+	 * @param {Object} [data] - The object to use as context to pass to systems
+	 * @param {string} [key] - The top-level key to inject into systems for the context object.
+	 * If no key is specified, then all the keys inside the context object will be spread into the
+	 * top-level of the system.
+	 *
+	 * @example
+	 * const state = { app: new PIXI.Application() }
+	 * const world = new World()
+	 * world.context(state) // systems can directly use this.app
+	 * world.system(...)
+	 *
+	 * @example
+	 * world.context(state, 'state') // systems use this.state.app
+	 *
+	 * @return {Entity} The new entity created
+	 */
+	context(data, key) {
+		this.contextData = data
+		this.contextKey = key
+
+		// Update existing systems' context
+		for (const system of this.systems) {
+			this._injectContext(system)
+		}
+	}
+
+	/**
 	 * Registers a system to the world.
 	 * The order the systems get registered, is the order then run in.
 	 *
 	 * @example
-	 * // Movement system
-	 * world.system(['position', 'velocity'], class {
-	 *      constructor(context) {
-	 *          // This is showing how you can optionally pass parameters to the system's constructor
-	 *          this.context = context
-	 *      }
-	 *      every(position, velocity, entity) {
-	 *          position.x += velocity.x
-	 *          position.y += velocity.y
-	 *      }
-	 *  }, context)
+	 * // Movement system (basic example)
+	 * class MovementSystem {
+	 *   run(dt) {
+	 *     world.each('position', 'velocity', ({ position, velocity }) => {
+	 *       position.x += velocity.x * dt
+	 *       position.y += velocity.y * dt
+	 *     })
+	 *   }
+	 * }
+	 * // Input system (advanced example)
+	 * class InputSystem {
+	 *   constructor(button) {
+	 *     // This is showing how you can optionally pass parameters to the system's constructor
+	 *     this.button = button
+	 *     // See world.context() for a simpler way to inject dependencies
+	 *   }
+	 *   run(dt) {
+	 *     if (this.button.isPressed()) {
+	 *       world.each('controlled', 'velocity', ({ velocity }, entity) => {
+	 *         // Start moving all controlled entities to the right
+	 *         velocity.x = 1
+	 *         velocity.y = 0
+	 *         // Can also use the full entity here, in this case to add a new component
+	 *         entity.set('useFuel')
+	 *       })
+	 *     }
+	 *   }
+	 * }
+	 * // Register systems in order (this method)
+	 * world.system(InputSystem, button) // pass button to system constructor
+	 * world.system(MovementSystem)
+	 * // Run systems (can get dt or frame time)
+	 * world.run(1000.0 / 60.0)
 	 *
-	 * @example
-	 * // System that doesn't use every()
-	 * world.system(class {
-	 *      constructor(context) {
-	 *          this.context = context
-	 *      }
-	 *      pre() {
-	 *          // Handle events or something
-	 *      }
-	 *  }, context)
-	 *
-	 * @param {...Object} args - Both signatures are accepted: (components, systemClass, ...args) or (systemClass, ...args).
-	 *
-	 * **[components]**: The list of components the system will process in every(). This follows the same logic as entity.has() and world.every().
-	 *
-	 * **{systemClass}**: The system class to instantiate. Can contain the following methods: constructor, initialize, pre, every, post. Pre() and post() get called before and after every(), for each of the independent systems. See world.run() for an example of the call order.
-	 *
-	 * **[...args]**: The arguments to forward to the system's constructors.
+	 * @param {Function} systemClass - The system class to instantiate. Can contain a
+	 * constructor(), run(), or any other custom methods/properties.
+	 * 
+	 * @param {...Object} args - The arguments to forward to the system's constructor.
 	 *
 	 * @return {number} Unique ID of the system on success or undefined on failure
 	 */
-	system(...args) {
-		// Get components and systemClass from arguments
-		let components = []
-		let systemClass, rest
-		if (Array.isArray(args[0])) {
-			components = args[0]
-			systemClass = args[1]
-			rest = args.slice(2)
-		} else {
-			systemClass = args[0]
-			rest = args.slice(1)
-		}
-
+	system(systemClass, ...args) {
 		// Make sure the system is valid
 		if (isFunction(systemClass)) {
-			// Create the system, and set the component array query
-			let newSystem = new systemClass(...rest)
-			newSystem.components = components
+			// Create the system
+			const newSystem = new systemClass(...args)
+
+			// Inject context
+			this._injectContext(newSystem)
 
 			// Add the system, return its ID
 			return this.systems.push(newSystem) - 1
 		}
-		return undefined
 	}
 
 	/**
-	 * Calls initialize() on all systems
-	 *
-	 * @example
-	 * world.initialize(renderContext)
-	 *
-	 * @param {...Object} [args] - The arguments to forward to the systems' initialize() methods
-	 */
-	initialize(...args) {
-		for (let system of this.systems) {
-			invoke(system, 'initialize', ...args)
-		}
-	}
-
-	/**
-	 * Calls pre(), every(), and post() on all systems. These methods can return true to cause an additional rerun of all systems.
+	 * Calls run() on all systems. These methods can return true to cause an additional rerun of all systems.
+	 * Reruns will not receive the args passed into run(), as a way to identify reruns.
 	 *
 	 * @example
 	 * world.run(deltaTime)
@@ -221,31 +241,20 @@ class World {
 	 * world.system(systemA)
 	 * world.system(systemB)
 	 * // During world.run():
-	 * // systemA.pre()
-	 * // systemA.every() * number of entities
-	 * // systemA.post()
-	 * // systemB.pre()
-	 * // systemB.every() * number of entities
-	 * // systemB.post()
+	 * // systemA.run()
+	 * // systemB.run()
 	 *
 	 * @param {...Object} [args] - The arguments to forward to the systems' methods
 	 */
 	run(...args) {
 		let status = true
+		// Continue rerunning while any systems return true
 		while (status) {
 			status = undefined
-			for (let system of this.systems) {
-				let preStatus = invoke(system, 'pre', ...args)
-
-				// Run the "every" method in the system
-				let everyStatus
-				if (isFunction(system.every)) {
-					everyStatus = this.every(system.components, system.every.bind(system), ...args)
-				}
-
-				let postStatus = invoke(system, 'post', ...args)
-
-				status = status || preStatus || everyStatus || postStatus
+			for (const system of this.systems) {
+				// Try to call the "run" method
+				const result = invoke(system, 'run', ...args)
+				status = status || result
 			}
 
 			// Clear args after first run, so re-runs can be identified
@@ -254,37 +263,67 @@ class World {
 	}
 
 	/**
-	 * Iterate through entities with the specified components
+	 * Iterate through components and entities with all of the specified component names
 	 *
 	 * @example
 	 * // Use a callback to process entities one-by-one
-	 * world.every(['comp'], comp => {comp.value = 0})
+	 * world.each('comp', ({ comp }) => { comp.value = 0 })
 	 *
 	 * @example
 	 * // Get an iterator for the entities
-	 * let it = world.every(['comp'])
+	 * const it = world.each('comp')
 	 * for (let entity of it) {...}
+	 * 
+	 * @example
+	 * // Pass multiple components, arrays, use extra entity parameter,
+	 * // and destructure components outside the query
+	 * world.each('compA', ['more', 'comps'], 'compB', ({ compA, compC }, entity) => {
+	 *   if (compC) compC.foo(compC.bar)
+	 *   compA.foo = 'bar'
+	 *   entity.remove('compB')
+	 * })
 	 *
-	 * @param {Array}     componentNames - The component names to match entities with. This checks if the entity
+	 * @param {...Object} args - Can pass component names, arrays of component names, and a callback,
+	 * in any order.
+	 * 
+	 * **{...string}**: The component names to match entities with. This checks if the entity
 	 * has ALL of the specified components, but does not check for additional components.
-	 * @param {Function}  callback       - The callback to call for each entity. Takes (...components, entity, ...args).
-	 * @param {...Object} [args]         - Any additional arguments to pass to the callback.
+	 * 
+	 * **{Function}**: The callback to call for each matched entity. Takes (entity.data, entity).
+	 * Entity data is an object of {[componentName]: [component]}, that can be destructured with syntax
+	 * shown in the examples.
 	 *
-	 * @return {MapIterator} If no callback specified, then a generator to the entities themselves. Otherwise, returns undefined.
+	 * @return {MapIterator} If no callback specified, then returns a one-time-use iterator to the entities.
+	 * Otherwise, returns the last loop iteration status, returned by the callback.
 	 */
-	every(componentNames, callback, ...args) {
-		// Get indexed map of entities
-		let entities = this.index.query(...componentNames)
+	each(...args) {
+		// Gather component names and a callback (if any) from args
+		const compNames = []
+		let callback
+		for (const arg of args) {
+			if (typeof arg === 'string') {
+				compNames.push(arg)
+			} else if (typeof arg === 'function') {
+				callback = arg
+			} else if (Array.isArray(arg)) {
+				// Add 1-level deep arrays of strings as separate component names
+				for (const name of arg) {
+					compNames.push(name)
+				}
+			} else {
+				throw new Error(`Unknown argument ${arg} with type ${typeof arg} passed to world.each().`)
+			}
+		}
 
-		if (isFunction(callback)) {
+		// Get indexed map of entities
+		const entities = this.index.query(...compNames)
+
+		if (callback) {
 			// Go through the map of entities
 			let status
-			for (let entity of entities) {
-				// Get all components as an array
-				let components = componentNames.map(name => entity.get(name))
-
-				// Pass components, then the main entity, then any additional arguments
-				status = callback(...components, entity, ...args)
+			for (const entity of entities) {
+				// Pass component data and the main entity
+				status = callback(entity.data, entity)
 
 				// Stop the iteration when the callback returns false
 				if (status === false) {
@@ -298,17 +337,32 @@ class World {
 
 	/**
 	 * Returns an array of entities with matching components
-	 * Simplified version of every(), returns an actual array, and only takes component names as arguments.
+	 * Simplified version of each(), returns an array instead of an iterator.
 	 *
 	 * @example
-	 * world.get('player', 'sprite')
+	 * const entities = world.get('player', 'sprite')
 	 *
-	 * @param {Array} componentNames - The component names to match on. See every() for how this matches.
+	 * @param {Array} componentNames - The component names to match on. See each() for how this matches.
 	 *
-	 * @return {Array} Array of entities, instead of iterator like every().
+	 * @return {Array} Array of entities, instead of iterator like each().
 	 */
 	get(...componentNames) {
-		return [...this.every(componentNames)]
+		return [...this.each(componentNames)]
+	}
+
+	/**
+	 * Returns an entity by ID
+	 * Returns undefined if it doesn't exist
+	 *
+	 * @example
+	 * world.getEntityById(123)
+	 *
+	 * @param {number} entityId - The entity ID to lookup for the entity
+	 *
+	 * @return {Entity} Entity if found, otherwise undefined
+	 */
+	getEntityById(entityId) {
+		return this.entities.get(entityId)
 	}
 
 	/**
@@ -344,7 +398,9 @@ class World {
 				// Iterate through component names
 				for (let compName in inputObject) {
 					// Store strings of each component
-					protoObject[compName] = JSON.stringify(inputObject[compName])
+					protoObject[compName] = JSON.stringify(
+						inputObject[compName]
+					)
 				}
 				this.entityTemplates[protoName] = protoObject
 				++count
@@ -352,6 +408,22 @@ class World {
 		}
 
 		return count
+	}
+
+	/**
+	 * Injects context into a system based on current context state
+	 * @ignore
+	 */
+	_injectContext(system) {
+		if (this.contextData && this.contextKey) {
+			// Inject into specified key
+			system[this.contextKey] = this.contextData
+		} else if (this.contextData) {
+			// Inject as keys of context
+			for (const key in this.contextData) {
+				system[key] = this.contextData[key]
+			}
+		}
 	}
 }
 

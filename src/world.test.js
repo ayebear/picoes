@@ -14,7 +14,7 @@ test('world: create a world', () => {
 })
 
 test('component: define a component', testIndexers(world => {
-	world.component('position', function(entity, x = 0, y = 0) {
+	world.component('position', function(x = 0, y = 0) {
 		this.x = x
 		this.y = y
 
@@ -32,7 +32,7 @@ test('component: define a component', testIndexers(world => {
 
 	// Using class syntax
 	world.component('velocity', class {
-		constructor(entity, x = 0, y = 0) {
+		constructor(x = 0, y = 0) {
 			this.x = x
 			this.y = y
 		}
@@ -62,7 +62,7 @@ test('component: README example', testIndexers(world => {
 	world.entity().set('damages', 30)
 
 	// Apply damage
-	world.every(['damages'], (amount) => {
+	world.each('damages', ({damages: amount}) => {
 		player.get('health').value -= amount
 	})
 
@@ -126,15 +126,15 @@ test('component: use an empty component', testIndexers(world => {
 }))
 
 test('component: test clearing with indexes', testIndexers(world => {
-	world.component('position', function(entity, x = 0, y = 0) {
+	world.component('position', function(x = 0, y = 0) {
 		this.x = x
 		this.y = y
 	})
 	world.component('velocity')
 	world.component('sprite')
-	let results = world.every([])
-	results = world.every(['position'])
-	results = world.every(['position', 'velocity'])
+	let results = world.each()
+	results = world.each('position')
+	results = world.each('position', 'velocity')
 
 	world.entity().set('position', 1, 2).set('velocity')
 	world.entity().set('position', 3, 4).set('velocity')
@@ -142,7 +142,7 @@ test('component: test clearing with indexes', testIndexers(world => {
 	world.entity().set('velocity')
 
 	let count = 0
-	world.every(['position'], (position) => {
+	world.each('position', ({position}) => {
 		assert(position.x >= 1)
 		assert(position.y >= 2)
 		++count
@@ -152,10 +152,10 @@ test('component: test clearing with indexes', testIndexers(world => {
 	world.clear()
 
 	count = 0
-	world.every(['position'], (position) => {
+	world.each('position', ({position}) => {
 		++count
 	})
-	world.every([], (ent) => {
+	world.each((_, ent) => {
 		++count
 	})
 	assert(count === 0)
@@ -164,8 +164,7 @@ test('component: test clearing with indexes', testIndexers(world => {
 test('component: test entity creation with constructor parameters', testIndexers(world => {
 	let when = 0
 	world.component('sprite', class {
-		onCreate(entity, texture, size, invalid) {
-			this.entity = entity
+		onCreate(texture, size, invalid) {
 			this.texture = texture
 			this.size = size
 			this.constructorCalled = ++when
@@ -174,7 +173,7 @@ test('component: test entity creation with constructor parameters', testIndexers
 			assert(invalid === undefined)
 
 			// Regression in 0.3.0, fixed in 0.3.1
-			assert(entity.get('sprite') === this)
+			assert(this.entity.get('sprite') === this)
 		}
 	})
 
@@ -232,7 +231,7 @@ test('component: test detach and attach', testIndexers(world => {
 	assert(!ent.valid())
 	assert(spriteCount === 2)
 	assert(world.entities.size === 1)
-	assert(getSize(world.every(['position'])) === 1)
+	assert(getSize(world.each('position')) === 1)
 	assert(world.get('position').length === 1)
 	assert(world.get('position')[0].get('position').x === 2)
 	assert(ent.get('position').x === 1)
@@ -242,7 +241,7 @@ test('component: test detach and attach', testIndexers(world => {
 	assert(ent.valid())
 	assert(spriteCount === 2)
 	assert(world.entities.size === 2)
-	assert(getSize(world.every(['position'])) === 2)
+	assert(getSize(world.each('position')) === 2)
 	assert(world.get('position').length === 2)
 	assert(ent.get('position').x === 1)
 
@@ -301,55 +300,97 @@ test('component: test detached entities', testIndexers(world => {
 }))
 
 test('system: define a system', testIndexers(world => {
-	world.component('position')
-	world.system(['position'], class {})
+	world.system(class {})
 	assert(world.systems.length == 1)
 }))
 
 test('system: define a system with arguments', testIndexers(world => {
 	let velocitySystem = class {
-		constructor(maxVelocity) {
+		constructor(maxVelocity, canvas, textures) {
 			this.maxVelocity = maxVelocity
-		}
-
-		initialize(canvas, textures) {
 			this.canvas = canvas
 			this.textures = textures
 		}
 	}
 	world.component('velocity')
-	world.system(['velocity'], velocitySystem, 3500)
+	world.system(velocitySystem, 3500, 'someCanvas', ['textures.png'])
 	assert(world.systems[0].maxVelocity === 3500)
-
-	world.initialize('someCanvas', ['textures.png'])
 	assert(world.systems[0].canvas === 'someCanvas')
 	assert(world.systems[0].textures[0] === 'textures.png')
+}))
+
+test('system: define a system with context (no key)', testIndexers(world => {
+	const state = {
+		maxVelocity: 3500,
+		canvas: 'someCanvas',
+		textures: ['textures.png']
+	}
+	const ran = []
+	const velocitySystem = class {
+		constructor(name) {
+			this.name = name
+		}
+		run() {
+			assert(this.maxVelocity === 3500)
+			assert(this.canvas === 'someCanvas')
+			assert(this.textures[0] === 'textures.png')
+			ran.push(this.name)
+		}
+	}
+	world.component('velocity')
+	world.system(velocitySystem, 'a') // Existing system
+	world.context(state) // Set keyless context
+	world.system(velocitySystem, 'b') // New system
+	expect(world.systems.length).toEqual(2)
+	world.run()
+	expect(ran).toEqual(['a', 'b'])
+}))
+
+test('system: define a system with context (specific key)', testIndexers(world => {
+	const state = {
+		maxVelocity: 3500,
+		canvas: 'someCanvas',
+		textures: ['textures.png']
+	}
+	const ran = []
+	const velocitySystem = class {
+		constructor(name) {
+			this.name = name
+		}
+		run() {
+			assert(this.state.maxVelocity === 3500)
+			assert(this.state.canvas === 'someCanvas')
+			assert(this.state.textures[0] === 'textures.png')
+			ran.push(this.name)
+		}
+	}
+	world.component('velocity')
+	world.system(velocitySystem, 'a') // Existing system
+	world.context(state, 'state') // Set keyed context
+	world.system(velocitySystem, 'b') // New system
+	expect(world.systems.length).toEqual(2)
+	world.run()
+	expect(ran).toEqual(['a', 'b'])
 }))
 
 test('system: system iteration', testIndexers(world => {
 	world.component('position')
 	world.component('velocity')
-	world.system(['position', 'velocity'], class {
-		pre(dt, total) {
+	world.system(class {
+		run(dt, total) {
 			assert(dt > 0)
 			assert(total > 0)
-		}
-
-		every(position, velocity, ent, dt, total) {
-			assert(position)
-			assert(velocity)
-			position.x += velocity.x
-			position.y += velocity.y
-			assert(ent)
-			assert(ent.has('position'))
-			assert(ent.has('velocity'))
-			assert(dt > 0)
-			assert(total > 0)
-		}
-
-		post(dt, total) {
-			assert(dt > 0)
-			assert(total > 0)
+			world.each('position', 'velocity', ({ position, velocity }, ent) => {
+				assert(position)
+				assert(velocity)
+				position.x += velocity.x
+				position.y += velocity.y
+				assert(ent)
+				assert(ent.has('position'))
+				assert(ent.has('velocity'))
+				assert(dt > 0)
+				assert(total > 0)
+			})
 		}
 	})
 
@@ -361,8 +402,6 @@ test('system: system iteration', testIndexers(world => {
 	let entC = world.entity()
 	entA.update('position', {x: 1, y: 1}).update('velocity', {x: 1, y: 0})
 	entB.update('position', {x: 30, y: 40}).update('velocity', {x: -1, y: 2})
-
-	world.initialize()
 
 	assert(entA.get('position').x == 1 && entA.get('position').y == 1)
 	assert(entB.get('position').x == 30 && entB.get('position').y == 40)
@@ -384,37 +423,29 @@ test('system: system methods', testIndexers(world => {
 
 	let methodsCalled = 0
 
-	world.system(['position'], class {
+	world.system(class {
 		constructor() {
 			this.val = 10
+			++methodsCalled
 		}
-		initialize() {
+		run() {
 			++methodsCalled
 			assert(this.val === 10)
-		}
-		pre() {
-			++methodsCalled
-			assert(this.val === 10)
-		}
-		every(position) {
-			position.x = 1
-			++methodsCalled
-			assert(this.val === 10)
-		}
-		post() {
-			++methodsCalled
-			assert(this.val === 10)
+			world.each('position', ({position}) => {
+				position.x = 1
+				++methodsCalled
+				assert(this.val === 10)
+			})
 		}
 	})
 
-	world.system(['invalid'], class {})
+	world.system(class {})
 	world.system()
 
 	let ent = world.entity().set('position')
-	world.initialize()
 	assert(methodsCalled == 1)
 	world.run()
-	assert(methodsCalled == 4)
+	assert(methodsCalled == 3)
 }))
 
 test('system: system edge cases', testIndexers(world => {
@@ -434,27 +465,29 @@ test('system: system edge cases', testIndexers(world => {
 	let testEnt1 = world.entity().set('position').set('velocity')
 	let count = 0
 
-	world.system(['position', 'velocity'], class {
-		every(position, velocity, ent) {
-			++count
-			if (count == 1) {
-				testEnt1.removeAll()
-				testEnt2.remove('position')
-				testEnt0.remove('velocity')
-				return
-			}
-			assert(position)
-			assert(velocity)
-			position.x += velocity.x
-			position.y += velocity.y
-			assert(ent)
-			assert(ent.has('position'))
-			assert(ent.has('velocity'))
+	world.system(class {
+		run() {
+			world.each(['position', 'velocity'], ({position, velocity}, ent) => {
+				++count
+				if (count == 1) {
+					testEnt1.removeAll()
+					testEnt2.remove('position')
+					testEnt0.remove('velocity')
+					return
+				}
+				assert(position)
+				assert(velocity)
+				position.x += velocity.x
+				position.y += velocity.y
+				assert(ent)
+				assert(ent.has('position'))
+				assert(ent.has('velocity'))
 
-			// Make sure the test entities do not show up here
-			assert(ent.id !== testEnt0.id)
-			assert(ent.id !== testEnt1.id)
-			assert(ent.id !== testEnt2.id)
+				// Make sure the test entities do not show up here
+				assert(ent.id !== testEnt0.id)
+				assert(ent.id !== testEnt1.id)
+				assert(ent.id !== testEnt2.id)
+			})
 		}
 	})
 	let entA = world.entity()
@@ -462,8 +495,6 @@ test('system: system edge cases', testIndexers(world => {
 	let entC = world.entity()
 	entA.update('position', {x: 1, y: 1}).update('velocity', {x: 1, y: 0})
 	entB.update('position', {x: 30, y: 40}).update('velocity', {x: -1, y: 2})
-
-	world.initialize()
 
 	assert(entA.get('position').x == 1 && entA.get('position').y == 1)
 	assert(entB.get('position').x == 30 && entB.get('position').y == 40)
@@ -494,8 +525,7 @@ test('system: adding entities to index', testIndexers(world => {
 
 test('system: onRemove edge cases', testIndexers(world => {
 	world.component('position', class {
-		onCreate(entity, value) {
-			this.entity = entity
+		onCreate(value) {
 			this.value = value
 		}
 
@@ -517,22 +547,19 @@ test('system: indexing edge cases', testIndexers(world => {
 
 	// Define components
 	world.component('position', class {
-		onCreate(entity, x = 0, y = 0) {
-			this.entity = entity
+		onCreate(x = 0, y = 0) {
 			this.x = x
 			this.y = y
 		}
 	})
 	world.component('velocity', class {
-		onCreate(entity, x = 0, y = 0) {
-			this.entity = entity
+		onCreate(x = 0, y = 0) {
 			this.x = x
 			this.y = y
 		}
 	})
 	world.component('sprite', class {
-		onCreate(entity, texture) {
-			this.entity = entity
+		onCreate(texture) {
 			this.texture = texture
 		}
 
@@ -573,11 +600,11 @@ test('system: indexing edge cases', testIndexers(world => {
 
 		// Remove test entities, create more test entities
 		let count = 0
-		world.every(['sprite'], (sprite, entity) => { ++count; entity.destroy() })
+		world.each('sprite', ({sprite}, entity) => { ++count; entity.destroy() })
 		assert(count === 4)
 
 		count = 0
-		world.every(['sprite'], (sprite, entity) => { ++count; entity.destroy() })
+		world.each('sprite', ({sprite}, entity) => { ++count; entity.destroy() })
 		assert(count === 0)
 
 
@@ -594,11 +621,11 @@ test('system: indexing edge cases', testIndexers(world => {
 		}
 
 		count = 0
-		world.every(['velocity'], (velocity, entity) => { ++count; entity.destroy() })
+		world.each('velocity', ({velocity}, entity) => { ++count; entity.destroy() })
 		assert(count === 2)
 
 		count = 0
-		world.every(['velocity'], (velocity, entity) => { ++count; entity.destroy() })
+		world.each('velocity', ({velocity}, entity) => { ++count; entity.destroy() })
 		assert(count === 0)
 
 		// Ensure indexes are still good
@@ -612,11 +639,11 @@ test('system: indexing edge cases', testIndexers(world => {
 		}
 
 		count = 0
-		world.every(['position'], (position, entity) => { ++count; entity.destroy() })
+		world.each('position', ({position}, entity) => { ++count; entity.destroy() })
 		assert(count === 1)
 
 		count = 0
-		world.every(['position'], (position, entity) => { ++count; entity.destroy() })
+		world.each('position', ({position}, entity) => { ++count; entity.destroy() })
 		assert(count === 0)
 
 		world.get('noOtherComponents')[0].destroy()
@@ -634,7 +661,6 @@ test('system: indexing edge cases', testIndexers(world => {
 }))
 
 test('system: system variadic arguments with optional components', testIndexers(world => {
-	// Test optional case
 	let created = false
 	world.system(class {
 		constructor(first, second) {
@@ -644,31 +670,20 @@ test('system: system variadic arguments with optional components', testIndexers(
 		}
 	}, 1, 2)
 	assert(created)
-
-	// Test specified case
-	created = false
-	world.system(['whatever'], class {
-		constructor(first, second) {
-			assert(first === 1)
-			assert(second === 2)
-			created = true
-		}
-	}, 1, 2)
-	assert(created)
 }))
 
-test('system: use the every() method', testIndexers(world => {
+test('system: use the each() method', testIndexers(world => {
 	let ent1 = world.entity().set('position').set('"velocity"')
 	let ent2 = world.entity().set('position')
 	let ent3 = world.entity().set('position:"velocity"')
 	let externalVar = 5
-	world.every(['position'], (pos, ent) => {
+	world.each('position', ({position: pos}, ent) => {
 		assert(pos)
 		assert(ent)
 		assert(ent.has('position'))
 		assert(externalVar === 5)
 	})
-	world.every(['position'], function(pos, ent) {
+	world.each('position', function({position: pos}, ent) {
 		assert(pos)
 		assert(ent)
 		assert(ent.has('position'))
@@ -676,9 +691,9 @@ test('system: use the every() method', testIndexers(world => {
 	})
 
 	// Test hash collisions and escaping
-	world.every(['position:"velocity"'])
+	world.each('position:"velocity"')
 	let count = 0
-	world.every(['position', '"velocity"'], function(pos, vel, ent) {
+	world.each('position', '"velocity"', function({position: pos, ['"velocity"']: vel}, ent) {
 		assert(pos)
 		assert(vel)
 		assert(ent)
@@ -689,39 +704,41 @@ test('system: use the every() method', testIndexers(world => {
 
 	// Test iterator usage
 	count = 0
-	let results = world.every(['position', '"velocity"'])
+	let results = world.each('position', '"velocity"')
 	for (let ent of results) {
 		++count
 	}
 	assert(count === 1)
 
 	// Passing callbacks cause the return value to be undefined
-	results = world.every(['position'], () => {})
+	results = world.each('position', () => {})
 	assert(results === undefined)
-	results = world.every([], () => {})
+	results = world.each(() => {})
 	assert(results === undefined)
 
 	// Test breaking out of the loop
 	count = 0
-	world.every(['position'], function(pos, ent, argA, argB, argC) {
-		assert(pos)
+	world.each('position', function({position}, ent) {
+		assert(position)
 		assert(ent)
-		assert(argA === 'extra')
-		assert(argB === 'args')
-		assert(argC === 999)
 		assert(ent.has('position'))
 		++count
 		return false
-	}, 'extra', 'args', 999)
+	})
 	assert(count === 1)
 
 	// And just to be sure there are more than 1
 	count = world.get('position').length
 	assert(count === 2)
+
+	// Invalid args
+	expect(() => {
+		world.each('position', () => {}, 999)
+	}).toThrow()
 }))
 
-test('system: test indexing with every()', testIndexers(world => {
-	world.component('position', function(entity, val = 0) {
+test('system: test indexing with each()', testIndexers(world => {
+	world.component('position', function(val = 0) {
 		this.val = val
 	})
 	world.component('velocity')
@@ -730,7 +747,7 @@ test('system: test indexing with every()', testIndexers(world => {
 	let ent2 = world.entity().set('position', 10)
 	let ent3 = world.entity().set('position', 100).set('velocity').set('sprite')
 	let count = 0
-	world.every(['position', 'velocity'], (pos, vel, ent) => {
+	world.each('position', 'velocity', ({position: pos, velocity: vel}, ent) => {
 		assert(ent.has('position', 'velocity'))
 		count += pos.val
 	})
@@ -740,7 +757,7 @@ test('system: test indexing with every()', testIndexers(world => {
 	ent1.remove('position')
 	ent1.set('sprite')
 	ent2.set('velocity')
-	world.every(['position', 'velocity'], (pos, vel, ent) => {
+	world.each('position', 'velocity', ({position: pos, velocity: vel}, ent) => {
 		assert(ent.has('position', 'velocity'))
 		count += pos.val
 	})
@@ -751,37 +768,37 @@ test('system: test indexing with every()', testIndexers(world => {
 	ent3.remove('sprite')
 
 	// Query for all entities
-	let test = world.every([])
+	let test = world.each()
 	assert(getSize(test) == 3)
 
 	let ent4 = world.entity()
-	assert(getSize(world.every([])) == 4)
-	assert(has(world.every([]), ent4))
+	assert(getSize(world.each()) == 4)
+	assert(has(world.each(), ent4))
 
 	ent4.set('velocity')
-	assert(getSize(world.every([])) == 4)
-	assert(has(world.every([]), ent4))
+	assert(getSize(world.each()) == 4)
+	assert(has(world.each(), ent4))
 
 	ent4.remove('velocity')
-	assert(getSize(world.every([])) == 4)
-	assert(has(world.every([]), ent4))
+	assert(getSize(world.each()) == 4)
+	assert(has(world.each(), ent4))
 
 	ent4.destroy()
-	assert(getSize(world.every([])) == 3)
-	assert(!has(world.every([]), ent4))
+	assert(getSize(world.each()) == 3)
+	assert(!has(world.each(), ent4))
 
 	count = 0
-	world.every([], (ent) => {
+	world.each(ent => {
 		++count
 	})
 	assert(count == 3)
 
 	count = 0
 	world.system(class {
-		every(ent) {
-			++count
+		run() {
+			world.each(() => { ++count })
 		}
 	})
 	world.run()
-	assert(count == 3)
+	expect(count).toEqual(3)
 }))
