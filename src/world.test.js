@@ -62,7 +62,7 @@ test('component: README example', testIndexers(world => {
 	world.entity().set('damages', 30)
 
 	// Apply damage
-	world.every(['damages'], (amount) => {
+	world.each('damages', ({damages: amount}) => {
 		player.get('health').value -= amount
 	})
 
@@ -132,9 +132,9 @@ test('component: test clearing with indexes', testIndexers(world => {
 	})
 	world.component('velocity')
 	world.component('sprite')
-	let results = world.every([])
-	results = world.every(['position'])
-	results = world.every(['position', 'velocity'])
+	let results = world.each()
+	results = world.each('position')
+	results = world.each('position', 'velocity')
 
 	world.entity().set('position', 1, 2).set('velocity')
 	world.entity().set('position', 3, 4).set('velocity')
@@ -142,7 +142,7 @@ test('component: test clearing with indexes', testIndexers(world => {
 	world.entity().set('velocity')
 
 	let count = 0
-	world.every(['position'], (position) => {
+	world.each('position', ({position}) => {
 		assert(position.x >= 1)
 		assert(position.y >= 2)
 		++count
@@ -152,10 +152,10 @@ test('component: test clearing with indexes', testIndexers(world => {
 	world.clear()
 
 	count = 0
-	world.every(['position'], (position) => {
+	world.each('position', ({position}) => {
 		++count
 	})
-	world.every([], (ent) => {
+	world.each((_, ent) => {
 		++count
 	})
 	assert(count === 0)
@@ -232,7 +232,7 @@ test('component: test detach and attach', testIndexers(world => {
 	assert(!ent.valid())
 	assert(spriteCount === 2)
 	assert(world.entities.size === 1)
-	assert(getSize(world.every(['position'])) === 1)
+	assert(getSize(world.each('position')) === 1)
 	assert(world.get('position').length === 1)
 	assert(world.get('position')[0].get('position').x === 2)
 	assert(ent.get('position').x === 1)
@@ -242,7 +242,7 @@ test('component: test detach and attach', testIndexers(world => {
 	assert(ent.valid())
 	assert(spriteCount === 2)
 	assert(world.entities.size === 2)
-	assert(getSize(world.every(['position'])) === 2)
+	assert(getSize(world.each('position')) === 2)
 	assert(world.get('position').length === 2)
 	assert(ent.get('position').x === 1)
 
@@ -301,8 +301,7 @@ test('component: test detached entities', testIndexers(world => {
 }))
 
 test('system: define a system', testIndexers(world => {
-	world.component('position')
-	world.system(['position'], class {})
+	world.system(class {})
 	assert(world.systems.length == 1)
 }))
 
@@ -324,27 +323,21 @@ test('system: define a system with arguments', testIndexers(world => {
 test('system: system iteration', testIndexers(world => {
 	world.component('position')
 	world.component('velocity')
-	world.system(['position', 'velocity'], class {
-		pre(dt, total) {
+	world.system(class {
+		run(dt, total) {
 			assert(dt > 0)
 			assert(total > 0)
-		}
-
-		every(position, velocity, ent, dt, total) {
-			assert(position)
-			assert(velocity)
-			position.x += velocity.x
-			position.y += velocity.y
-			assert(ent)
-			assert(ent.has('position'))
-			assert(ent.has('velocity'))
-			assert(dt > 0)
-			assert(total > 0)
-		}
-
-		post(dt, total) {
-			assert(dt > 0)
-			assert(total > 0)
+			world.each('position', 'velocity', ({ position, velocity }, ent) => {
+				assert(position)
+				assert(velocity)
+				position.x += velocity.x
+				position.y += velocity.y
+				assert(ent)
+				assert(ent.has('position'))
+				assert(ent.has('velocity'))
+				assert(dt > 0)
+				assert(total > 0)
+			})
 		}
 	})
 
@@ -377,32 +370,29 @@ test('system: system methods', testIndexers(world => {
 
 	let methodsCalled = 0
 
-	world.system(['position'], class {
+	world.system(class {
 		constructor() {
 			this.val = 10
+			++methodsCalled
 		}
-		pre() {
+		run() {
 			++methodsCalled
 			assert(this.val === 10)
-		}
-		every(position) {
-			position.x = 1
-			++methodsCalled
-			assert(this.val === 10)
-		}
-		post() {
-			++methodsCalled
-			assert(this.val === 10)
+			world.each('position', ({position}) => {
+				position.x = 1
+				++methodsCalled
+				assert(this.val === 10)
+			})
 		}
 	})
 
-	world.system(['invalid'], class {})
+	world.system(class {})
 	world.system()
 
 	let ent = world.entity().set('position')
 	assert(methodsCalled == 1)
 	world.run()
-	assert(methodsCalled == 4)
+	assert(methodsCalled == 3)
 }))
 
 test('system: system edge cases', testIndexers(world => {
@@ -422,27 +412,29 @@ test('system: system edge cases', testIndexers(world => {
 	let testEnt1 = world.entity().set('position').set('velocity')
 	let count = 0
 
-	world.system(['position', 'velocity'], class {
-		every(position, velocity, ent) {
-			++count
-			if (count == 1) {
-				testEnt1.removeAll()
-				testEnt2.remove('position')
-				testEnt0.remove('velocity')
-				return
-			}
-			assert(position)
-			assert(velocity)
-			position.x += velocity.x
-			position.y += velocity.y
-			assert(ent)
-			assert(ent.has('position'))
-			assert(ent.has('velocity'))
+	world.system(class {
+		run() {
+			world.each(['position', 'velocity'], ({position, velocity}, ent) => {
+				++count
+				if (count == 1) {
+					testEnt1.removeAll()
+					testEnt2.remove('position')
+					testEnt0.remove('velocity')
+					return
+				}
+				assert(position)
+				assert(velocity)
+				position.x += velocity.x
+				position.y += velocity.y
+				assert(ent)
+				assert(ent.has('position'))
+				assert(ent.has('velocity'))
 
-			// Make sure the test entities do not show up here
-			assert(ent.id !== testEnt0.id)
-			assert(ent.id !== testEnt1.id)
-			assert(ent.id !== testEnt2.id)
+				// Make sure the test entities do not show up here
+				assert(ent.id !== testEnt0.id)
+				assert(ent.id !== testEnt1.id)
+				assert(ent.id !== testEnt2.id)
+			})
 		}
 	})
 	let entA = world.entity()
@@ -559,11 +551,11 @@ test('system: indexing edge cases', testIndexers(world => {
 
 		// Remove test entities, create more test entities
 		let count = 0
-		world.every(['sprite'], (sprite, entity) => { ++count; entity.destroy() })
+		world.each('sprite', ({sprite}, entity) => { ++count; entity.destroy() })
 		assert(count === 4)
 
 		count = 0
-		world.every(['sprite'], (sprite, entity) => { ++count; entity.destroy() })
+		world.each('sprite', ({sprite}, entity) => { ++count; entity.destroy() })
 		assert(count === 0)
 
 
@@ -580,11 +572,11 @@ test('system: indexing edge cases', testIndexers(world => {
 		}
 
 		count = 0
-		world.every(['velocity'], (velocity, entity) => { ++count; entity.destroy() })
+		world.each('velocity', ({velocity}, entity) => { ++count; entity.destroy() })
 		assert(count === 2)
 
 		count = 0
-		world.every(['velocity'], (velocity, entity) => { ++count; entity.destroy() })
+		world.each('velocity', ({velocity}, entity) => { ++count; entity.destroy() })
 		assert(count === 0)
 
 		// Ensure indexes are still good
@@ -598,11 +590,11 @@ test('system: indexing edge cases', testIndexers(world => {
 		}
 
 		count = 0
-		world.every(['position'], (position, entity) => { ++count; entity.destroy() })
+		world.each('position', ({position}, entity) => { ++count; entity.destroy() })
 		assert(count === 1)
 
 		count = 0
-		world.every(['position'], (position, entity) => { ++count; entity.destroy() })
+		world.each('position', ({position}, entity) => { ++count; entity.destroy() })
 		assert(count === 0)
 
 		world.get('noOtherComponents')[0].destroy()
@@ -620,7 +612,6 @@ test('system: indexing edge cases', testIndexers(world => {
 }))
 
 test('system: system variadic arguments with optional components', testIndexers(world => {
-	// Test optional case
 	let created = false
 	world.system(class {
 		constructor(first, second) {
@@ -630,31 +621,20 @@ test('system: system variadic arguments with optional components', testIndexers(
 		}
 	}, 1, 2)
 	assert(created)
-
-	// Test specified case
-	created = false
-	world.system(['whatever'], class {
-		constructor(first, second) {
-			assert(first === 1)
-			assert(second === 2)
-			created = true
-		}
-	}, 1, 2)
-	assert(created)
 }))
 
-test('system: use the every() method', testIndexers(world => {
+test('system: use the each() method', testIndexers(world => {
 	let ent1 = world.entity().set('position').set('"velocity"')
 	let ent2 = world.entity().set('position')
 	let ent3 = world.entity().set('position:"velocity"')
 	let externalVar = 5
-	world.every(['position'], (pos, ent) => {
+	world.each('position', ({position: pos}, ent) => {
 		assert(pos)
 		assert(ent)
 		assert(ent.has('position'))
 		assert(externalVar === 5)
 	})
-	world.every(['position'], function(pos, ent) {
+	world.each('position', function({position: pos}, ent) {
 		assert(pos)
 		assert(ent)
 		assert(ent.has('position'))
@@ -662,9 +642,9 @@ test('system: use the every() method', testIndexers(world => {
 	})
 
 	// Test hash collisions and escaping
-	world.every(['position:"velocity"'])
+	world.each('position:"velocity"')
 	let count = 0
-	world.every(['position', '"velocity"'], function(pos, vel, ent) {
+	world.each('position', '"velocity"', function({position: pos, ['"velocity"']: vel}, ent) {
 		assert(pos)
 		assert(vel)
 		assert(ent)
@@ -675,35 +655,37 @@ test('system: use the every() method', testIndexers(world => {
 
 	// Test iterator usage
 	count = 0
-	let results = world.every(['position', '"velocity"'])
+	let results = world.each('position', '"velocity"')
 	for (let ent of results) {
 		++count
 	}
 	assert(count === 1)
 
 	// Passing callbacks cause the return value to be undefined
-	results = world.every(['position'], () => {})
+	results = world.each('position', () => {})
 	assert(results === undefined)
-	results = world.every([], () => {})
+	results = world.each(() => {})
 	assert(results === undefined)
 
 	// Test breaking out of the loop
 	count = 0
-	world.every(['position'], function(pos, ent, argA, argB, argC) {
-		assert(pos)
+	world.each('position', function({position}, ent) {
+		assert(position)
 		assert(ent)
-		assert(argA === 'extra')
-		assert(argB === 'args')
-		assert(argC === 999)
 		assert(ent.has('position'))
 		++count
 		return false
-	}, 'extra', 'args', 999)
+	})
 	assert(count === 1)
 
 	// And just to be sure there are more than 1
 	count = world.get('position').length
 	assert(count === 2)
+
+	// Invalid args
+	expect(() => {
+		world.each('position', () => {}, 999)
+	}).toThrow()
 }))
 
 test('system: test indexing with every()', testIndexers(world => {
@@ -716,7 +698,7 @@ test('system: test indexing with every()', testIndexers(world => {
 	let ent2 = world.entity().set('position', 10)
 	let ent3 = world.entity().set('position', 100).set('velocity').set('sprite')
 	let count = 0
-	world.every(['position', 'velocity'], (pos, vel, ent) => {
+	world.each('position', 'velocity', ({position: pos, velocity: vel}, ent) => {
 		assert(ent.has('position', 'velocity'))
 		count += pos.val
 	})
@@ -726,7 +708,7 @@ test('system: test indexing with every()', testIndexers(world => {
 	ent1.remove('position')
 	ent1.set('sprite')
 	ent2.set('velocity')
-	world.every(['position', 'velocity'], (pos, vel, ent) => {
+	world.each('position', 'velocity', ({position: pos, velocity: vel}, ent) => {
 		assert(ent.has('position', 'velocity'))
 		count += pos.val
 	})
@@ -737,37 +719,37 @@ test('system: test indexing with every()', testIndexers(world => {
 	ent3.remove('sprite')
 
 	// Query for all entities
-	let test = world.every([])
+	let test = world.each()
 	assert(getSize(test) == 3)
 
 	let ent4 = world.entity()
-	assert(getSize(world.every([])) == 4)
-	assert(has(world.every([]), ent4))
+	assert(getSize(world.each()) == 4)
+	assert(has(world.each(), ent4))
 
 	ent4.set('velocity')
-	assert(getSize(world.every([])) == 4)
-	assert(has(world.every([]), ent4))
+	assert(getSize(world.each()) == 4)
+	assert(has(world.each(), ent4))
 
 	ent4.remove('velocity')
-	assert(getSize(world.every([])) == 4)
-	assert(has(world.every([]), ent4))
+	assert(getSize(world.each()) == 4)
+	assert(has(world.each(), ent4))
 
 	ent4.destroy()
-	assert(getSize(world.every([])) == 3)
-	assert(!has(world.every([]), ent4))
+	assert(getSize(world.each()) == 3)
+	assert(!has(world.each(), ent4))
 
 	count = 0
-	world.every([], (ent) => {
+	world.each(ent => {
 		++count
 	})
 	assert(count == 3)
 
 	count = 0
 	world.system(class {
-		every(ent) {
-			++count
+		run() {
+			world.each(() => { ++count })
 		}
 	})
 	world.run()
-	assert(count == 3)
+	expect(count).toEqual(3)
 }))
