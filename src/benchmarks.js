@@ -51,21 +51,21 @@ function runBenchmarks() {
 			let systems = 50
 			let results = null
 			for (let i = 0; i < systems; ++i) {
-				results = world.every(['compA', 'compB'])
-				results = world.every(['compA', 'compB', 'compC', 'comp' + i])
-				results = world.every(['compA', 'compC', 'comp5', 'comp6', 'comp7'])
-				results = world.every(['compB', 'compC', 'comp10'])
-				results = world.every(['compB', 'compC', 'comp30'])
-				results = world.every(['compC', 'comp30'])
-				results = world.every(['compC'])
+				results = world.each(['compA', 'compB'])
+				results = world.each(['compA', 'compB', 'compC', 'comp' + i])
+				results = world.each(['compA', 'compC', 'comp5', 'comp6', 'comp7'])
+				results = world.each(['compB', 'compC', 'comp10'])
+				results = world.each(['compB', 'compC', 'comp30'])
+				results = world.each(['compC', 'comp30'])
+				results = world.each(['compC'])
 
 				// Simulate a real system
-				world.every(['comp45', 'compB'], (f, b) => b.val += f)
+				world.each(['comp45', 'compB'], ({comp45: f, compB: b}) => b.val += f)
 			}
 
 			// Destroy all numbered components
 			for (let i = 0; i < systems; ++i) {
-				world.every(['comp' + i], (c, e) => e.destroy())
+				world.each('comp' + i, (_, e) => e.destroy())
 			}
 		}
 
