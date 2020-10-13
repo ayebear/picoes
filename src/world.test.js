@@ -320,6 +320,33 @@ test('system: define a system with arguments', testIndexers(world => {
 	assert(world.systems[0].textures[0] === 'textures.png')
 }))
 
+test('system: define a system with context (no key)', testIndexers(world => {
+	const state = {
+		maxVelocity: 3500,
+		canvas: 'someCanvas',
+		textures: ['textures.png']
+	}
+	const ran = []
+	const velocitySystem = class {
+		constructor(name) {
+			this.name = name
+		}
+		run() {
+			ran.push(this.name)
+			assert(this.maxVelocity === 3500)
+			assert(this.canvas === 'someCanvas')
+			assert(this.textures[0] === 'textures.png')
+		}
+	}
+	world.component('velocity')
+	world.system(velocitySystem, 'a')
+	world.context(state)
+	world.system(velocitySystem, 'b')
+	expect(world.systems.length).toEqual(2)
+	world.run()
+	expect(ran).toEqual(['a', 'b'])
+}))
+
 test('system: system iteration', testIndexers(world => {
 	world.component('position')
 	world.component('velocity')
