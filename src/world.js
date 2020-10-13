@@ -297,6 +297,21 @@ class World {
 	}
 
 	/**
+	 * Returns an array of entities with matching components
+	 * Simplified version of each(), returns an array instead of an iterator.
+	 *
+	 * @example
+	 * const entities = world.get('player', 'sprite')
+	 *
+	 * @param {Array} componentNames - The component names to match on. See each() for how this matches.
+	 *
+	 * @return {Array} Array of entities, instead of iterator like each().
+	 */
+	get(...componentNames) {
+		return [...this.each(componentNames)]
+	}
+
+	/**
 	 * Returns an entity by ID
 	 * Returns undefined if it doesn't exist
 	 *
