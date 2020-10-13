@@ -116,34 +116,43 @@ console.assert(player.get('health').value === 60)
 #### Full component and system definitions
 
 ```javascript
-// import { World } from 'picoes'
-const { World } = require('picoes')
+// const { World } = require('picoes')
+import { World } from 'picoes'
 
 // Create a world to store entities in
 const world = new World()
 
-// Define position and velocity components
-world.component(
-	'position',
-	class {
-		onCreate(entity, x = 0, y = 0) {
-			this.x = x
-			this.y = y
-		}
+// Define and register components
+class Vec2 {
+	constructor(x = 0, y = 0) {
+		this.x = x
+		this.y = y
 	}
-)
-
-world.component(
-	'velocity',
-	class {
-		onCreate(entity, x = 0, y = 0) {
-			this.x = x
-			this.y = y
-		}
+}
+world.component('position', Vec2)
+world.component('velocity', Vec2)
+world.component('health', class {
+	constructor(start = 100) {
+		this.value = start
 	}
-)
+})
 
-// Define movement system
+// Example of using onCreate and onRemove
+world.component('sprite', class {
+	onCreate(entity, texture) {
+		// Entity is always passed as first param to onCreate
+		// Remaining parameters are from entity.set()
+		this.container = entity.get('gameContainer')
+		this.sprite = new Sprite(texture)
+		this.container.add(this.sprite)
+	}
+
+	onRemove() {
+		this.container.remove(this.sprite)
+	}
+})
+
+// Define systems
 // Log statements are to show flow order below
 class MovementSystem {
 	constructor(...args) {

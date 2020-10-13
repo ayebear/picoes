@@ -40,7 +40,7 @@ test('entity: get entity by id', testIndexers(world => {
 }))
 
 test('entity: remove an entity', testIndexers(world => {
-	world.component('position', function(entity, x = 0, y = 0) {
+	world.component('position', function(x = 0, y = 0) {
 		this.x = x
 		this.y = y
 	})
@@ -71,7 +71,7 @@ test('entity: remove an entity', testIndexers(world => {
 }))
 
 test('entity: get and set components', testIndexers(world => {
-	world.component('position', function(entity, x = 0, y = 0) {
+	world.component('position', function(x = 0, y = 0) {
 		this.x = x
 		this.y = y
 	})
@@ -139,7 +139,7 @@ test('entity: get and set components', testIndexers(world => {
 }))
 
 test('entity: setRaw', testIndexers(world => {
-	world.component('position', function(entity, x = 0, y = 0) {
+	world.component('position', function(x = 0, y = 0) {
 		this.x = x
 		this.y = y
 	})
@@ -219,7 +219,7 @@ test('entity: remove components', testIndexers(world => {
 }))
 
 test('entity: remove components - onRemove', testIndexers(world => {
-	world.component('test', function(entity, obj) {
+	world.component('test', function(obj) {
 		this.obj = obj
 		this.obj.created = true
 
@@ -270,7 +270,7 @@ test('entity: serialize components', testIndexers(world => {
 }))
 
 test('entity: serialize custom components', testIndexers(world => {
-	world.component('position', function(entity, x = 0, y = 0) {
+	world.component('position', function(x = 0, y = 0) {
 		this.x = x
 		this.y = y
 
@@ -299,7 +299,7 @@ test('entity: deserialize components', testIndexers(world => {
 }))
 
 test('entity: deserialize custom components', testIndexers(world => {
-	world.component('position', function(entity, x = 0, y = 0) {
+	world.component('position', function(x = 0, y = 0) {
 		this.x = x
 		this.y = y
 
@@ -336,7 +336,7 @@ test('entity: deserialize custom components', testIndexers(world => {
 
 test('entity: check for existence of components', testIndexers(world => {
 	// Test all component types
-	world.component('position', function(entity, x = 0, y = 0) {
+	world.component('position', function(x = 0, y = 0) {
 		this.x = x
 		this.y = y
 	})
@@ -368,7 +368,7 @@ test('entity: check for existence of components', testIndexers(world => {
 
 test('entity: register and use prototypes', testIndexers(world => {
 	// Test all three component types
-	world.component('position', function(entity, x = 0, y = 0) {
+	world.component('position', function(x = 0, y = 0) {
 		this.x = x
 		this.y = y
 	})

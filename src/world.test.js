@@ -14,7 +14,7 @@ test('world: create a world', () => {
 })
 
 test('component: define a component', testIndexers(world => {
-	world.component('position', function(entity, x = 0, y = 0) {
+	world.component('position', function(x = 0, y = 0) {
 		this.x = x
 		this.y = y
 
@@ -32,7 +32,7 @@ test('component: define a component', testIndexers(world => {
 
 	// Using class syntax
 	world.component('velocity', class {
-		constructor(entity, x = 0, y = 0) {
+		constructor(x = 0, y = 0) {
 			this.x = x
 			this.y = y
 		}
@@ -126,7 +126,7 @@ test('component: use an empty component', testIndexers(world => {
 }))
 
 test('component: test clearing with indexes', testIndexers(world => {
-	world.component('position', function(entity, x = 0, y = 0) {
+	world.component('position', function(x = 0, y = 0) {
 		this.x = x
 		this.y = y
 	})
@@ -164,8 +164,7 @@ test('component: test clearing with indexes', testIndexers(world => {
 test('component: test entity creation with constructor parameters', testIndexers(world => {
 	let when = 0
 	world.component('sprite', class {
-		onCreate(entity, texture, size, invalid) {
-			this.entity = entity
+		onCreate(texture, size, invalid) {
 			this.texture = texture
 			this.size = size
 			this.constructorCalled = ++when
@@ -174,7 +173,7 @@ test('component: test entity creation with constructor parameters', testIndexers
 			assert(invalid === undefined)
 
 			// Regression in 0.3.0, fixed in 0.3.1
-			assert(entity.get('sprite') === this)
+			assert(this.entity.get('sprite') === this)
 		}
 	})
 
@@ -526,8 +525,7 @@ test('system: adding entities to index', testIndexers(world => {
 
 test('system: onRemove edge cases', testIndexers(world => {
 	world.component('position', class {
-		onCreate(entity, value) {
-			this.entity = entity
+		onCreate(value) {
 			this.value = value
 		}
 
@@ -549,22 +547,19 @@ test('system: indexing edge cases', testIndexers(world => {
 
 	// Define components
 	world.component('position', class {
-		onCreate(entity, x = 0, y = 0) {
-			this.entity = entity
+		onCreate(x = 0, y = 0) {
 			this.x = x
 			this.y = y
 		}
 	})
 	world.component('velocity', class {
-		onCreate(entity, x = 0, y = 0) {
-			this.entity = entity
+		onCreate(x = 0, y = 0) {
 			this.x = x
 			this.y = y
 		}
 	})
 	world.component('sprite', class {
-		onCreate(entity, texture) {
-			this.entity = entity
+		onCreate(texture) {
 			this.texture = texture
 		}
 
@@ -743,7 +738,7 @@ test('system: use the each() method', testIndexers(world => {
 }))
 
 test('system: test indexing with each()', testIndexers(world => {
-	world.component('position', function(entity, val = 0) {
+	world.component('position', function(val = 0) {
 		this.val = val
 	})
 	world.component('velocity')
