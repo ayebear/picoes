@@ -332,16 +332,43 @@ test('system: define a system with context (no key)', testIndexers(world => {
 			this.name = name
 		}
 		run() {
-			ran.push(this.name)
 			assert(this.maxVelocity === 3500)
 			assert(this.canvas === 'someCanvas')
 			assert(this.textures[0] === 'textures.png')
+			ran.push(this.name)
 		}
 	}
 	world.component('velocity')
-	world.system(velocitySystem, 'a')
-	world.context(state)
-	world.system(velocitySystem, 'b')
+	world.system(velocitySystem, 'a') // Existing system
+	world.context(state) // Set keyless context
+	world.system(velocitySystem, 'b') // New system
+	expect(world.systems.length).toEqual(2)
+	world.run()
+	expect(ran).toEqual(['a', 'b'])
+}))
+
+test('system: define a system with context (specific key)', testIndexers(world => {
+	const state = {
+		maxVelocity: 3500,
+		canvas: 'someCanvas',
+		textures: ['textures.png']
+	}
+	const ran = []
+	const velocitySystem = class {
+		constructor(name) {
+			this.name = name
+		}
+		run() {
+			assert(this.state.maxVelocity === 3500)
+			assert(this.state.canvas === 'someCanvas')
+			assert(this.state.textures[0] === 'textures.png')
+			ran.push(this.name)
+		}
+	}
+	world.component('velocity')
+	world.system(velocitySystem, 'a') // Existing system
+	world.context(state, 'state') // Set keyed context
+	world.system(velocitySystem, 'b') // New system
 	expect(world.systems.length).toEqual(2)
 	world.run()
 	expect(ran).toEqual(['a', 'b'])
