@@ -164,10 +164,10 @@ world.component(&apos;health&apos;, class {
 
 // Example of using onCreate and onRemove
 world.component(&apos;sprite&apos;, class {
-    onCreate(entity, texture) {
-        // Entity is always passed as first param to onCreate
-        // Remaining parameters are from entity.set()
-        this.container = entity.get(&apos;gameContainer&apos;)
+    onCreate(texture) {
+        // this.entity is auto-injected into registered components
+        // It is not available in the constructor, but is available in onCreate
+        this.container = this.entity.get(&apos;gameContainer&apos;)
         this.sprite = new Sprite(texture)
         this.container.add(this.sprite)
     }
