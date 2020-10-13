@@ -24,6 +24,15 @@ This entity system is designed to be as simple as possible, while still having u
 
 ### Features
 
+-   **Simple query syntax**
+    -   `world.each('a', 'b', ({a, b}) => { a.foo = b.bar })`
+	-   See the examples below for more advanced usage, or the [reference docs](https://ayebear.com/picoes/class/src/world.js~World.html#instance-method-each)
+-   **No formal declarations required**
+    -   Can create components and entities in a world and query on them, without needing to define structured systems and components
+-   **Strings as component keys**
+    -   No need to manually define component keys, or manually include component classes to use them
+-   **Automatic dependency injection for systems**
+    -   No need to pass state to each system, can have a single context that gets injected into all systems automatically
 -   **High performance indexing options**
     -   SimpleIndex (Default): O(1) component add/remove, O(m) query time
         -   Where `m` is the smallest size component index
@@ -32,12 +41,6 @@ This entity system is designed to be as simple as possible, while still having u
         -   And `n` is the total number of entities
     -   _Note: Above time complexities are amortized assuming the number of components used is a known constant_
     -   Can also write your own and pass it to the World constructor! Needs clear, add, remove, and query.
--   **No formal declarations required**
-    -   Can create components and entities in a world and query on them, without needing to define structured systems and components
--   **Strings as component keys**
-    -   No need to manually define component keys like many libraries
--   **JSON serialization**
-    -   Useful for save data and networked applications
 -   **Prototypes**
     -   Allows entity definitions to be data-driven, outside of code
 
@@ -81,7 +84,7 @@ npm i -D picoes
 
 ### Documentation
 
-[PicoES Documentation](http://ayebear.com/picoes)
+[PicoES Documentation](https://ayebear.com/picoes)
 
 ### Examples
 
@@ -140,14 +143,6 @@ world.component(
 	}
 )
 
-// Create movable prototype
-world.prototype({
-	Movable: {
-		position: {},
-		velocity: {},
-	},
-})
-
 // Define movement system
 // Log statements are to show flow order below
 class MovementSystem {
@@ -174,6 +169,12 @@ console.assert(entityA.has('position'))
 console.assert(entityA.has('velocity'))
 
 // Create entity with prototype (results are the same as above)
+world.prototype({
+	Movable: {
+		position: {},
+		velocity: {},
+	},
+})
 const entityB = world.entity('Movable')
 console.assert(entityB.has('position'))
 console.assert(entityB.has('velocity'))
