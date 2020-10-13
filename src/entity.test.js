@@ -358,7 +358,7 @@ test('entity: check for existence of components', testIndexers(world => {
 	assert(!ent.has('anonymous', 'invalid'))
 	assert(!ent.has('invalid'))
 
-	// This behavior is important for every/systems to work properly when no components are specified
+	// This behavior is important for world.each to work properly when no components are specified
 	// Basically, it should return all entities when nothing is specified
 	assert(ent.has())
 	let ent2 = world.entity()

@@ -742,7 +742,7 @@ test('system: use the each() method', testIndexers(world => {
 	}).toThrow()
 }))
 
-test('system: test indexing with every()', testIndexers(world => {
+test('system: test indexing with each()', testIndexers(world => {
 	world.component('position', function(entity, val = 0) {
 		this.val = val
 	})

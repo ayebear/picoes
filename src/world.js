@@ -275,7 +275,7 @@ class World {
 	 *
 	 * @example
 	 * // Get an iterator for the entities
-	 * const it = world.every('comp')
+	 * const it = world.each('comp')
 	 * for (let entity of it) {...}
 	 * 
 	 * @example
