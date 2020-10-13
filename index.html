@@ -57,6 +57,23 @@
 <p>Read up on what an ECS is here: <a href="https://en.wikipedia.org/wiki/Entity_component_system">https://en.wikipedia.org/wiki/Entity_component_system</a></p>
 <p>This entity system is designed to be as simple as possible, while still having useful features.</p>
 <h3 id="features">Features</h3><ul>
+<li><strong>Simple query syntax</strong><ul>
+<li><code>world.each(&apos;a&apos;, &apos;b&apos;, ({a, b}) =&gt; { a.foo = b.bar })</code></li>
+<li>See the examples below for more advanced usage, or the <a href="https://ayebear.com/picoes/class/src/world.js~World.html#instance-method-each">reference docs</a></li>
+</ul>
+</li>
+<li><strong>No formal declarations required</strong><ul>
+<li>Can create components and entities in a world and query on them, without needing to define structured systems and components</li>
+</ul>
+</li>
+<li><strong>Strings as component keys</strong><ul>
+<li>No need to manually define component keys, or manually include component classes to use them</li>
+</ul>
+</li>
+<li><strong>Automatic dependency injection for systems</strong><ul>
+<li>No need to pass state to each system, can have a single context that gets injected into all systems automatically</li>
+</ul>
+</li>
 <li><strong>High performance indexing options</strong><ul>
 <li>SimpleIndex (Default): O(1) component add/remove, O(m) query time<ul>
 <li>Where <code>m</code> is the smallest size component index</li>
@@ -69,18 +86,6 @@
 </li>
 <li><em>Note: Above time complexities are amortized assuming the number of components used is a known constant</em></li>
 <li>Can also write your own and pass it to the World constructor! Needs clear, add, remove, and query.</li>
-</ul>
-</li>
-<li><strong>No formal declarations required</strong><ul>
-<li>Can create components and entities in a world and query on them, without needing to define structured systems and components</li>
-</ul>
-</li>
-<li><strong>Strings as component keys</strong><ul>
-<li>No need to manually track component keys like many libraries</li>
-</ul>
-</li>
-<li><strong>JSON serialization</strong><ul>
-<li>Useful for save data and networked applications</li>
 </ul>
 </li>
 <li><strong>Prototypes</strong><ul>
@@ -114,90 +119,97 @@
 </code></pre>
 <h4 id="npm">NPM</h4><pre><code class="lang-bash"><code class="source-code prettyprint">npm i -D picoes</code>
 </code></pre>
-<h3 id="documentation">Documentation</h3><p><a href="http://ayebear.com/picoes">PicoES Documentation</a></p>
+<h3 id="documentation">Documentation</h3><p><a href="https://ayebear.com/picoes">PicoES Documentation</a></p>
 <h3 id="examples">Examples</h3><h4 id="shorthand-anonymous-components-and-systems">Shorthand anonymous components and systems</h4><pre><code class="lang-javascript"><code class="source-code prettyprint">// import { World } from &apos;picoes&apos;
 const { World } = require(&apos;picoes&apos;)
 
 // Create a world to store entities in
-let world = new World()
+const world = new World()
 
 // Create player with anonymous health component
-let player = world.entity().set(&apos;health&apos;, { value: 100 })
+const player = world.entity().set(&apos;health&apos;, { value: 100 })
 
 // Create enemies
 world.entity().set(&apos;damages&apos;, 10)
 world.entity().set(&apos;damages&apos;, 30)
 
 // Apply damage
-world.every([&apos;damages&apos;], amount =&gt; {
-    player.get(&apos;health&apos;).value -= amount
+world.each(&apos;damages&apos;, ({ damages }) =&gt; {
+    player.get(&apos;health&apos;).value -= damages
 })
 
 // Player now has reduced health
 console.assert(player.get(&apos;health&apos;).value === 60)</code>
 </code></pre>
-<h4 id="full-component-and-system-definitions">Full component and system definitions</h4><pre><code class="lang-javascript"><code class="source-code prettyprint">// import { World } from &apos;picoes&apos;
-const { World } = require(&apos;picoes&apos;)
+<h4 id="full-component-and-system-definitions">Full component and system definitions</h4><pre><code class="lang-javascript"><code class="source-code prettyprint">// const { World } = require(&apos;picoes&apos;)
+import { World } from &apos;picoes&apos;
 
 // Create a world to store entities in
-let world = new World()
+const world = new World()
 
-// Define position and velocity components
-world.component(&apos;position&apos;, class {
-    onCreate(entity, x = 0, y = 0) {
+// Define and register components
+class Vec2 {
+    constructor(x = 0, y = 0) {
         this.x = x
         this.y = y
     }
-})
-
-world.component(&apos;velocity&apos;, class {
-    onCreate(entity, x = 0, y = 0) {
-        this.x = x
-        this.y = y
+}
+world.component(&apos;position&apos;, Vec2)
+world.component(&apos;velocity&apos;, Vec2)
+world.component(&apos;health&apos;, class {
+    constructor(start = 100) {
+        this.value = start
     }
 })
 
-// Create movable prototype
-world.prototype({
-    Movable: {
-        position: {},
-        velocity: {}
+// Example of using onCreate and onRemove
+world.component(&apos;sprite&apos;, class {
+    onCreate(entity, texture) {
+        // Entity is always passed as first param to onCreate
+        // Remaining parameters are from entity.set()
+        this.container = entity.get(&apos;gameContainer&apos;)
+        this.sprite = new Sprite(texture)
+        this.container.add(this.sprite)
+    }
+
+    onRemove() {
+        this.container.remove(this.sprite)
     }
 })
 
-// Define movement system
-// Note: All system methods are optional, but they are included here to show the flow
-world.system([&apos;position&apos;, &apos;velocity&apos;], class {
-    constructor() {
-        console.log(&apos;constructor() called&apos;)
+// Define systems
+// Log statements are to show flow order below
+class MovementSystem {
+    constructor(...args) {
+        console.log(&apos;constructor() called with args:&apos;, ...args)
     }
 
-    initialize() {
-        console.log(&apos;initialize() called&apos;)
+    run(dt) {
+        console.log(`run(${dt}) called`)
+        world.each(&apos;position&apos;, &apos;velocity&apos;, ({ position, velocity }, entity) =&gt; {
+            console.log(`each() called for entity ${entity.id}`)
+            position.x += velocity.x * dt
+            position.y += velocity.y * dt
+        })
     }
+}
 
-    pre() {
-        console.log(&apos;pre() called&apos;)
-    }
-
-    every(position, velocity, entity) {
-        console.log(`every() called for entity ${entity.id}`)
-        position.x += velocity.x
-        position.y += velocity.y
-    }
-
-    post() {
-        console.log(&apos;post() called&apos;)
-    }
-})
+// Register systems
+world.system(MovementSystem, &apos;extra&apos;, &apos;args&apos;)
 
 // Create entity without prototype
-let entityA = world.entity().set(&apos;position&apos;).set(&apos;velocity&apos;)
+const entityA = world.entity().set(&apos;position&apos;).set(&apos;velocity&apos;)
 console.assert(entityA.has(&apos;position&apos;))
 console.assert(entityA.has(&apos;velocity&apos;))
 
 // Create entity with prototype (results are the same as above)
-let entityB = world.entity(&apos;Movable&apos;)
+world.prototype({
+    Movable: {
+        position: {},
+        velocity: {},
+    },
+})
+const entityB = world.entity(&apos;Movable&apos;)
 console.assert(entityB.has(&apos;position&apos;))
 console.assert(entityB.has(&apos;velocity&apos;))
 
@@ -211,11 +223,8 @@ entityA.get(&apos;position&apos;).x = 100
 entityA.update(&apos;velocity&apos;, { x: 10, y: 10 })
 entityB.update(&apos;velocity&apos;, { x: -10, y: -10 })
 
-// Initialize systems
-world.initialize()
-
-// Run systems
-world.run()
+// Run systems (pass one second for dt)
+world.run(1.0)
 
 // Since the movement system ran once, the positions changed by the amount of their velocity
 console.assert(entityA.get(&apos;position&apos;).x === 110)
@@ -224,12 +233,10 @@ console.assert(entityB.get(&apos;position&apos;).x === 90)
 console.assert(entityB.get(&apos;position&apos;).y === 90)</code>
 </code></pre>
 <p>Expected output:</p>
-<pre><code><code class="source-code prettyprint">constructor() called
-initialize() called
-pre() called
-every() called for entity 1
-every() called for entity 2
-post() called</code>
+<pre><code><code class="source-code prettyprint">constructor() called with args: extra args
+run(1) called
+each() called for entity 1
+each() called for entity 2</code>
 </code></pre></div>
 </div>
 

@@ -367,13 +367,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/entity.js~entity#id",
-    "class/src/entity.js~Entity.html#instance-set-id",
+    "class/src/entity.js~Entity.html#instance-get-id",
     "src/entity.js~Entity#id",
     "member"
   ],
   [
     "src/entity.js~entity#id",
-    "class/src/entity.js~Entity.html#instance-get-id",
+    "class/src/entity.js~Entity.html#instance-set-id",
     "src/entity.js~Entity#id",
     "member"
   ],
@@ -570,15 +570,33 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/world.js~world#entity",
-    "class/src/world.js~World.html#instance-method-entity",
-    "src/world.js~World#entity",
+    "src/world.js~world#context",
+    "class/src/world.js~World.html#instance-method-context",
+    "src/world.js~World#context",
     "method"
   ],
   [
-    "src/world.js~world#every",
-    "class/src/world.js~World.html#instance-method-every",
-    "src/world.js~World#every",
+    "src/world.js~world#contextdata",
+    "class/src/world.js~World.html#instance-member-contextData",
+    "src/world.js~World#contextData",
+    "member"
+  ],
+  [
+    "src/world.js~world#contextkey",
+    "class/src/world.js~World.html#instance-member-contextKey",
+    "src/world.js~World#contextKey",
+    "member"
+  ],
+  [
+    "src/world.js~world#each",
+    "class/src/world.js~World.html#instance-method-each",
+    "src/world.js~World#each",
+    "method"
+  ],
+  [
+    "src/world.js~world#entity",
+    "class/src/world.js~World.html#instance-method-entity",
+    "src/world.js~World#entity",
     "method"
   ],
   [
@@ -588,9 +606,9 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/world.js~world#initialize",
-    "class/src/world.js~World.html#instance-method-initialize",
-    "src/world.js~World#initialize",
+    "src/world.js~world#getentitybyid",
+    "class/src/world.js~World.html#instance-method-getEntityById",
+    "src/world.js~World#getEntityById",
     "method"
   ],
   [

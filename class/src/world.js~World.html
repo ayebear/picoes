@@ -115,7 +115,70 @@
 </tbody>
 </table>
 </div>
-
+<div data-ice="memberSummary"><h2>Member Summary</h2><table class="summary" data-ice="summary">
+  <thead><tr><td data-ice="title" colspan="3">Public Members</td></tr></thead>
+  <tbody>
+  
+  <tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-member-contextData">contextData</a></span></span><span class="code" data-ice="signature">: <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Context information</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-member-contextKey">contextKey</a></span></span><span class="code" data-ice="signature">: <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
 <div data-ice="methodSummary"><h2>Method Summary</h2><table class="summary" data-ice="summary">
   <thead><tr><td data-ice="title" colspan="3">Public Methods</td></tr></thead>
   <tbody>
@@ -192,6 +255,64 @@
           
           
           
+          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-method-context">context</a></span></span><span class="code" data-ice="signature">(data: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>, key: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span><a href="class/src/entity.js~Entity.html">Entity</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Sets a context object that is automatically injected into all existing and new systems.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-method-each">each</a></span></span><span class="code" data-ice="signature">(args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span>MapIterator</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Iterate through components and entities with all of the specified component names</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
           <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-method-entity">entity</a></span></span><span class="code" data-ice="signature">(name: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span><a href="class/src/entity.js~Entity.html">Entity</a></span></span>
         </p>
       </div>
@@ -221,35 +342,6 @@
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-method-every">every</a></span></span><span class="code" data-ice="signature">(componentNames: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span>, callback: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span>MapIterator</span></span>
-        </p>
-      </div>
-      <div>
-        
-        
-        <div data-ice="description"><p>Iterate through entities with the specified components</p>
-</div>
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
-          
           <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-method-get">get</a></span></span><span class="code" data-ice="signature">(componentNames: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span></span>
         </p>
       </div>
@@ -257,7 +349,7 @@
         
         
         <div data-ice="description"><p>Returns an array of entities with matching components
-Simplified version of every(), returns an actual array, and only takes component names as arguments.</p>
+Simplified version of each(), returns an array instead of an iterator.</p>
 </div>
       </div>
     </td>
@@ -280,13 +372,14 @@ Simplified version of every(), returns an actual array, and only takes component
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-method-initialize">initialize</a></span></span><span class="code" data-ice="signature">(args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>)</span>
+          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-method-getEntityById">getEntityById</a></span></span><span class="code" data-ice="signature">(entityId: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>): <span><a href="class/src/entity.js~Entity.html">Entity</a></span></span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Calls initialize() on all systems</p>
+        <div data-ice="description"><p>Returns an entity by ID
+Returns undefined if it doesn&apos;t exist</p>
 </div>
       </div>
     </td>
@@ -344,7 +437,7 @@ Simplified version of every(), returns an actual array, and only takes component
       <div>
         
         
-        <div data-ice="description"><p>Calls pre(), every(), and post() on all systems.</p>
+        <div data-ice="description"><p>Calls run() on all systems.</p>
 </div>
       </div>
     </td>
@@ -367,7 +460,7 @@ Simplified version of every(), returns an actual array, and only takes component
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-method-system">system</a></span></span><span class="code" data-ice="signature">(args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></span>
+          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-method-system">system</a></span></span><span class="code" data-ice="signature">(systemClass: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></span>
         </p>
       </div>
       <div>
@@ -455,7 +548,96 @@ Simplified version of every(), returns an actual array, and only takes component
   
 </div>
 </div>
+<div data-ice="memberDetails"><h2 data-ice="title">Public Members</h2>
 
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-contextData">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">contextData</span><span class="code" data-ice="signature">: <span>*</span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber49">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Context information</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-contextKey">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">contextKey</span><span class="code" data-ice="signature">: <span>*</span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber50">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+</div>
 <div data-ice="methodDetails"><h2 data-ice="title">Public Methods</h2>
 
 <div class="detail" data-ice="detail">
@@ -470,7 +652,7 @@ Simplified version of every(), returns an actual array, and only takes component
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber54">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber60">source</a></span></span>
     </span>
   </h3>
 
@@ -522,7 +704,7 @@ Does not affect registered systems, components, or prototypes.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber95">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber101">source</a></span></span>
     </span>
   </h3>
 
@@ -614,6 +796,209 @@ world.entity().set(&apos;myComponent&apos;, 10, 500)</code></pre>
   
 </div>
 <div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-context">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">context</span><span class="code" data-ice="signature">(data: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>, key: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span><a href="class/src/entity.js~Entity.html">Entity</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber161">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Sets a context object that is automatically injected into all existing and new systems.
+Calling this multiple times will overwrite any previous contexts passed.</p>
+</div>
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">data</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="description"><p>The object to use as context to pass to systems</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">key</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="description"><p>The top-level key to inject into systems for the context object.
+If no key is specified, then all the keys inside the context object will be spread into the
+top-level of the system.</p>
+</td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type code" data-ice="returnType"><span><a href="class/src/entity.js~Entity.html">Entity</a></span></td>
+          <td class="return-desc" data-ice="returnDescription"><p>The new entity created</p>
+</td>
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  <div data-ice="example">
+    <h4>Example:</h4>
+    
+  <div class="example-doc" data-ice="exampleDoc">
+      
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">const state = { app: new PIXI.Application() }
+const world = new World()
+world.context(state) // systems can directly use this.app
+world.system(...)</code></pre>
+    </div>
+<div class="example-doc" data-ice="exampleDoc">
+      
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">world.context(state, &apos;state&apos;) // systems use this.state.app</code></pre>
+    </div>
+</div>
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-each">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">each</span><span class="code" data-ice="signature">(args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span>MapIterator</span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber299">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Iterate through components and entities with all of the specified component names</p>
+</div>
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">args</td>
+      <td data-ice="type" class="code">...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>Can pass component names, arrays of component names, and a callback,
+in any order.</p>
+<p><strong>{...string}</strong>: The component names to match entities with. This checks if the entity
+has ALL of the specified components, but does not check for additional components.</p>
+<p><strong>{Function}</strong>: The callback to call for each matched entity. Takes (entity.data, entity).
+Entity data is an object of {[componentName]: [component]}, that can be destructured with syntax
+shown in the examples.</p>
+</td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type code" data-ice="returnType"><span>MapIterator</span></td>
+          <td class="return-desc" data-ice="returnDescription"><p>If no callback specified, then returns a one-time-use iterator to the entities.
+Otherwise, returns the last loop iteration status, returned by the callback.</p>
+</td>
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  <div data-ice="example">
+    <h4>Example:</h4>
+    
+  <div class="example-doc" data-ice="exampleDoc">
+      
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">// Use a callback to process entities one-by-one
+world.each(&apos;comp&apos;, ({ comp }) =&gt; { comp.value = 0 })</code></pre>
+    </div>
+<div class="example-doc" data-ice="exampleDoc">
+      
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">// Get an iterator for the entities
+const it = world.each(&apos;comp&apos;)
+for (let entity of it) {...}</code></pre>
+    </div>
+<div class="example-doc" data-ice="exampleDoc">
+      
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">// Pass multiple components, arrays, use extra entity parameter,
+// and destructure components outside the query
+world.each(&apos;compA&apos;, [&apos;more&apos;, &apos;comps&apos;], &apos;compB&apos;, ({ compA, compC }, entity) =&gt; {
+  if (compC) compC.foo(compC.bar)
+  compA.foo = &apos;bar&apos;
+  entity.remove(&apos;compB&apos;)
+})</code></pre>
+    </div>
+</div>
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
   <h3 data-ice="anchor" id="instance-method-entity">
     <span class="access" data-ice="access">public</span>
     
@@ -625,7 +1010,7 @@ world.entity().set(&apos;myComponent&apos;, 10, 500)</code></pre>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber116">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber122">source</a></span></span>
     </span>
   </h3>
 
@@ -699,109 +1084,6 @@ world.entity().set(&apos;myComponent&apos;, 10, 500)</code></pre>
   
 </div>
 <div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-method-every">
-    <span class="access" data-ice="access">public</span>
-    
-    
-    
-    
-    
-    <span class="code" data-ice="name">every</span><span class="code" data-ice="signature">(componentNames: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span>, callback: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span>MapIterator</span></span>
-    <span class="right-info">
-      
-      
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber275">source</a></span></span>
-    </span>
-  </h3>
-
-  
-  
-  
-  <div data-ice="description"><p>Iterate through entities with the specified components</p>
-</div>
-
-  
-
-  <div data-ice="properties"><div data-ice="properties">
-  <h4 data-ice="title">Params:</h4>
-  <table class="params">
-    <thead>
-    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-    
-    <tr data-ice="property" data-depth="0">
-      <td data-ice="name" class="code" data-depth="0">componentNames</td>
-      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>The component names to match entites with. This checks if the entity
-has ALL of the specified components, but does not check for additional components.</p>
-</td>
-    </tr>
-<tr data-ice="property" data-depth="0">
-      <td data-ice="name" class="code" data-depth="0">callback</td>
-      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>The callback to call for each entity. Takes (...components, entity, ...args).</p>
-</td>
-    </tr>
-<tr data-ice="property" data-depth="0">
-      <td data-ice="name" class="code" data-depth="0">args</td>
-      <td data-ice="type" class="code">...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
-      <td data-ice="appendix"><ul><li>optional</li></ul></td>
-      <td data-ice="description"><p>Any additional arguments to pass to the callback.</p>
-</td>
-    </tr>
-</tbody>
-  </table>
-</div>
-</div>
-
-  <div class="return-params" data-ice="returnParams">
-    <h4>Return:</h4>
-    <table>
-      <tbody>
-        <tr>
-          <td class="return-type code" data-ice="returnType"><span>MapIterator</span></td>
-          <td class="return-desc" data-ice="returnDescription"><p>If no callback specified, then a generator to the entities themselves. Otherwise, returns undefined.</p>
-</td>
-        </tr>
-      </tbody>
-    </table>
-    <div data-ice="returnProperties">
-</div>
-  </div>
-
-  
-
-  
-
-  
-
-  
-
-  <div data-ice="example">
-    <h4>Example:</h4>
-    
-  <div class="example-doc" data-ice="exampleDoc">
-      
-      <pre class="prettyprint source-code"><code data-ice="exampleCode">// Use a callback to process entities one-by-one
-world.every([&apos;comp&apos;], comp =&gt; {comp.value = 0})</code></pre>
-    </div>
-<div class="example-doc" data-ice="exampleDoc">
-      
-      <pre class="prettyprint source-code"><code data-ice="exampleCode">// Get an iterator for the entities
-let it = world.every([&apos;comp&apos;])
-for (let entity of it) {...}</code></pre>
-    </div>
-</div>
-
-  
-
-  
-  
-</div>
-<div class="detail" data-ice="detail">
   <h3 data-ice="anchor" id="instance-method-get">
     <span class="access" data-ice="access">public</span>
     
@@ -813,7 +1095,7 @@ for (let entity of it) {...}</code></pre>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber310">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber349">source</a></span></span>
     </span>
   </h3>
 
@@ -821,7 +1103,7 @@ for (let entity of it) {...}</code></pre>
   
   
   <div data-ice="description"><p>Returns an array of entities with matching components
-Simplified version of every(), returns an actual array, and only takes component names as arguments.</p>
+Simplified version of each(), returns an array instead of an iterator.</p>
 </div>
 
   
@@ -838,7 +1120,7 @@ Simplified version of every(), returns an actual array, and only takes component
       <td data-ice="name" class="code" data-depth="0">componentNames</td>
       <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"><p>The component names to match on. See every() for how this matches.</p>
+      <td data-ice="description"><p>The component names to match on. See each() for how this matches.</p>
 </td>
     </tr>
 </tbody>
@@ -852,7 +1134,7 @@ Simplified version of every(), returns an actual array, and only takes component
       <tbody>
         <tr>
           <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span></td>
-          <td class="return-desc" data-ice="returnDescription"><p>Array of entities, instead of iterator like every().</p>
+          <td class="return-desc" data-ice="returnDescription"><p>Array of entities, instead of iterator like each().</p>
 </td>
         </tr>
       </tbody>
@@ -874,7 +1156,7 @@ Simplified version of every(), returns an actual array, and only takes component
     
   <div class="example-doc" data-ice="exampleDoc">
       
-      <pre class="prettyprint source-code"><code data-ice="exampleCode">world.get(&apos;player&apos;, &apos;sprite&apos;)</code></pre>
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">const entities = world.get(&apos;player&apos;, &apos;sprite&apos;)</code></pre>
     </div>
 </div>
 
@@ -884,25 +1166,26 @@ Simplified version of every(), returns an actual array, and only takes component
   
 </div>
 <div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-method-initialize">
+  <h3 data-ice="anchor" id="instance-method-getEntityById">
     <span class="access" data-ice="access">public</span>
     
     
     
     
     
-    <span class="code" data-ice="name">initialize</span><span class="code" data-ice="signature">(args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>)</span>
+    <span class="code" data-ice="name">getEntityById</span><span class="code" data-ice="signature">(entityId: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>): <span><a href="class/src/entity.js~Entity.html">Entity</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber206">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber364">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Calls initialize() on all systems</p>
+  <div data-ice="description"><p>Returns an entity by ID
+Returns undefined if it doesn&apos;t exist</p>
 </div>
 
   
@@ -916,10 +1199,10 @@ Simplified version of every(), returns an actual array, and only takes component
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" class="code" data-depth="0">args</td>
-      <td data-ice="type" class="code">...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
-      <td data-ice="appendix"><ul><li>optional</li></ul></td>
-      <td data-ice="description"><p>The arguments to forward to the systems&apos; initialize() methods</p>
+      <td data-ice="name" class="code" data-depth="0">entityId</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>The entity ID to lookup for the entity</p>
 </td>
     </tr>
 </tbody>
@@ -927,7 +1210,20 @@ Simplified version of every(), returns an actual array, and only takes component
 </div>
 </div>
 
-  
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type code" data-ice="returnType"><span><a href="class/src/entity.js~Entity.html">Entity</a></span></td>
+          <td class="return-desc" data-ice="returnDescription"><p>Entity if found, otherwise undefined</p>
+</td>
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
 
   
 
@@ -942,7 +1238,7 @@ Simplified version of every(), returns an actual array, and only takes component
     
   <div class="example-doc" data-ice="exampleDoc">
       
-      <pre class="prettyprint source-code"><code data-ice="exampleCode">world.initialize(renderContext)</code></pre>
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">world.getEntityById(123)</code></pre>
     </div>
 </div>
 
@@ -963,7 +1259,7 @@ Simplified version of every(), returns an actual array, and only takes component
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber330">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber384">source</a></span></span>
     </span>
   </h3>
 
@@ -1050,14 +1346,15 @@ being the prototype names. Can also be a JSON formatted string.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber233">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber249">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Calls pre(), every(), and post() on all systems. These methods can return true to cause an additional rerun of all systems.</p>
+  <div data-ice="description"><p>Calls run() on all systems. These methods can return true to cause an additional rerun of all systems.
+Reruns will not receive the args passed into run(), as a way to identify reruns.</p>
 </div>
 
   
@@ -1106,12 +1403,8 @@ being the prototype names. Can also be a JSON formatted string.</p>
 world.system(systemA)
 world.system(systemB)
 // During world.run():
-// systemA.pre()
-// systemA.every() * number of entities
-// systemA.post()
-// systemB.pre()
-// systemB.every() * number of entities
-// systemB.post()</code></pre>
+// systemA.run()
+// systemB.run()</code></pre>
     </div>
 </div>
 
@@ -1128,11 +1421,11 @@ world.system(systemB)
     
     
     
-    <span class="code" data-ice="name">system</span><span class="code" data-ice="signature">(args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></span>
+    <span class="code" data-ice="name">system</span><span class="code" data-ice="signature">(systemClass: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber173">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber217">source</a></span></span>
     </span>
   </h3>
 
@@ -1154,13 +1447,18 @@ The order the systems get registered, is the order then run in.</p>
     <tbody>
     
     <tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">systemClass</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>The system class to instantiate. Can contain a
+constructor(), run(), or any other custom methods/properties.</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="0">
       <td data-ice="name" class="code" data-depth="0">args</td>
       <td data-ice="type" class="code">...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"><p>Both signatures are accepted: (components, systemClass, ...args) or (systemClass, ...args).</p>
-<p><strong>[components]</strong>: The list of components the system will process in every(). This follows the same logic as entity.has() and world.every().</p>
-<p><strong>{systemClass}</strong>: The system class to instantiate. Can contain the following methods: constructor, initialize, pre, every, post. Pre() and post() get called before and after every(), for each of the independent systems. See world.run() for an example of the call order.</p>
-<p><strong>[...args]</strong>: The arguments to forward to the system&apos;s constructors.</p>
+      <td data-ice="description"><p>The arguments to forward to the system&apos;s constructor.</p>
 </td>
     </tr>
 </tbody>
@@ -1196,29 +1494,39 @@ The order the systems get registered, is the order then run in.</p>
     
   <div class="example-doc" data-ice="exampleDoc">
       
-      <pre class="prettyprint source-code"><code data-ice="exampleCode">// Movement system
-world.system([&apos;position&apos;, &apos;velocity&apos;], class {
-     constructor(context) {
-         // This is showing how you can optionally pass parameters to the system&apos;s constructor
-         this.context = context
-     }
-     every(position, velocity, entity) {
-         position.x += velocity.x
-         position.y += velocity.y
-     }
- }, context)</code></pre>
-    </div>
-<div class="example-doc" data-ice="exampleDoc">
-      
-      <pre class="prettyprint source-code"><code data-ice="exampleCode">// System that doesn&apos;t use every()
-world.system(class {
-     constructor(context) {
-         this.context = context
-     }
-     pre() {
-         // Handle events or something
-     }
- }, context)</code></pre>
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">// Movement system (basic example)
+class MovementSystem {
+  run(dt) {
+    world.each(&apos;position&apos;, &apos;velocity&apos;, ({ position, velocity }) =&gt; {
+      position.x += velocity.x * dt
+      position.y += velocity.y * dt
+    })
+  }
+}
+// Input system (advanced example)
+class InputSystem {
+  constructor(button) {
+    // This is showing how you can optionally pass parameters to the system&apos;s constructor
+    this.button = button
+    // See world.context() for a simpler way to inject dependencies
+  }
+  run(dt) {
+    if (this.button.isPressed()) {
+      world.each(&apos;controlled&apos;, &apos;velocity&apos;, ({ velocity }, entity) =&gt; {
+        // Start moving all controlled entities to the right
+        velocity.x = 1
+        velocity.y = 0
+        // Can also use the full entity here, in this case to add a new component
+        entity.set(&apos;useFuel&apos;)
+      })
+    }
+  }
+}
+// Register systems in order (this method)
+world.system(InputSystem, button) // pass button to system constructor
+world.system(MovementSystem)
+// Run systems (can get dt or frame time)
+world.run(1000.0 / 60.0)</code></pre>
     </div>
 </div>
 
