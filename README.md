@@ -4,15 +4,15 @@
 
 ### Table Of Contents
 
-* [About](#about)
-	* [Features](#features)
-	* [Terminology](#terminology)
-	* [License](#license)
-	* [Author](#author)
-* [Instructions](#instructions)
-	* [Setup](#setup)
-	* [Documentation](#documentation)
-	* [Examples](#examples)
+-   [About](#about)
+    -   [Features](#features)
+    -   [Terminology](#terminology)
+    -   [License](#license)
+    -   [Author](#author)
+-   [Instructions](#instructions)
+    -   [Setup](#setup)
+    -   [Documentation](#documentation)
+    -   [Examples](#examples)
 
 ## About
 
@@ -24,34 +24,34 @@ This entity system is designed to be as simple as possible, while still having u
 
 ### Features
 
-* **High performance indexing options**
-	* SimpleIndex (Default): O(1) component add/remove, O(m) query time
-		* Where `m` is the smallest size component index
-	* MemoizedQueryIndex: O(q) component add/remove, O(1) average query time (memoized), O(n) worst query time (initial)
-		* Where `q` is the total number of memoized queries
-		* And `n` is the total number of entities
-	* *Note: Above time complexities are amortized assuming the number of components used is a known constant*
-	* Can also write your own and pass it to the World constructor! Needs clear, add, remove, and query.
-* **No formal declarations required**
-	* Can create components and entities in a world and query on them, without needing to define structured systems and components
-* **Strings as component keys**
-	* No need to manually define component keys like many libraries
-* **JSON serialization**
-	* Useful for save data and networked applications
-* **Prototypes**
-	* Allows entity definitions to be data-driven, outside of code
+-   **High performance indexing options**
+    -   SimpleIndex (Default): O(1) component add/remove, O(m) query time
+        -   Where `m` is the smallest size component index
+    -   MemoizedQueryIndex: O(q) component add/remove, O(1) average query time (memoized), O(n) worst query time (initial)
+        -   Where `q` is the total number of memoized queries
+        -   And `n` is the total number of entities
+    -   _Note: Above time complexities are amortized assuming the number of components used is a known constant_
+    -   Can also write your own and pass it to the World constructor! Needs clear, add, remove, and query.
+-   **No formal declarations required**
+    -   Can create components and entities in a world and query on them, without needing to define structured systems and components
+-   **Strings as component keys**
+    -   No need to manually define component keys like many libraries
+-   **JSON serialization**
+    -   Useful for save data and networked applications
+-   **Prototypes**
+    -   Allows entity definitions to be data-driven, outside of code
 
 ### Terminology
 
-* **Component:** Holds some related data
-	* Example: Position, Velocity, Health
-* **Entity:** Refers to a collection of components
-	* Example: Position + Health could represent a player
-* **Prototype:** A template of components used for creating entities
-	* Example: Player could contain Position, Velocity, and Health
-* **System:** Logic loop that processes entities
-	* Example: Movement system which handles positions and velocities
-* **World:** Lets you register components, systems, and prototypes in a self-contained object - which avoids the use of singletons. This is also where you can create entities from.
+-   **Component:** Holds some related data
+    -   Example: Position, Velocity, Health
+-   **Entity:** Refers to a collection of components
+    -   Example: Position + Health could represent a player
+-   **Prototype:** A template of components used for creating entities
+    -   Example: Player could contain Position, Velocity, and Health
+-   **System:** Logic loop that processes entities
+    -   Example: Movement system which handles positions and velocities
+-   **World:** Lets you register components, systems, and prototypes in a self-contained object - which avoids the use of singletons. This is also where you can create entities from.
 
 ### License
 
@@ -92,18 +92,18 @@ npm i -D picoes
 const { World } = require('picoes')
 
 // Create a world to store entities in
-let world = new World()
+const world = new World()
 
 // Create player with anonymous health component
-let player = world.entity().set('health', { value: 100 })
+const player = world.entity().set('health', { value: 100 })
 
 // Create enemies
 world.entity().set('damages', 10)
 world.entity().set('damages', 30)
 
 // Apply damage
-world.every(['damages'], amount => {
-	player.get('health').value -= amount
+world.each('damages', ({ damages }) => {
+	player.get('health').value -= damages
 })
 
 // Player now has reduced health
@@ -117,60 +117,64 @@ console.assert(player.get('health').value === 60)
 const { World } = require('picoes')
 
 // Create a world to store entities in
-let world = new World()
+const world = new World()
 
 // Define position and velocity components
-world.component('position', class {
-	onCreate(entity, x = 0, y = 0) {
-		this.x = x
-		this.y = y
+world.component(
+	'position',
+	class {
+		onCreate(entity, x = 0, y = 0) {
+			this.x = x
+			this.y = y
+		}
 	}
-})
+)
 
-world.component('velocity', class {
-	onCreate(entity, x = 0, y = 0) {
-		this.x = x
-		this.y = y
+world.component(
+	'velocity',
+	class {
+		onCreate(entity, x = 0, y = 0) {
+			this.x = x
+			this.y = y
+		}
 	}
-})
+)
 
 // Create movable prototype
 world.prototype({
 	Movable: {
 		position: {},
-		velocity: {}
-	}
+		velocity: {},
+	},
 })
 
 // Define movement system
-// Note: All system methods are optional, but they are included here to show the flow
-world.system(['position', 'velocity'], class {
-	constructor() {
-		console.log('constructor() called')
+// Log statements are to show flow order below
+class MovementSystem {
+	constructor(...args) {
+		console.log('constructor() called with args:', ...args)
 	}
 
-	pre() {
-		console.log('pre() called')
+	run(dt) {
+		console.log(`run(${dt}) called`)
+		world.each('position', 'velocity', ({ position, velocity }, entity) => {
+			console.log(`each() called for entity ${entity.id}`)
+			position.x += velocity.x * dt
+			position.y += velocity.y * dt
+		})
 	}
+}
 
-	every(position, velocity, entity) {
-		console.log(`every() called for entity ${entity.id}`)
-		position.x += velocity.x
-		position.y += velocity.y
-	}
-
-	post() {
-		console.log('post() called')
-	}
-})
+// Register systems
+world.system(MovementSystem, 'extra', 'args')
 
 // Create entity without prototype
-let entityA = world.entity().set('position').set('velocity')
+const entityA = world.entity().set('position').set('velocity')
 console.assert(entityA.has('position'))
 console.assert(entityA.has('velocity'))
 
 // Create entity with prototype (results are the same as above)
-let entityB = world.entity('Movable')
+const entityB = world.entity('Movable')
 console.assert(entityB.has('position'))
 console.assert(entityB.has('velocity'))
 
@@ -184,8 +188,8 @@ entityA.get('position').x = 100
 entityA.update('velocity', { x: 10, y: 10 })
 entityB.update('velocity', { x: -10, y: -10 })
 
-// Run systems
-world.run()
+// Run systems (pass one second for dt)
+world.run(1.0)
 
 // Since the movement system ran once, the positions changed by the amount of their velocity
 console.assert(entityA.get('position').x === 110)
@@ -197,9 +201,8 @@ console.assert(entityB.get('position').y === 90)
 Expected output:
 
 ```
-constructor() called
-pre() called
-every() called for entity 1
-every() called for entity 2
-post() called
+constructor() called with args: extra args
+run(1) called
+each() called for entity 1
+each() called for entity 2
 ```
