@@ -140,7 +140,9 @@ class World {
 
 	/**
 	 * Sets a context object that is automatically injected into all existing and new systems.
-	 * Calling this multiple times will overwrite any previous contexts passed.
+	 * Calling this multiple times will overwrite any previous contexts passed. One caveat is that
+	 * you can only start to use the injected context in systems starting with init(). It is not
+	 * available in the constructor.
 	 *
 	 * @param {Object} [data] - The object to use as context to pass to systems
 	 * @param {string} [key] - The top-level key to inject into systems for the context object.
@@ -184,13 +186,12 @@ class World {
 	 * }
 	 * // Input system (advanced example)
 	 * class InputSystem {
-	 *   constructor(button) {
-	 *     // This is showing how you can optionally pass parameters to the system's constructor
-	 *     this.button = button
-	 *     // See world.context() for a simpler way to inject dependencies
+	 *   init(key) {
+	 *     // Have access to this.keyboard here, but not in constructor
+	 *     this.key = key
 	 *   }
 	 *   run(dt) {
-	 *     if (this.button.isPressed()) {
+	 *     if (this.keyboard.isPressed(this.key)) {
 	 *       world.each('controlled', 'velocity', ({ velocity }, entity) => {
 	 *         // Start moving all controlled entities to the right
 	 *         velocity.x = 1
@@ -201,16 +202,19 @@ class World {
 	 *     }
 	 *   }
 	 * }
+	 * // Inject context (see world.context())
+	 * world.context({ keyboard: new Keyboard() })
 	 * // Register systems in order (this method)
-	 * world.system(InputSystem, button) // pass button to system constructor
+	 * world.system(InputSystem, 'w') // pass arguments to init/constructor
 	 * world.system(MovementSystem)
 	 * // Run systems (can get dt or frame time)
 	 * world.run(1000.0 / 60.0)
 	 *
 	 * @param {Function} systemClass - The system class to instantiate. Can contain a
-	 * constructor(), run(), or any other custom methods/properties.
-	 * 
-	 * @param {...Object} args - The arguments to forward to the system's constructor.
+	 * constructor(), init(), run(), or any other custom methods/properties.
+	 *
+	 * @param {...Object} args - The arguments to forward to the system's constructor and init.
+	 * Note that it is recommended to use init if using context, see world.context().
 	 *
 	 * @return {number} Unique ID of the system on success or undefined on failure
 	 */
@@ -222,6 +226,9 @@ class World {
 
 			// Inject context
 			this._injectContext(newSystem)
+
+			// Call init
+			invoke(newSystem, 'init', ...args)
 
 			// Add the system, return its ID
 			return this.systems.push(newSystem) - 1
@@ -273,7 +280,7 @@ class World {
 	 * // Get an iterator for the entities
 	 * const it = world.each('comp')
 	 * for (let entity of it) {...}
-	 * 
+	 *
 	 * @example
 	 * // Pass multiple components, arrays, use extra entity parameter,
 	 * // and destructure components outside the query
@@ -285,10 +292,10 @@ class World {
 	 *
 	 * @param {...Object} args - Can pass component names, arrays of component names, and a callback,
 	 * in any order.
-	 * 
+	 *
 	 * **{...string}**: The component names to match entities with. This checks if the entity
 	 * has ALL of the specified components, but does not check for additional components.
-	 * 
+	 *
 	 * **{Function}**: The callback to call for each matched entity. Takes (entity.data, entity).
 	 * Entity data is an object of {[componentName]: [component]}, that can be destructured with syntax
 	 * shown in the examples.
@@ -311,7 +318,9 @@ class World {
 					compNames.push(name)
 				}
 			} else {
-				throw new Error(`Unknown argument ${arg} with type ${typeof arg} passed to world.each().`)
+				throw new Error(
+					`Unknown argument ${arg} with type ${typeof arg} passed to world.each().`
+				)
 			}
 		}
 

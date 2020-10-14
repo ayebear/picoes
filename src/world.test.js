@@ -327,23 +327,29 @@ test('system: define a system with context (no key)', testIndexers(world => {
 	}
 	const ran = []
 	const velocitySystem = class {
-		constructor(name) {
-			this.name = name
+		init(existing) {
+			this.existing = existing
+			if (!existing) {
+				expect(this.maxVelocity).toEqual(3500)
+				expect(this.canvas).toEqual('someCanvas')
+				expect(this.textures[0]).toEqual('textures.png')
+				ran.push(existing)
+			}
 		}
 		run() {
-			assert(this.maxVelocity === 3500)
-			assert(this.canvas === 'someCanvas')
-			assert(this.textures[0] === 'textures.png')
-			ran.push(this.name)
+			expect(this.maxVelocity).toEqual(3500)
+			expect(this.canvas).toEqual('someCanvas')
+			expect(this.textures[0]).toEqual('textures.png')
+			ran.push(this.existing)
 		}
 	}
 	world.component('velocity')
-	world.system(velocitySystem, 'a') // Existing system
+	world.system(velocitySystem, true) // Existing system
 	world.context(state) // Set keyless context
-	world.system(velocitySystem, 'b') // New system
+	world.system(velocitySystem, false) // New system
 	expect(world.systems.length).toEqual(2)
 	world.run()
-	expect(ran).toEqual(['a', 'b'])
+	expect(ran).toEqual([false, true, false])
 }))
 
 test('system: define a system with context (specific key)', testIndexers(world => {
@@ -354,23 +360,29 @@ test('system: define a system with context (specific key)', testIndexers(world =
 	}
 	const ran = []
 	const velocitySystem = class {
-		constructor(name) {
-			this.name = name
+		init(existing) {
+			this.existing = existing
+			if (!existing) {
+				expect(this.state.maxVelocity).toEqual(3500)
+				expect(this.state.canvas).toEqual('someCanvas')
+				expect(this.state.textures[0]).toEqual('textures.png')
+				ran.push(existing)
+			}
 		}
 		run() {
-			assert(this.state.maxVelocity === 3500)
-			assert(this.state.canvas === 'someCanvas')
-			assert(this.state.textures[0] === 'textures.png')
-			ran.push(this.name)
+			expect(this.state.maxVelocity).toEqual(3500)
+			expect(this.state.canvas).toEqual('someCanvas')
+			expect(this.state.textures[0]).toEqual('textures.png')
+			ran.push(this.existing)
 		}
 	}
 	world.component('velocity')
-	world.system(velocitySystem, 'a') // Existing system
+	world.system(velocitySystem, true) // Existing system
 	world.context(state, 'state') // Set keyed context
-	world.system(velocitySystem, 'b') // New system
+	world.system(velocitySystem, false) // New system
 	expect(world.systems.length).toEqual(2)
 	world.run()
-	expect(ran).toEqual(['a', 'b'])
+	expect(ran).toEqual([false, true, false])
 }))
 
 test('system: system iteration', testIndexers(world => {
@@ -428,6 +440,9 @@ test('system: system methods', testIndexers(world => {
 			this.val = 10
 			++methodsCalled
 		}
+		init() {
+			++methodsCalled
+		}
 		run() {
 			++methodsCalled
 			assert(this.val === 10)
@@ -443,9 +458,9 @@ test('system: system methods', testIndexers(world => {
 	world.system()
 
 	let ent = world.entity().set('position')
-	assert(methodsCalled == 1)
+	assert(methodsCalled == 2)
 	world.run()
-	assert(methodsCalled == 3)
+	assert(methodsCalled == 4)
 }))
 
 test('system: system edge cases', testIndexers(world => {

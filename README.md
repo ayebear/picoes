@@ -155,8 +155,9 @@ world.component('sprite', class {
 // Define systems
 // Log statements are to show flow order below
 class MovementSystem {
-	constructor(...args) {
-		console.log('constructor() called with args:', ...args)
+	init(...args) {
+		// Context is available here as well
+		console.log('init() called with args:', ...args)
 	}
 
 	run(dt) {
@@ -211,7 +212,7 @@ console.assert(entityB.get('position').y === 90)
 Expected output:
 
 ```
-constructor() called with args: extra args
+init() called with args: extra args
 run(1) called
 each() called for entity 1
 each() called for entity 2
