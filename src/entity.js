@@ -387,6 +387,41 @@ class Entity {
 			this.world = undefined
 		}
 	}
+
+	/**
+	 * Creates a copy of this entity with all of the components cloned and returns it.
+	 * 
+	 * @example
+	 * entity.clone()
+	 */
+	clone() {
+		if (!this.valid()) {
+			throw new Error('Cannot clone detached or invalid entity.')
+		}
+
+		const entity = this.world.entity()
+		for (const name in this.data) {
+			const component = this.data[name]
+
+			// Clone component
+			let cloned, args = []
+			if (typeof component === 'object' && typeof component.clone === 'function') {
+				// Custom implementation
+				cloned = component.clone(args)
+			} else {
+				// Fallback implementation
+				cloned = cloneDeepWith(component, (value, key) => {
+					if (key === 'entity') {
+						return entity
+					}
+				})
+			}
+
+			// Set cloned component and call onCreate
+			entity.setRaw(name, cloned)
+			invoke(cloned, 'onCreate', ...args)
+		}
+	}
 }
 
 exports.Entity = Entity
