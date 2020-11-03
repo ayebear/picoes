@@ -88,9 +88,9 @@ class Entity {
 	 *
 	 * @return {Object} Always returns either the existing component, or the newly created one.
 	 */
-	access(component, ...args) {
+	access(component, fallback, ...args) {
 		if (!this.has(component)) {
-			this.set(component, ...args)
+			this.setWithFallback(component, fallback, ...args)
 		}
 		return this.data[component]
 	}
@@ -118,18 +118,32 @@ class Entity {
 	 * @return {Object} The original entity that set() was called on, so that operations can be chained.
 	 */
 	set(component, ...args) {
+		// Use first argument as fallback
+		return this.setWithFallback(component, args[0], ...args)
+	}
+
+	/**
+	 * Adds a new component, or re-creates and overwrites an existing component. Has separate fallback argument.
+	 *
+	 * @example
+	 * entity.setWithFallback('position', { x: 1, y: 2 }, 1, 2)
+	 *
+	 * @param {string}    component - See entity.set() for details.
+	 * @param {Object}    fallback  - The object or value to use as the component when there is no registered type.
+	 * @param {...Object} [args]    - See entity.set() for details.
+	 *
+	 * @return {Object} The original entity that setWithFallback() was called on, so that operations can be chained.
+	 */
+	setWithFallback(component, fallback, ...args) {
 		if (this.valid() && component in this.world.components) {
 			// Create component and store in entity
 			this.data[component] = new this.world.components[component](...args)
 			
 			// Inject parent entity into component
 			this.data[component].entity = this
-		} else if (args.length > 0) {
-			// Use first argument as component value
-			this.data[component] = args[0]
 		} else {
-			// Make an empty object
-			this.data[component] = {}
+			// Use fallback argument as component value
+			this.data[component] = fallback
 		}
 
 		// Update the index with this new component
@@ -177,11 +191,11 @@ class Entity {
 	 *
 	 * @return {Object} The original entity that update() was called on, so that operations can be chained.
 	 */
-	update(component, data) {
-		let comp = this.access(component)
+	update(component, data, ...args) {
+		const comp = this.access(component, {}, ...args)
 
 		// Shallow set keys of the component
-		for (let key in data) {
+		for (const key in data) {
 			comp[key] = data[key]
 		}
 
@@ -321,9 +335,9 @@ class Entity {
 	 * @return {Object} The original entity that fromJSON() was called on, so that operations can be chained.
 	 */
 	fromJSON(data) {
-		let parsed = JSON.parse(data)
-		for (let name in parsed) {
-			let comp = this.access(name)
+		const parsed = JSON.parse(data)
+		for (const name in parsed) {
+			const comp = this.access(name, {})
 
 			// Either call custom method or copy all properties
 			if (typeof comp.fromJSON === 'function') {
