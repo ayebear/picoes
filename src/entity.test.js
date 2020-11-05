@@ -454,4 +454,26 @@ test('entity: cloning advanced', testIndexers(world => {
 	expect(source.get('foo').bar).toEqual(target.get('foo').bar)
 	expect(source.get('foo').baz).toEqual(target.get('foo').baz)
 	expect(source.get('foo').qux).toEqual(target.get('foo').qux)
+
+	const target2 = source.clone()
+	expect(source.get('foo').bar).toEqual(target2.get('foo').bar)
+	expect(source.get('foo').baz).toEqual(target2.get('foo').baz)
+	expect(source.get('foo').qux).toEqual(target2.get('foo').qux)
+
+	target.get('foo').bar = 'change1'
+	target2.get('foo').baz = 'change2'
+	expect(source.get('foo').bar).not.toEqual(target.get('foo').bar)
+	expect(source.get('foo').baz).toEqual(target.get('foo').baz)
+	expect(source.get('foo').qux).toEqual(target.get('foo').qux)
+	expect(source.get('foo').bar).toEqual(target2.get('foo').bar)
+	expect(source.get('foo').baz).not.toEqual(target2.get('foo').baz)
+	expect(source.get('foo').qux).toEqual(target2.get('foo').qux)
+
+	const target3 = target2.clone()
+	expect(target3.get('foo').bar).toEqual(target2.get('foo').bar)
+	expect(target3.get('foo').baz).toEqual(target2.get('foo').baz)
+	expect(target3.get('foo').qux).toEqual(target2.get('foo').qux)
+
+	target3.destroy()
+	expect(() => target3.clone()).toThrow()
 }))

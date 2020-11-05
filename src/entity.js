@@ -467,12 +467,7 @@ class Entity {
 			invoke(component, 'clone', newComponent)
 		} else {
 			// Unregistered component, so just shallow clone it
-			targetEntity.data[name] = shallowClone(component, value => {
-				// Lodash doesn't copy functions, but this makes sense to allow here
-				if (typeof value === 'function') {
-					return value
-				}
-			})
+			targetEntity.data[name] = shallowClone(component)
 		}
 
 		// Update the index with this new component
