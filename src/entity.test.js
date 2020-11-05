@@ -1,6 +1,6 @@
 const {
-    testIndexers,
-    assert
+		testIndexers,
+		assert
 } = require('./test_utils.js')
 
 test('entity: create an entity', testIndexers(world => {
@@ -420,4 +420,38 @@ test('entity: register and use prototypes', testIndexers(world => {
 	expect(e.get('position').y).toEqual(0)
 	assert(e.get('velocity').x === undefined && e.get('velocity').y === undefined)
 	assert(t.get('position').x === 3.14159 && t.get('position').y === 5000)
+}))
+
+test('entity: cloning basic', testIndexers(world => {
+	const source = world.entity().set('a', 'aaa')
+	const target = world.entity()
+	source.cloneComponentTo(target, 'a')
+	expect(target.get('a')).toEqual('aaa')
+}))
+
+test('entity: cloning advanced', testIndexers(world => {
+	world.component('foo', class {
+		onCreate(bar, baz) {
+			this.bar = bar
+			this.baz = baz
+			this.qux = false
+		}
+		setQux(qux = true) {
+			this.qux = qux
+		}
+		cloneArgs() {
+			return [this.bar, this.baz]
+		}
+		clone(target) {
+			target.qux = this.qux
+		}
+	})
+	const source = world.entity()
+		.set('foo', 'bar', 'baz')
+		.set('qux', true)
+	const target = world.entity()
+	source.cloneComponentTo(target, 'foo')
+	expect(source.get('foo').bar).toEqual(target.get('foo').bar)
+	expect(source.get('foo').baz).toEqual(target.get('foo').baz)
+	expect(source.get('foo').qux).toEqual(target.get('foo').qux)
 }))

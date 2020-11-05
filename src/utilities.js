@@ -15,6 +15,7 @@ function invoke(object, method, ...args) {
 	}
 }
 
+// TODO: Delete this
 /**
  * Determines if function.
  *
@@ -24,5 +25,20 @@ function isFunction(obj) {
 	return typeof obj === 'function'
 }
 
+/**
+ * Shallow clones any type of variable.
+ *
+ * @ignore
+ */
+function shallowClone(val) {
+	if (Array.isArray(val)) {
+		return [...val]
+	} else if (typeof val === 'object') {
+		return {...val}
+	}
+	return val
+}
+
 exports.invoke = invoke
 exports.isFunction = isFunction
+exports.shallowClone = shallowClone

@@ -1,5 +1,5 @@
 /** @ignore */
-const { invoke } = require('./utilities.js')
+const { invoke, shallowClone } = require('./utilities.js')
 
 /**
  * Entity class used for storing components.
@@ -467,7 +467,7 @@ class Entity {
 			invoke(component, 'clone', newComponent)
 		} else {
 			// Unregistered component, so just shallow clone it
-			targetEntity.data[name] = cloneWith(component, value => {
+			targetEntity.data[name] = shallowClone(component, value => {
 				// Lodash doesn't copy functions, but this makes sense to allow here
 				if (typeof value === 'function') {
 					return value
