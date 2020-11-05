@@ -56,16 +56,21 @@ function invoke(object, method, ...args) {
 }
 
 /**
- * Determines if function.
+ * Shallow clones any type of variable.
  *
  * @ignore
  */
-function isFunction(obj) {
-	return typeof obj === &apos;function&apos;
+function shallowClone(val) {
+	if (Array.isArray(val)) {
+		return [...val]
+	} else if (typeof val === &apos;object&apos;) {
+		return {...val}
+	}
+	return val
 }
 
 exports.invoke = invoke
-exports.isFunction = isFunction
+exports.shallowClone = shallowClone
 </code></pre>
 
 </div>

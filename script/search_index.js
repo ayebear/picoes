@@ -324,6 +324,18 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/entity.js~entity#clone",
+    "class/src/entity.js~Entity.html#instance-method-clone",
+    "src/entity.js~Entity#clone",
+    "method"
+  ],
+  [
+    "src/entity.js~entity#clonecomponentto",
+    "class/src/entity.js~Entity.html#instance-method-cloneComponentTo",
+    "src/entity.js~Entity#cloneComponentTo",
+    "method"
+  ],
+  [
     "src/entity.js~entity#components",
     "class/src/entity.js~Entity.html#instance-get-components",
     "src/entity.js~Entity#components",
@@ -367,13 +379,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/entity.js~entity#id",
-    "class/src/entity.js~Entity.html#instance-get-id",
+    "class/src/entity.js~Entity.html#instance-set-id",
     "src/entity.js~Entity#id",
     "member"
   ],
   [
     "src/entity.js~entity#id",
-    "class/src/entity.js~Entity.html#instance-set-id",
+    "class/src/entity.js~Entity.html#instance-get-id",
     "src/entity.js~Entity#id",
     "member"
   ],
@@ -399,6 +411,12 @@ window.esdocSearchIndex = [
     "src/entity.js~entity#setraw",
     "class/src/entity.js~Entity.html#instance-method-setRaw",
     "src/entity.js~Entity#setRaw",
+    "method"
+  ],
+  [
+    "src/entity.js~entity#setwithfallback",
+    "class/src/entity.js~Entity.html#instance-method-setWithFallback",
+    "src/entity.js~Entity#setWithFallback",
     "method"
   ],
   [

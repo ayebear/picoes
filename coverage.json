@@ -1,11 +1,11 @@
 {
-  "coverage": "74.64%",
-  "expectCount": 71,
-  "actualCount": 53,
+  "coverage": "75.67%",
+  "expectCount": 74,
+  "actualCount": 56,
   "files": {
     "src/entity.js": {
-      "expectCount": 25,
-      "actualCount": 25,
+      "expectCount": 28,
+      "actualCount": 28,
       "undocumentLines": []
     },
     "src/memoized_query_index.js": {
