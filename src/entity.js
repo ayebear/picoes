@@ -166,7 +166,7 @@ class Entity {
 	 * @param {string} component - The component name to set.
 	 * @param {Object} value - Should be a previous component instance, or whatever is expected for the component name.
 	 *
-	 * @return {Object} The original entity that set() was called on, so that operations can be chained.
+	 * @return {Object} The original entity that setRaw() was called on, so that operations can be chained.
 	 */
 	setRaw(component, value) {
 		// Directly set value
@@ -390,6 +390,8 @@ class Entity {
 
 	/**
 	 * Creates a copy of this entity with all of the components cloned and returns it.
+	 * Individual components are either shallow or deep copied, depending on component
+	 * registration status and if a clone() method is defined. See entity.cloneComponentTo().
 	 * 
 	 * @example
 	 * entity.clone()
@@ -399,28 +401,87 @@ class Entity {
 			throw new Error('Cannot clone detached or invalid entity.')
 		}
 
-		const entity = this.world.entity()
+		// Clone each component in this entity, to a new entity
+		const newEntity = this.world.entity()
 		for (const name in this.data) {
-			const component = this.data[name]
-
-			// Clone component
-			let cloned, args = []
-			if (typeof component === 'object' && typeof component.clone === 'function') {
-				// Custom implementation
-				cloned = component.clone(args)
-			} else {
-				// Fallback implementation
-				cloned = cloneDeepWith(component, (value, key) => {
-					if (key === 'entity') {
-						return entity
-					}
-				})
-			}
-
-			// Set cloned component and call onCreate
-			entity.setRaw(name, cloned)
-			invoke(cloned, 'onCreate', ...args)
+			this.cloneComponentTo(newEntity, name)
 		}
+
+		// Return the cloned entity
+		return newEntity
+	}
+
+	/**
+	 * Clones a component from this entity to the target entity.
+	 * 
+	 * @example
+	 * const source = world.entity().set('foo', 'bar')
+	 * const target = world.entity()
+	 * source.cloneComponentTo(target, 'foo')
+	 * assert(target.get('foo') === 'bar')
+	 * 
+	 * @example
+	 * world.component('foo', class {
+	 *   onCreate(bar, baz) {
+	 *     this.bar = bar
+	 *     this.baz = baz
+	 *     this.qux = false
+	 *   }
+	 *   setQux(qux = true) {
+	 *     this.qux = qux
+	 *   }
+	 *   cloneArgs() {
+	 *     return [this.bar, this.baz]
+	 *   }
+	 *   clone(target) {
+	 *     target.qux = this.qux
+	 *   }
+	 * })
+	 * const source = world.entity()
+	 *   .set('foo', 'bar', 'baz')
+	 *   .set('qux', true)
+	 * const target = world.entity()
+	 * source.cloneComponentTo(target, 'foo')
+	 * assert(source.get('foo').bar === target.get('foo').bar)
+	 * assert(source.get('foo').baz === target.get('foo').baz)
+	 * assert(source.get('foo').qux === target.get('foo').qux)
+	 *
+	 * @param {Entity} targetEntity - Must be a valid entity. Could be part of another world, but it
+	 * is undefined behavior if the registered components are different types.
+	 * @param {string} name         - Component name of both source and target components.
+	 *
+	 * @return {Object} The original entity that cloneComponentTo() was called on,
+	 * so that operations can be chained.
+	 */
+	cloneComponentTo(targetEntity, name) {
+		// Get component and optional arguments for cloning
+		const component = this.get(name)
+		const args = invoke(component, 'cloneArgs') || []
+
+		if (name in targetEntity.world.components) {
+			// Registered component, so create new using constructor, inject
+			// entity, and call optional clone
+			const newComponent = new targetEntity.world.components[name](...args)
+			newComponent.entity = targetEntity
+			targetEntity.data[name] = newComponent
+			invoke(component, 'clone', newComponent)
+		} else {
+			// Unregistered component, so just shallow clone it
+			targetEntity.data[name] = cloneWith(component, value => {
+				// Lodash doesn't copy functions, but this makes sense to allow here
+				if (typeof value === 'function') {
+					return value
+				}
+			})
+		}
+
+		// Update the index with this new component
+		targetEntity.world.index.add(targetEntity, name)
+
+		// Call custom onCreate to initialize component, and any additional arguments passed into set()
+		invoke(targetEntity.data[name], 'onCreate', ...args)
+
+		return this
 	}
 }
 
