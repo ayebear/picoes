@@ -84,6 +84,7 @@ class Entity {
 	 * let position = entity.access('position', 3, 4)
 	 *
 	 * @param {string}    component - The component name to create/get
+	 * @param {Object}    fallback  - The value to set the component as for unregistered components
 	 * @param {...Object} [args]    - The arguments to forward to create the new component, only if it doesn't exist.
 	 *
 	 * @return {Object} Always returns either the existing component, or the newly created one.
@@ -158,13 +159,15 @@ class Entity {
 	}
 
 	/**
-	 * Sets a component value directly. The onCreate method is not called, and it is expected that you pass an already initialized component.
+	 * Sets a component value directly. The onCreate method is not called, and it is expected that you
+	 * pass an already initialized component.
 	 *
 	 * @example
 	 * entity.set('position', position)
 	 *
 	 * @param {string} component - The component name to set.
-	 * @param {Object} value - Should be a previous component instance, or whatever is expected for the component name.
+	 * @param {Object} value     - Should be a previous component instance, or whatever is expected for
+	 * the component name.
 	 *
 	 * @return {Object} The original entity that setRaw() was called on, so that operations can be chained.
 	 */
@@ -188,6 +191,7 @@ class Entity {
 	 *
 	 * @param {string} component - The component name to update
 	 * @param {Object} data      - The object or other component to merge into the specified component.
+	 * @param {...Object} [args] - See entity.set() for details.
 	 *
 	 * @return {Object} The original entity that update() was called on, so that operations can be chained.
 	 */
