@@ -1,6 +1,6 @@
 const {
-    testIndexers,
-    assert
+		testIndexers,
+		assert
 } = require('./test_utils.js')
 
 test('entity: create an entity', testIndexers(world => {
@@ -416,7 +416,64 @@ test('entity: register and use prototypes', testIndexers(world => {
 	assert(p.get('position').x === 5 && p.get('position').y === 10)
 	assert(p.get('velocity').x === 15 && p.get('velocity').y === 20)
 	assert(p.get('player') !== undefined)
-	assert(e.get('position').x === 0 && e.get('position').y === 0)
+	expect(e.get('position').x).toEqual(0)
+	expect(e.get('position').y).toEqual(0)
 	assert(e.get('velocity').x === undefined && e.get('velocity').y === undefined)
 	assert(t.get('position').x === 3.14159 && t.get('position').y === 5000)
+}))
+
+test('entity: cloning basic', testIndexers(world => {
+	const source = world.entity().set('a', 'aaa')
+	const target = world.entity()
+	source.cloneComponentTo(target, 'a')
+	expect(target.get('a')).toEqual('aaa')
+}))
+
+test('entity: cloning advanced', testIndexers(world => {
+	world.component('foo', class {
+		onCreate(bar, baz) {
+			this.bar = bar
+			this.baz = baz
+			this.qux = false
+		}
+		setQux(qux = true) {
+			this.qux = qux
+		}
+		cloneArgs() {
+			return [this.bar, this.baz]
+		}
+		clone(target) {
+			target.qux = this.qux
+		}
+	})
+	const source = world.entity()
+		.set('foo', 'bar', 'baz')
+		.set('qux', true)
+	const target = world.entity()
+	source.cloneComponentTo(target, 'foo')
+	expect(source.get('foo').bar).toEqual(target.get('foo').bar)
+	expect(source.get('foo').baz).toEqual(target.get('foo').baz)
+	expect(source.get('foo').qux).toEqual(target.get('foo').qux)
+
+	const target2 = source.clone()
+	expect(source.get('foo').bar).toEqual(target2.get('foo').bar)
+	expect(source.get('foo').baz).toEqual(target2.get('foo').baz)
+	expect(source.get('foo').qux).toEqual(target2.get('foo').qux)
+
+	target.get('foo').bar = 'change1'
+	target2.get('foo').baz = 'change2'
+	expect(source.get('foo').bar).not.toEqual(target.get('foo').bar)
+	expect(source.get('foo').baz).toEqual(target.get('foo').baz)
+	expect(source.get('foo').qux).toEqual(target.get('foo').qux)
+	expect(source.get('foo').bar).toEqual(target2.get('foo').bar)
+	expect(source.get('foo').baz).not.toEqual(target2.get('foo').baz)
+	expect(source.get('foo').qux).toEqual(target2.get('foo').qux)
+
+	const target3 = target2.clone()
+	expect(target3.get('foo').bar).toEqual(target2.get('foo').bar)
+	expect(target3.get('foo').baz).toEqual(target2.get('foo').baz)
+	expect(target3.get('foo').qux).toEqual(target2.get('foo').qux)
+
+	target3.destroy()
+	expect(() => target3.clone()).toThrow()
 }))

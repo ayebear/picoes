@@ -100,7 +100,7 @@ class World {
 	 */
 	component(name, componentClass) {
 		// Only allow functions and classes to be components
-		if (isFunction(componentClass)) {
+		if (typeof componentClass === 'function') {
 			this.components[name] = componentClass
 			return name
 		}
@@ -220,7 +220,7 @@ class World {
 	 */
 	system(systemClass, ...args) {
 		// Make sure the system is valid
-		if (isFunction(systemClass)) {
+		if (typeof systemClass === 'function') {
 			// Create the system
 			const newSystem = new systemClass(...args)
 

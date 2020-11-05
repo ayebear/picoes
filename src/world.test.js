@@ -431,7 +431,7 @@ test('system: system iteration', testIndexers(world => {
 }))
 
 test('system: system methods', testIndexers(world => {
-	world.component('position')
+	expect(world.component('position')).toBeUndefined()
 
 	let methodsCalled = 0
 
@@ -457,15 +457,15 @@ test('system: system methods', testIndexers(world => {
 	world.system(class {})
 	world.system()
 
-	let ent = world.entity().set('position')
+	world.entity().set('position', {})
 	assert(methodsCalled == 2)
 	world.run()
 	assert(methodsCalled == 4)
 }))
 
 test('system: system edge cases', testIndexers(world => {
-	world.component('position')
-	world.component('velocity')
+	world.component('position', class {})
+	world.component('velocity', class {})
 
 	let testEnt0 = world.entity().set('position').set('velocity')
 	let testEnt2 = null
@@ -688,9 +688,9 @@ test('system: system variadic arguments with optional components', testIndexers(
 }))
 
 test('system: use the each() method', testIndexers(world => {
-	let ent1 = world.entity().set('position').set('"velocity"')
-	let ent2 = world.entity().set('position')
-	let ent3 = world.entity().set('position:"velocity"')
+	let ent1 = world.entity().set('position', {}).set('"velocity"', {})
+	let ent2 = world.entity().set('position', {})
+	let ent3 = world.entity().set('position:"velocity"', {})
 	let externalVar = 5
 	world.each('position', ({position: pos}, ent) => {
 		assert(pos)
