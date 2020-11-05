@@ -15,16 +15,6 @@ function invoke(object, method, ...args) {
 	}
 }
 
-// TODO: Delete this
-/**
- * Determines if function.
- *
- * @ignore
- */
-function isFunction(obj) {
-	return typeof obj === 'function'
-}
-
 /**
  * Shallow clones any type of variable.
  *
@@ -40,5 +30,4 @@ function shallowClone(val) {
 }
 
 exports.invoke = invoke
-exports.isFunction = isFunction
 exports.shallowClone = shallowClone
