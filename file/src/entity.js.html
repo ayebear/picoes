@@ -104,6 +104,21 @@ class Entity {
 	}
 
 	/**
+	 * Returns true if the entity has ANY of the specified component names.
+	 * If no component names are specified, this method returns false.
+	 *
+	 * @example
+	 * if (entity.hasAny(&apos;position&apos;, &apos;velocity&apos;)) {...}
+	 *
+	 * @param {...string} [components] - The component names to check for
+	 *
+	 * @return {boolean} true or false
+	 */
+	hasAny(...components) {
+		return components.some(name =&gt; name in this.data)
+	}
+
+	/**
 	 * Returns a component by name, or undefined if it doesn&apos;t exist
 	 *
 	 * @example
