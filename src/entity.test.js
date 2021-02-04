@@ -79,35 +79,42 @@ test('entity: get and set components', testIndexers(world => {
 	let ent = world.entity()
 	ent.set('position', 5)
 	assert(ent.has('position'))
+	assert(ent.hasAny('position'))
 	assert(ent.components.length == 1)
 	assert(ent.get('position').x === 5)
 	assert(ent.get('position').y === 0)
 
 	ent.update('position', {y: 3})
 	assert(ent.has('position'))
+	assert(ent.hasAny('position'))
 	assert(ent.components.length == 1)
 	assert(ent.get('position').x === 5)
 	assert(ent.get('position').y === 3)
 
 	ent.update('object', {val: 50})
 	assert(ent.has('object'))
+	assert(ent.hasAny('object'))
 	assert(ent.components.length == 2)
 	assert(ent.get('object').val === 50)
 
 	ent.update('empty', {testing: 100})
 	assert(ent.has('empty'))
+	assert(ent.hasAny('empty'))
 	assert(ent.components.length == 3)
 	assert(ent.get('empty').testing === 100)
 
 	ent.set('anonymous')
 	assert(ent.components.length == 4)
 	assert(ent.has('anonymous'))
+	assert(ent.hasAny('anonymous'))
 
 	// Access test
 	ent.removeAll()
 	assert(!ent.has('position'))
+	assert(!ent.hasAny('position'))
 	ent.access('position').x = 300
 	assert(ent.has('position'))
+	assert(ent.hasAny('position'))
 	assert(ent.get('position').x === 300)
 
 	// Get test
@@ -136,6 +143,39 @@ test('entity: get and set components', testIndexers(world => {
 
 	ent.set('invalid2', ['test'])
 	assert(ent.get('invalid2')[0] === 'test')
+}))
+
+test('entity: check existence of components', testIndexers(world => {
+	world.component('position', function(x = 0, y = 0) {
+		this.x = x
+		this.y = y
+	})
+	world.component('empty')
+	const ent = world.entity()
+	assert(!ent.hasAny())
+	assert(ent.has())
+	ent.set('a')
+	ent.set('b')
+	assert(ent.has())
+	assert(ent.has('a'))
+	assert(ent.has('a','b'))
+	assert(!ent.has('a','b','c','d'))
+	assert(!ent.hasAny())
+	assert(ent.hasAny('a'))
+	assert(ent.hasAny('a','b'))
+	assert(ent.hasAny('','a','c'))
+	assert(ent.hasAny('a','b','c','d'))
+
+	ent.removeAll()
+	assert(ent.has())
+	assert(!ent.has('a'))
+	assert(!ent.has('a','b'))
+	assert(!ent.has('a','b','c','d'))
+	assert(!ent.hasAny())
+	assert(!ent.hasAny('a'))
+	assert(!ent.hasAny('a','b'))
+	assert(!ent.hasAny('','a','c'))
+	assert(!ent.hasAny('a','b','c','d'))
 }))
 
 test('entity: setRaw', testIndexers(world => {
