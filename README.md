@@ -4,15 +4,15 @@
 
 ### Table Of Contents
 
--   [About](#about)
-    -   [Features](#features)
-    -   [Terminology](#terminology)
-    -   [License](#license)
-    -   [Author](#author)
--   [Instructions](#instructions)
-    -   [Setup](#setup)
-    -   [Documentation](#documentation)
-    -   [Examples](#examples)
+- [About](#about)
+  - [Features](#features)
+  - [Terminology](#terminology)
+  - [License](#license)
+  - [Author](#author)
+- [Instructions](#instructions)
+  - [Setup](#setup)
+  - [Documentation](#documentation)
+  - [Examples](#examples)
 
 ## About
 
@@ -24,37 +24,37 @@ This entity system is designed to be as simple as possible, while still having u
 
 ### Features
 
--   **Simple query syntax**
-    -   `world.each('a', 'b', ({a, b}) => { a.foo = b.bar })`
-	-   See the examples below for more advanced usage, or the [reference docs](https://ayebear.com/picoes/class/src/world.js~World.html#instance-method-each)
--   **No formal declarations required**
-    -   Can create components and entities in a world and query on them, without needing to define structured systems and components
--   **Strings as component keys**
-    -   No need to manually define component keys, or manually include component classes to use them
--   **Automatic dependency injection for systems**
-    -   No need to pass state to each system, can have a single context that gets injected into all systems automatically
--   **High performance indexing options**
-    -   SimpleIndex (Default): O(1) component add/remove, O(m) query time
-        -   Where `m` is the smallest size component index
-    -   MemoizedQueryIndex: O(q) component add/remove, O(1) average query time (memoized), O(n) worst query time (initial)
-        -   Where `q` is the total number of memoized queries
-        -   And `n` is the total number of entities
-    -   _Note: Above time complexities are amortized assuming the number of components used is a known constant_
-    -   Can also write your own and pass it to the World constructor! Needs clear, add, remove, and query.
--   **Prototypes**
-    -   Allows entity definitions to be data-driven, outside of code
+- **Simple query syntax**
+  - `world.each('a', 'b', ({a, b}) => { a.foo = b.bar })`
+  - See the examples below for more advanced usage, or the [reference docs](https://ayebear.com/picoes/class/src/world.js~World.html#instance-method-each)
+- **No formal declarations required**
+  - Can create components and entities in a world and query on them, without needing to define structured systems and components
+- **Strings as component keys**
+  - No need to manually define component keys, or manually include component classes to use them
+- **Automatic dependency injection for systems**
+  - No need to pass state to each system, can have a single context that gets injected into all systems automatically
+- **High performance indexing options**
+  - SimpleIndex (Default): O(1) component add/remove, O(m) query time
+    - Where `m` is the smallest size component index
+  - MemoizedQueryIndex: O(q) component add/remove, O(1) average query time (memoized), O(n) worst query time (initial)
+    - Where `q` is the total number of memoized queries
+    - And `n` is the total number of entities
+  - _Note: Above time complexities are amortized assuming the number of components used is a known constant_
+  - Can also write your own and pass it to the World constructor! Needs clear, add, remove, and query.
+- **Prototypes**
+  - Allows entity definitions to be data-driven, outside of code
 
 ### Terminology
 
--   **Component:** Holds some related data
-    -   Example: Position, Velocity, Health
--   **Entity:** Refers to a collection of components
-    -   Example: Position + Health could represent a player
--   **Prototype:** A template of components used for creating entities
-    -   Example: Player could contain Position, Velocity, and Health
--   **System:** Logic loop that processes entities
-    -   Example: Movement system which handles positions and velocities
--   **World:** Lets you register components, systems, and prototypes in a self-contained object - which avoids the use of singletons. This is also where you can create entities from.
+- **Component:** Holds some related data
+  - Example: Position, Velocity, Health
+- **Entity:** Refers to a collection of components
+  - Example: Position + Health could represent a player
+- **Prototype:** A template of components used for creating entities
+  - Example: Player could contain Position, Velocity, and Health
+- **System:** Logic loop that processes entities
+  - Example: Movement system which handles positions and velocities
+- **World:** Lets you register components, systems, and prototypes in a self-contained object - which avoids the use of singletons. This is also where you can create entities from.
 
 ### License
 
@@ -106,7 +106,7 @@ world.entity().set('damages', 30)
 
 // Apply damage
 world.each('damages', ({ damages }) => {
-	player.get('health').value -= damages
+  player.get('health').value -= damages
 })
 
 // Player now has reduced health
@@ -124,50 +124,56 @@ const world = new World()
 
 // Define and register components
 class Vec2 {
-	constructor(x = 0, y = 0) {
-		this.x = x
-		this.y = y
-	}
+  constructor(x = 0, y = 0) {
+    this.x = x
+    this.y = y
+  }
 }
 world.component('position', Vec2)
 world.component('velocity', Vec2)
-world.component('health', class {
-	constructor(start = 100) {
-		this.value = start
-	}
-})
+world.component(
+  'health',
+  class {
+    constructor(start = 100) {
+      this.value = start
+    }
+  }
+)
 
 // Example of using onCreate and onRemove
-world.component('sprite', class {
-	onCreate(texture) {
-		// this.entity is auto-injected into registered components
-		// It is not available in the constructor, but is available in onCreate
-		this.container = this.entity.get('gameContainer')
-		this.sprite = new Sprite(texture)
-		this.container.add(this.sprite)
-	}
+world.component(
+  'sprite',
+  class {
+    onCreate(texture) {
+      // this.entity is auto-injected into registered components
+      // It is not available in the constructor, but is available in onCreate
+      this.container = this.entity.get('gameContainer')
+      this.sprite = new Sprite(texture)
+      this.container.add(this.sprite)
+    }
 
-	onRemove() {
-		this.container.remove(this.sprite)
-	}
-})
+    onRemove() {
+      this.container.remove(this.sprite)
+    }
+  }
+)
 
 // Define systems
 // Log statements are to show flow order below
 class MovementSystem {
-	init(...args) {
-		// Context is available here as well
-		console.log('init() called with args:', ...args)
-	}
+  init(...args) {
+    // Context is available here as well
+    console.log('init() called with args:', ...args)
+  }
 
-	run(dt) {
-		console.log(`run(${dt}) called`)
-		world.each('position', 'velocity', ({ position, velocity }, entity) => {
-			console.log(`each() called for entity ${entity.id}`)
-			position.x += velocity.x * dt
-			position.y += velocity.y * dt
-		})
-	}
+  run(dt) {
+    console.log(`run(${dt}) called`)
+    world.each('position', 'velocity', ({ position, velocity }, entity) => {
+      console.log(`each() called for entity ${entity.id}`)
+      position.x += velocity.x * dt
+      position.y += velocity.y * dt
+    })
+  }
 }
 
 // Register systems
@@ -180,10 +186,10 @@ console.assert(entityA.has('velocity'))
 
 // Create entity with prototype (results are the same as above)
 world.prototype({
-	Movable: {
-		position: {},
-		velocity: {},
-	},
+  Movable: {
+    position: {},
+    velocity: {},
+  },
 })
 const entityB = world.entity('Movable')
 console.assert(entityB.has('position'))

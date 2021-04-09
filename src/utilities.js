@@ -10,9 +10,9 @@
  * @return {Object} Returns what the called method returns
  */
 function invoke(object, method, ...args) {
-	if (object && typeof object[method] === 'function') {
-		return object[method].call(object, ...args)
-	}
+  if (object && typeof object[method] === 'function') {
+    return object[method].call(object, ...args)
+  }
 }
 
 /**
@@ -21,12 +21,12 @@ function invoke(object, method, ...args) {
  * @ignore
  */
 function shallowClone(val) {
-	if (Array.isArray(val)) {
-		return [...val]
-	} else if (typeof val === 'object') {
-		return {...val}
-	}
-	return val
+  if (Array.isArray(val)) {
+    return [...val]
+  } else if (typeof val === 'object') {
+    return { ...val }
+  }
+  return val
 }
 
 exports.invoke = invoke
