@@ -1,1 +1,2 @@
-exports.World = require('./src/world.js').World
+import { World } from './src/world.js'
+export { World }

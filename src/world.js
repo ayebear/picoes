@@ -1,47 +1,21 @@
-/** @ignore */
-const { invoke } = require('./utilities.js')
-
-/** @ignore */
-const { Entity } = require('./entity.js')
+import { Entity } from './entity.js'
+import { SystemStorage } from './system_storage.js'
+import { EntityStorage } from './entity_storage.js'
 
 /**
  * Class for world.
  *
- * @class      World (name)
+ * @class World (name)
  */
 class World {
   /**
    * Constructs an instance of the world.
    */
   constructor() {
-    // TODO: World should just wrap SystemStorage and EntityStorage
-
     /** @ignore */
-    this.systems = []
-
-    /**
-     * Maps entity IDs to entities
-     * @ignore
-     */
-    this.entities = new Map()
-
+    this.systems = new SystemStorage()
     /** @ignore */
-    this.components = {}
-
-    /** @ignore */
-    this.idCounter = 1
-
-    /**
-     * Maps component keys to entities
-     * @ignore
-     */
-    this.index = {}
-
-    /**
-     * Context information
-     */
-    this.contextData = undefined
-    this.contextKey = undefined
+    this.entities = new EntityStorage()
   }
 
   /**
@@ -52,18 +26,7 @@ class World {
    * world.clear()
    */
   clear() {
-    // Call onRemove on all components of all entities
-    for (const [, entity] of this.entities) {
-      for (let componentName in entity.data) {
-        // Get component, and call onRemove if it exists as a function
-        let component = entity.data[componentName]
-        invoke(component, 'onRemove')
-      }
-    }
-
-    // Clear entities
-    this.entities = new Map()
-    this.index.clear()
+    this.entities.clear()
   }
 
   /**
@@ -93,11 +56,7 @@ class World {
    * @return {string} Registered component name on success, undefined on failure
    */
   component(name, componentClass) {
-    // Only allow functions and classes to be components
-    if (typeof componentClass === 'function') {
-      this.components[name] = componentClass
-      return name
-    }
+    this.entities.registerComponent(name, componentClass)
   }
 
   /**
@@ -109,10 +68,7 @@ class World {
    * @return {Entity} The new entity created
    */
   entity() {
-    const entityId = this.idCounter++
-    const entity = new Entity(this, entityId)
-    this.entities.set(entityId, entity)
-    return entity
+    return this.entities.createEntity()
   }
 
   /**
@@ -138,13 +94,7 @@ class World {
    * @return {Entity} The new entity created
    */
   context(data, key) {
-    this.contextData = data
-    this.contextKey = key
-
-    // Update existing systems' context
-    for (const system of this.systems) {
-      this._injectContext(system)
-    }
+    this.systems.setContext(data, key)
   }
 
   /**
@@ -192,24 +142,9 @@ class World {
    *
    * @param {...Object} args - The arguments to forward to the system's constructor and init.
    * Note that it is recommended to use init if using context, see world.context().
-   *
-   * @return {number} Unique ID of the system on success or undefined on failure
    */
   system(systemClass, ...args) {
-    // Make sure the system is valid
-    if (typeof systemClass === 'function') {
-      // Create the system
-      const newSystem = new systemClass(...args)
-
-      // Inject context
-      this._injectContext(newSystem)
-
-      // Call init
-      invoke(newSystem, 'init', ...args)
-
-      // Add the system, return its ID
-      return this.systems.push(newSystem) - 1
-    }
+    this.systems.register(systemClass, ...args)
   }
 
   /**
@@ -231,19 +166,7 @@ class World {
    * @param {...Object} [args] - The arguments to forward to the systems' methods
    */
   run(...args) {
-    let status = true
-    // Continue rerunning while any systems return true
-    while (status) {
-      status = undefined
-      for (const system of this.systems) {
-        // Try to call the "run" method
-        const result = invoke(system, 'run', ...args)
-        status = status || result
-      }
-
-      // Clear args after first run, so re-runs can be identified
-      args = []
-    }
+    this.systems.run(...args)
   }
 
   /**
@@ -281,59 +204,7 @@ class World {
    * Otherwise, returns the last loop iteration status, returned by the callback.
    */
   each(...args) {
-    // Gather component names and a callback (if any) from args
-    const compNames = []
-    let callback
-    for (const arg of args) {
-      if (typeof arg === 'string') {
-        compNames.push(arg)
-      } else if (typeof arg === 'function') {
-        callback = arg
-      } else if (Array.isArray(arg)) {
-        // Add 1-level deep arrays of strings as separate component names
-        for (const name of arg) {
-          compNames.push(name)
-        }
-      } else {
-        throw new Error(
-          `Unknown argument ${arg} with type ${typeof arg} passed to world.each().`
-        )
-      }
-    }
-
-    // Get indexed map of entities
-    this.index.query(compNames, callback)
-  }
-
-  /**
-   * Returns an array of entities with matching components
-   * Simplified version of each(), returns an array instead of an iterator.
-   *
-   * @example
-   * const entities = world.get('player', 'sprite')
-   *
-   * @param {Array} componentNames - The component names to match on. See each() for how this matches.
-   *
-   * @return {Array} Array of entities, instead of iterator like each().
-   */
-  get(...componentNames) {
-    return [...this.each(componentNames)]
-  }
-
-  /**
-   * Injects context into a system based on current context state
-   * @ignore
-   */
-  _injectContext(system) {
-    if (this.contextData && this.contextKey) {
-      // Inject into specified key
-      system[this.contextKey] = this.contextData
-    } else if (this.contextData) {
-      // Inject as keys of context
-      for (const key in this.contextData) {
-        system[key] = this.contextData[key]
-      }
-    }
+    return this.entities.each(...args)
   }
 }
 
