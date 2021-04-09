@@ -1,11 +1,8 @@
 /** @ignore */
-const { invoke, isFunction } = require('./utilities.js')
+const { invoke } = require('./utilities.js')
 
 /** @ignore */
 const { Entity } = require('./entity.js')
-
-/** @ignore */
-const { SimpleIndex } = require('./simple_index.js')
 
 /**
  * Class for world.
@@ -15,10 +12,10 @@ const { SimpleIndex } = require('./simple_index.js')
 class World {
   /**
    * Constructs an instance of the world.
-   *
-   * @param      {Function}  [indexer=SimpleIndex]  The indexer to use. Default is SimpleIndex. Can use MemoizedQueryIndex if better querying performance is needed, for increased component creation/removal costs.
    */
-  constructor(indexer = SimpleIndex) {
+  constructor() {
+    // TODO: World should just wrap SystemStorage and EntityStorage
+
     /** @ignore */
     this.systems = []
 
@@ -32,16 +29,13 @@ class World {
     this.components = {}
 
     /** @ignore */
-    this.entityTemplates = {}
-
-    /** @ignore */
     this.idCounter = 1
 
     /**
-     * Maps entire queries to arrays of entities
+     * Maps component keys to entities
      * @ignore
      */
-    this.index = new indexer(this)
+    this.index = {}
 
     /**
      * Context information
@@ -59,7 +53,7 @@ class World {
    */
   clear() {
     // Call onRemove on all components of all entities
-    for (const [entityId, entity] of this.entities) {
+    for (const [, entity] of this.entities) {
       for (let componentName in entity.data) {
         // Get component, and call onRemove if it exists as a function
         let component = entity.data[componentName]
@@ -109,31 +103,14 @@ class World {
   /**
    * Creates a new entity in the world
    *
-   * @param {string} [name] - The prototype name to use
-   *
    * @example
    * world.entity()
    *
-   * @example
-   * world.entity('Player')
-   *
    * @return {Entity} The new entity created
    */
-  entity(name) {
-    let entityId = this.idCounter++
-    let entity = new Entity(this, entityId)
-
-    // Use 'name' to get prototype data (if specified)
-    if (name && name in this.entityTemplates) {
-      // Add all components from prototype
-      let template = this.entityTemplates[name]
-      for (let componentName in template) {
-        // Update component with data from template
-        let newComponentData = JSON.parse(template[componentName])
-        entity.update(componentName, newComponentData)
-      }
-    }
-
+  entity() {
+    const entityId = this.idCounter++
+    const entity = new Entity(this, entityId)
     this.entities.set(entityId, entity)
     return entity
   }
@@ -325,23 +302,7 @@ class World {
     }
 
     // Get indexed map of entities
-    const entities = this.index.query(...compNames)
-
-    if (callback) {
-      // Go through the map of entities
-      let status
-      for (const entity of entities) {
-        // Pass component data and the main entity
-        status = callback(entity.data, entity)
-
-        // Stop the iteration when the callback returns false
-        if (status === false) {
-          break
-        }
-      }
-      return status
-    }
-    return entities
+    this.index.query(compNames, callback)
   }
 
   /**
@@ -357,64 +318,6 @@ class World {
    */
   get(...componentNames) {
     return [...this.each(componentNames)]
-  }
-
-  /**
-   * Returns an entity by ID
-   * Returns undefined if it doesn't exist
-   *
-   * @example
-   * world.getEntityById(123)
-   *
-   * @param {number} entityId - The entity ID to lookup for the entity
-   *
-   * @return {Entity} Entity if found, otherwise undefined
-   */
-  getEntityById(entityId) {
-    return this.entities.get(entityId)
-  }
-
-  /**
-   * Registers entity prototype(s). Any existing prototype names that are the same will be overwritten
-   *
-   * @example
-   * world.prototype({
-   *     Movable: {
-   *         position: {},
-   *         velocity: {}
-   *     }
-   * })
-   *
-   * @param {Object} data - Object structure to register as a prototype. Should be a dictionary with the top level keys
-   * being the prototype names. Can also be a JSON formatted string.
-   *
-   * @return {number} Number of prototypes added.
-   */
-  prototype(data) {
-    let count = 0
-
-    // Convert to an object when given a string
-    if (typeof data === 'string') {
-      data = JSON.parse(data)
-    }
-
-    // Data must be an object at this point
-    if (typeof data === 'object') {
-      // Iterate through prototype names
-      for (let protoName in data) {
-        let inputObject = data[protoName]
-        let protoObject = {}
-        // Iterate through component names
-        for (let compName in inputObject) {
-          // Store strings of each component
-          protoObject[compName] = JSON.stringify(inputObject[compName])
-        }
-        this.entityTemplates[protoName] = protoObject
-        ++count
-      }
-    }
-
-    return count
   }
 
   /**

@@ -28,10 +28,12 @@ class SimpleIndex {
   }
 
   // Uses an existing index or builds a new index, to return entities with the specified components
-  *query(...componentNames) {
+  query(componentNames, callback) {
     // Return all entities
     if (componentNames.length === 0) {
-      yield* this.world.entities.values()
+      for (const entity of this.world.entities.values()) {
+        callback(entity.data, entity)
+      }
       return
     }
 
@@ -42,9 +44,9 @@ class SimpleIndex {
     const minComp = componentNames[minCompIndex]
 
     // Return matching entities
-    for (let entity of this.index[minComp].values()) {
+    for (const entity of this.index[minComp].values()) {
       if (entity.has(...componentNames)) {
-        yield entity
+        callback(entity.data, entity)
       }
     }
   }

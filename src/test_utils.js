@@ -1,8 +1,3 @@
-const { World } = require('../index.js')
-const { SimpleIndex } = require('./simple_index.js')
-const { MemoizedQueryIndex } = require('./memoized_query_index.js')
-const indexers = [SimpleIndex, MemoizedQueryIndex]
-
 function getSize(it) {
   let num = 0
   for (let elem of it) {
@@ -20,14 +15,6 @@ function has(it, target) {
   return false
 }
 
-function testIndexers(callback) {
-  return () => {
-    for (let indexer of indexers) {
-      callback(new World(indexer))
-    }
-  }
-}
-
 // TODO: Result of mocha/chai to jest upgrade, remove and use jest's "expect"
 function assert(value) {
   expect(Boolean(value)).toBe(true)
@@ -36,6 +23,5 @@ function assert(value) {
 module.exports = {
   getSize,
   has,
-  testIndexers,
   assert,
 }

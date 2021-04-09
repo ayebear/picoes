@@ -199,29 +199,6 @@ class Entity {
   }
 
   /**
-   * Updates component data from an object or other component. Similar to access() with a shallow merge applied after.
-   *
-   * @example
-   * entity.update('position', { x: 1, y: 2 })
-   *
-   * @param {string} component - The component name to update
-   * @param {Object} data      - The object or other component to merge into the specified component.
-   * @param {...Object} [args] - See entity.set() for details.
-   *
-   * @return {Object} The original entity that update() was called on, so that operations can be chained.
-   */
-  update(component, data, ...args) {
-    const comp = this.access(component, {}, ...args)
-
-    // Shallow set keys of the component
-    for (const key in data) {
-      comp[key] = data[key]
-    }
-
-    return this
-  }
-
-  /**
    * Removes a component from the entity - has no effect when it doesn't exist.
    * Can specify an onRemove() method in your component which gets called before it is removed.
    * If nothing is specified, then nothing will be removed. Use removeAll() to remove all components.
@@ -291,20 +268,6 @@ class Entity {
   }
 
   /**
-   * Returns an array of component names this entity currently has.
-   *
-   * @return {Array<String>} Array of component names.
-   */
-  get components() {
-    return Object.keys(this.data)
-  }
-
-  /** @ignore */
-  set components(c) {
-    throw new Error('Cannot set components in this way. See entity.set().')
-  }
-
-  /**
    * Returns true if this is a valid, existing, and usable entity, which is attached to a world.
    *
    * @example
@@ -316,18 +279,6 @@ class Entity {
     // Note: No need to actually look in the world for the ID, if entities are only ever copied by reference.
     // If entities are ever deep/shallow copied, this function will need to check this to be more robust.
     return this.world && this._id !== undefined
-  }
-
-  /**
-   * Returns unique entity ID as a string.
-   *
-   * @example
-   * let entityId = entity.toString()
-   *
-   * @return {string} String representation of the entity ID.
-   */
-  toString() {
-    return String(this._id)
   }
 
   /**
