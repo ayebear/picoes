@@ -19,8 +19,8 @@ test('component: define a component', () => {
     }
   })
   let ent = world.entity().set('position', 1, 2)
-  assert('position' in world.components)
-  assert(Object.keys(world.components).length == 1)
+  assert('position' in world.entities.componentClasses)
+  assert(Object.keys(world.entities.componentClasses).length == 1)
   assert(ent.has('position'))
   assert(ent.get('position').x === 1)
   assert(ent.get('position').y === 2)
@@ -41,8 +41,8 @@ test('component: define a component', () => {
     }
   )
   let ent2 = world.entity().set('velocity', 1, 2)
-  assert('velocity' in world.components)
-  assert(Object.keys(world.components).length == 2)
+  assert('velocity' in world.entities.componentClasses)
+  assert(Object.keys(world.entities.componentClasses).length == 2)
   assert(ent2.has('velocity'))
   assert(ent2.get('velocity').x === 1)
   assert(ent2.get('velocity').y === 2)
@@ -70,22 +70,21 @@ test('component: README example', () => {
   assert(player.get('health').value === 60)
 })
 
-test('component: define an object component (should be invalid)', () => {
+test('component: define invalid components', () => {
   const world = new World()
-  let result = world.component('position', {
-    x: 0,
-    y: 0,
-  })
-  assert(result === undefined)
-  let result2 = world.component('invalid', 555)
-  assert(result2 === undefined)
-  assert(Object.keys(world.components).length === 0)
-})
-
-test('component: define an empty component', () => {
-  const world = new World()
-  let result = world.component('position')
-  assert(result === undefined)
+  expect(() => {
+    world.component('empty')
+  }).toThrow()
+  expect(() => {
+    world.component('position', {
+      x: 0,
+      y: 0,
+    })
+  }).toThrow()
+  expect(() => {
+    world.component('invalid', 555)
+  }).toThrow()
+  assert(Object.keys(world.entities.componentClasses).length === 0)
 })
 
 test('component: use an empty component', () => {
@@ -132,8 +131,6 @@ test('component: test clearing with indexes', () => {
     this.x = x
     this.y = y
   })
-  world.component('velocity')
-  world.component('sprite')
   let results = world.each()
   results = world.each('position')
   results = world.each('position', 'velocity')
@@ -243,7 +240,7 @@ test('component: test detach and attach', () => {
   ent.detach()
   assert(!ent.valid())
   assert(spriteCount === 2)
-  assert(world.entities.size === 1)
+  assert(world.entities.entities.size === 1)
   assert(getSize(world.each('position')) === 1)
   assert(world.each('position').length === 1)
   assert(world.each('position')[0].get('position').x === 2)
@@ -253,7 +250,7 @@ test('component: test detach and attach', () => {
   ent.attach(world)
   assert(ent.valid())
   assert(spriteCount === 2)
-  assert(world.entities.size === 2)
+  assert(world.entities.entities.size === 2)
   assert(getSize(world.each('position')) === 2)
   assert(world.each('position').length === 2)
   assert(ent.get('position').x === 1)
@@ -317,7 +314,7 @@ test('component: test detached entities', () => {
 test('system: define a system', () => {
   const world = new World()
   world.system(class {})
-  assert(world.systems.length == 1)
+  assert(world.systems.systems.length == 1)
 })
 
 test('system: define a system with arguments', () => {
@@ -329,11 +326,10 @@ test('system: define a system with arguments', () => {
       this.textures = textures
     }
   }
-  world.component('velocity')
   world.system(velocitySystem, 3500, 'someCanvas', ['textures.png'])
-  assert(world.systems[0].maxVelocity === 3500)
-  assert(world.systems[0].canvas === 'someCanvas')
-  assert(world.systems[0].textures[0] === 'textures.png')
+  assert(world.systems.systems[0].maxVelocity === 3500)
+  assert(world.systems.systems[0].canvas === 'someCanvas')
+  assert(world.systems.systems[0].textures[0] === 'textures.png')
 })
 
 test('system: define a system with context (no key)', () => {
@@ -361,11 +357,10 @@ test('system: define a system with context (no key)', () => {
       ran.push(this.existing)
     }
   }
-  world.component('velocity')
   world.system(velocitySystem, true) // Existing system
   world.context(state) // Set keyless context
   world.system(velocitySystem, false) // New system
-  expect(world.systems.length).toEqual(2)
+  expect(world.systems.systems.length).toEqual(2)
   world.run()
   expect(ran).toEqual([false, true, false])
 })
@@ -395,19 +390,16 @@ test('system: define a system with context (specific key)', () => {
       ran.push(this.existing)
     }
   }
-  world.component('velocity')
   world.system(velocitySystem, true) // Existing system
   world.context(state, 'state') // Set keyed context
   world.system(velocitySystem, false) // New system
-  expect(world.systems.length).toEqual(2)
+  expect(world.systems.systems.length).toEqual(2)
   world.run()
   expect(ran).toEqual([false, true, false])
 })
 
 test('system: system iteration', () => {
   const world = new World()
-  world.component('position')
-  world.component('velocity')
   world.system(
     class {
       run(dt, total) {
@@ -456,8 +448,6 @@ test('system: system iteration', () => {
 
 test('system: system methods', () => {
   const world = new World()
-  expect(world.component('position')).toBeUndefined()
-
   let methodsCalled = 0
 
   world.system(
@@ -482,7 +472,9 @@ test('system: system methods', () => {
   )
 
   world.system(class {})
-  world.system()
+  expect(() => {
+    world.system()
+  }).toThrow()
 
   world.entity().set('position', {})
   assert(methodsCalled == 2)
@@ -560,15 +552,15 @@ test('system: system edge cases', () => {
 test('system: adding entities to index', () => {
   const world = new World()
   world.entity().set('a').set('b')
-  assert(world.each('a', 'b').length === 1)
+  expect(world.each('a', 'b').length).toBe(1)
   world.each('a', 'b')[0].destroy()
-  assert(world.each('a', 'b').length === 0)
+  expect(world.each('a', 'b').length).toBe(0)
   world.entity().set('a')
-  assert(world.each('a', 'b').length === 0)
+  expect(world.each('a', 'b').length).toBe(0)
   world.entity().set('b')
-  assert(world.each('a', 'b').length === 0)
+  expect(world.each('a', 'b').length).toBe(0)
   world.entity().set('b').set('a')
-  assert(world.each('a', 'b').length === 1)
+  expect(world.each('a', 'b').length).toBe(1)
 })
 
 test('system: onRemove edge cases', () => {
@@ -691,7 +683,7 @@ test('system: indexing edge cases', () => {
       ++count
       entity.destroy()
     })
-    assert(count === 2)
+    expect(count).toBe(2)
 
     count = 0
     world.each('velocity', ({ velocity }, entity) => {
@@ -715,7 +707,7 @@ test('system: indexing edge cases', () => {
       ++count
       entity.destroy()
     })
-    assert(count === 1)
+    expect(count).toBe(1)
 
     count = 0
     world.each('position', ({ position }, entity) => {
@@ -788,7 +780,7 @@ test('system: use the each() method', () => {
       ++count
     }
   )
-  assert(count === 1)
+  expect(count).toBe(1)
 
   // Test iterator usage
   count = 0
@@ -796,7 +788,7 @@ test('system: use the each() method', () => {
   for (let ent of results) {
     ++count
   }
-  assert(count === 1)
+  expect(count).toBe(1)
 
   // Passing callbacks cause the return value to be undefined
   results = world.each('position', () => {})
@@ -804,7 +796,7 @@ test('system: use the each() method', () => {
   results = world.each(() => {})
   assert(results === undefined)
 
-  // Test breaking out of the loop
+  // Test breaking out of the loop (with components)
   count = 0
   world.each('position', function ({ position }, ent) {
     assert(position)
@@ -813,11 +805,21 @@ test('system: use the each() method', () => {
     ++count
     return false
   })
-  assert(count === 1)
+  expect(count).toBe(1)
+
+  // Test breaking out of the loop (without components)
+  count = 0
+  world.each(function (_, ent) {
+    assert(ent)
+    assert(ent.valid())
+    ++count
+    return false
+  })
+  expect(count).toBe(1)
 
   // And just to be sure there are more than 1
   count = world.each('position').length
-  assert(count === 2)
+  expect(count).toBe(2)
 
   // Invalid args
   expect(() => {
@@ -830,8 +832,6 @@ test('system: test indexing with each()', () => {
   world.component('position', function (val = 0) {
     this.val = val
   })
-  world.component('velocity')
-  world.component('sprite')
   let ent1 = world.entity().set('position', 1).set('velocity')
   let ent2 = world.entity().set('position', 10)
   let ent3 = world.entity().set('position', 100).set('velocity').set('sprite')

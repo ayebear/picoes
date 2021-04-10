@@ -3,9 +3,8 @@ import { assert } from './test_utils.js'
 
 test('entity: create an entity', () => {
   const world = new World()
-  world.component('position')
   let ent = world.entity()
-  assert(world.entities.size === 1)
+  assert(world.entities.entities.size === 1)
   assert(typeof ent.id === 'number' && ent.id === 1)
 })
 
@@ -40,24 +39,24 @@ test('entity: remove an entity', () => {
   ent.set('position')
   ent.get('position').val = 100
 
-  assert(world.entities.size == 1)
-  assert(Object.keys(world.components).length == 1)
+  expect(world.entities.entities.size).toBe(1)
+  assert(Object.keys(world.entities.componentClasses).length == 1)
   assert(ent.has('position'))
   assert(ent.get('position').val === 100)
   assert(ent.valid())
 
   ent.destroy()
 
-  assert(world.entities.size == 0)
-  assert(Object.keys(world.components).length == 1)
+  assert(world.entities.entities.size == 0)
+  assert(Object.keys(world.entities.componentClasses).length == 1)
   assert(!ent.valid())
   assert(!ent.has('position'))
 
   // Just for safe measure
   ent.destroy()
 
-  assert(world.entities.size == 0)
-  assert(Object.keys(world.components).length == 1)
+  assert(world.entities.entities.size == 0)
+  assert(Object.keys(world.entities.componentClasses).length == 1)
   assert(!ent.valid())
   assert(!ent.has('position'))
 })
@@ -68,7 +67,9 @@ test('entity: get and set components', () => {
     this.x = x
     this.y = y
   })
-  world.component('empty')
+  expect(() => {
+    world.component('empty')
+  }).toThrow()
   let ent = world.entity()
   ent.set('position', 5)
   assert(ent.has('position'))
@@ -77,20 +78,20 @@ test('entity: get and set components', () => {
   assert(ent.get('position').x === 5)
   assert(ent.get('position').y === 0)
 
-  ent.update('position', { y: 3 })
+  Object.assign(ent.access('position', {}), { y: 3 })
   assert(ent.has('position'))
   assert(ent.hasAny('position'))
   assert(ent.components.length == 1)
   assert(ent.get('position').x === 5)
   assert(ent.get('position').y === 3)
 
-  ent.update('object', { val: 50 })
+  Object.assign(ent.access('object', {}), { val: 50 })
   assert(ent.has('object'))
   assert(ent.hasAny('object'))
   assert(ent.components.length == 2)
   assert(ent.get('object').val === 50)
 
-  ent.update('empty', { testing: 100 })
+  Object.assign(ent.access('empty', {}), { testing: 100 })
   assert(ent.has('empty'))
   assert(ent.hasAny('empty'))
   assert(ent.components.length == 3)
@@ -144,7 +145,6 @@ test('entity: check existence of components', () => {
     this.x = x
     this.y = y
   })
-  world.component('empty')
   const ent = world.entity()
   assert(!ent.hasAny())
   assert(ent.has())
@@ -206,8 +206,6 @@ test('entity: setRaw', () => {
 
 test('entity: remove components', () => {
   const world = new World()
-  world.component('position')
-  world.component('velocity')
   let ent = world.entity().set('position').set('velocity')
   assert(ent.components.length == 2)
   assert(ent.has('position'))
@@ -295,8 +293,7 @@ test('entity: remove components - onRemove', () => {
 
 test('entity: serialize components', () => {
   const world = new World()
-  world.component('position')
-  let ent = world.entity().update('position', { x: 4, y: 6 })
+  let ent = world.entity().set('position', { x: 4, y: 6 })
 
   let data = JSON.parse(ent.toJSON())
   assert(data)
@@ -323,7 +320,6 @@ test('entity: serialize custom components', () => {
 
 test('entity: deserialize components', () => {
   const world = new World()
-  world.component('position')
   let ent = world.entity()
   assert(ent.components.length == 0)
 
@@ -379,8 +375,6 @@ test('entity: check for existence of components', () => {
     this.x = x
     this.y = y
   })
-  world.component('velocity')
-  world.component('player')
 
   let ent = world
     .entity()
@@ -409,68 +403,6 @@ test('entity: check for existence of components', () => {
   let ent2 = world.entity()
   assert(ent2.has())
   assert(!ent2.has('invalid'))
-})
-
-test('entity: register and use prototypes', () => {
-  const world = new World()
-  // Test all three component types
-  world.component('position', function (x = 0, y = 0) {
-    this.x = x
-    this.y = y
-  })
-
-  let result = world.prototype()
-  assert(result == 0)
-
-  // Register prototypes in all ways
-  result = world.prototype({
-    Player: {
-      position: {
-        x: 5,
-        y: 10,
-      },
-      velocity: {
-        x: 15,
-        y: 20,
-      },
-      player: {},
-    },
-    Enemy: {
-      position: {},
-      velocity: {},
-    },
-  })
-  assert(result == 2)
-
-  let stringTest = JSON.stringify({
-    Test: {
-      position: {
-        x: 3.14159,
-        y: 5000,
-      },
-    },
-  })
-  result = world.prototype(stringTest)
-  assert(result == 1)
-
-  // Create entities with the prototype
-  let p = world.entity('Player')
-  let e = world.entity('Enemy')
-  let t = world.entity('Test')
-
-  // Make sure all components exist and there are no extras
-  assert(p.has('position', 'velocity', 'player'))
-  assert(e.has('position', 'velocity') && !e.has('player'))
-  assert(t.has('position') && !t.has('velocity') && !t.has('player'))
-
-  // Make sure all component values are correct
-  assert(p.get('position').x === 5 && p.get('position').y === 10)
-  assert(p.get('velocity').x === 15 && p.get('velocity').y === 20)
-  assert(p.get('player') !== undefined)
-  expect(e.get('position').x).toEqual(0)
-  expect(e.get('position').y).toEqual(0)
-  assert(e.get('velocity').x === undefined && e.get('velocity').y === undefined)
-  assert(t.get('position').x === 3.14159 && t.get('position').y === 5000)
 })
 
 test('entity: cloning basic', () => {

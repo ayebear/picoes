@@ -10,11 +10,11 @@ test('utilities: invoke', () => {
     constructor() {
       this.that = this
       this.foo5 = () => {
-        return Boolean(this.that && this === this.that)
+        return Boolean(this && this.that && this === this.that)
       }
     }
     foo4() {
-      return Boolean(this.that && this === this.that)
+      return Boolean(this && this.that && this === this.that)
     }
   }
   const obj2 = new C()

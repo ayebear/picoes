@@ -325,7 +325,7 @@ export class Entity {
       if (typeof comp.fromJSON === 'function') {
         comp.fromJSON(parsed[name])
       } else {
-        this.update(name, parsed[name])
+        Object.assign(this.access(name, {}), parsed[name])
       }
     }
     return this

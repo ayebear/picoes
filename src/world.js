@@ -20,7 +20,7 @@ export class World {
 
   /**
    * Removes all entities from the world.
-   * Does not affect registered systems, components, or prototypes.
+   * Does not affect any registered systems or components.
    *
    * @example
    * world.clear()
@@ -143,6 +143,8 @@ export class World {
    * @param {...Object} args - The arguments to forward to the system's constructor and init.
    * Note that it is recommended to use init if using context, see world.context().
    */
+  // TODO: Get rid of args because of context
+  // TODO: Rename to systems() and take an array or multiple systems (pick ONE)
   system(systemClass, ...args) {
     this.systems.register(systemClass, ...args)
   }

@@ -47,10 +47,10 @@ export class EntityStorage {
 
   registerComponent(name, componentClass) {
     // Only allow functions and classes to be components
-    if (typeof componentClass === 'function') {
-      this.componentClasses[name] = componentClass
-      return name
+    if (typeof componentClass !== 'function') {
+      throw new Error('Component is not a valid function or class.')
     }
+    this.componentClasses[name] = componentClass
   }
 
   // Creates a new entity attached to the world
@@ -118,7 +118,7 @@ export class EntityStorage {
   // If callback is defined, it will be called for each entity with component data, and returns undefined
   // If callback is not defined, an array of entities will be returned
   queryIndex({ componentNames, callback }) {
-    // Return all entities
+    // Return all entities (array if no callback)
     if (componentNames.length === 0) {
       const iter = this.entities.values()
       if (!callback) {
@@ -138,10 +138,16 @@ export class EntityStorage {
       .reduce(minIndexReducer, 0)
     const minComp = componentNames[minCompIndex]
 
-    // Return matching entities
+    // Return matching entities (array if no callback)
     const iter = this.index.get(minComp).values()
     if (!callback) {
-      return [...iter]
+      const results = []
+      for (const entity of iter) {
+        if (entity.has(...componentNames)) {
+          results.push(entity)
+        }
+      }
+      return results
     }
     for (const entity of iter) {
       if (
