@@ -1,6 +1,6 @@
-const { World } = require('../index.js')
-const { Entity } = require('./entity.js')
-const { getSize, has, assert } = require('./test_utils.js')
+import { World } from '../index.js'
+import { Entity } from './entity.js'
+import { getSize, has, assert } from './test_utils.js'
 
 test('world: create a world', () => {
   const world = new World()
@@ -90,7 +90,7 @@ test('component: define an empty component', () => {
 
 test('component: use an empty component', () => {
   const world = new World()
-  let ent = world.entity().update('position', {
+  let ent = world.entity().set('position', {
     x: 1,
   })
   assert(ent.has('position'))
@@ -106,9 +106,7 @@ test('component: use an empty component', () => {
   })
   assert(ent2.get('velocity').x === undefined)
   assert(ent2.get('velocity').y === 3)
-  ent2.update('velocity', {
-    x: 42,
-  })
+  ent2.get('velocity').x = 42
   assert(ent2.get('velocity').x === 42)
   assert(ent2.get('velocity').y === 3)
 
@@ -436,8 +434,10 @@ test('system: system iteration', () => {
   let entA = world.entity()
   let entB = world.entity()
   let entC = world.entity()
-  entA.update('position', { x: 1, y: 1 }).update('velocity', { x: 1, y: 0 })
-  entB.update('position', { x: 30, y: 40 }).update('velocity', { x: -1, y: 2 })
+  Object.assign(entA.access('position', {}), { x: 1, y: 1 })
+  Object.assign(entA.access('velocity', {}), { x: 1, y: 0 })
+  Object.assign(entB.access('position', {}), { x: 30, y: 40 })
+  Object.assign(entB.access('velocity', {}), { x: -1, y: 2 })
 
   assert(entA.get('position').x == 1 && entA.get('position').y == 1)
   assert(entB.get('position').x == 30 && entB.get('position').y == 40)
@@ -538,8 +538,10 @@ test('system: system edge cases', () => {
   let entA = world.entity()
   let entB = world.entity()
   let entC = world.entity()
-  entA.update('position', { x: 1, y: 1 }).update('velocity', { x: 1, y: 0 })
-  entB.update('position', { x: 30, y: 40 }).update('velocity', { x: -1, y: 2 })
+  Object.assign(entA.access('position', {}), { x: 1, y: 1 })
+  Object.assign(entA.access('velocity', {}), { x: 1, y: 0 })
+  Object.assign(entB.access('position', {}), { x: 30, y: 40 })
+  Object.assign(entB.access('velocity', {}), { x: -1, y: 2 })
 
   assert(entA.get('position').x == 1 && entA.get('position').y == 1)
   assert(entB.get('position').x == 30 && entB.get('position').y == 40)

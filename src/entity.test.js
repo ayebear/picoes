@@ -1,12 +1,12 @@
-const { World } = require('../index.js')
-const { assert } = require('./test_utils.js')
+import { World } from '../index.js'
+import { assert } from './test_utils.js'
 
 test('entity: create an entity', () => {
   const world = new World()
   world.component('position')
   let ent = world.entity()
-  assert(world.entities.size == 1)
-  assert(ent.toString() == String(ent.id))
+  assert(world.entities.size === 1)
+  assert(typeof ent.id === 'number' && ent.id === 1)
 })
 
 test('entity: test if ID is read-only', () => {

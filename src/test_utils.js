@@ -1,14 +1,14 @@
-function getSize(it) {
+export function getSize(it) {
   let num = 0
-  for (let elem of it) {
+  for (let _elem of it) {
     ++num
   }
   return num
 }
 
-function has(it, target) {
+export function has(it, target) {
   for (let elem of it) {
-    if (elem.toString() == target.toString()) {
+    if (elem.id === target.id) {
       return true
     }
   }
@@ -16,12 +16,6 @@ function has(it, target) {
 }
 
 // TODO: Result of mocha/chai to jest upgrade, remove and use jest's "expect"
-function assert(value) {
+export function assert(value) {
   expect(Boolean(value)).toBe(true)
-}
-
-module.exports = {
-  getSize,
-  has,
-  assert,
 }

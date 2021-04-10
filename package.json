@@ -1,11 +1,11 @@
 {
   "name": "picoes",
   "version": "1.0.0-alpha5",
-  "description": "Pico Entity System for JavaScript (ES6).",
+  "description": "Pico Entity System for JavaScript",
   "main": "./index.js",
   "scripts": {
-    "test": "jest --coverage",
-    "doc": "node ./node_modules/.bin/esdoc",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
+    "doc": "node --experimental-vm-modules ./node_modules/.bin/esdoc",
     "deploy": "gh-pages -d docs"
   },
   "repository": {
@@ -17,8 +17,7 @@
     "component",
     "system",
     "ecs",
-    "picoes",
-    "es6"
+    "picoes"
   ],
   "author": "Eric Hebert",
   "license": "MIT",

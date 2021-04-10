@@ -1,12 +1,12 @@
 /** @ignore */
-const { invoke, shallowClone } = require('./utilities.js')
+import { invoke, shallowClone } from './utilities.js'
 
 /**
  * Entity class used for storing components.
  *
  * @class      Entity (name)
  */
-class Entity {
+export class Entity {
   /**
    * Do not construct an Entity yourself - use the entity() method in World instead.
    * Also, do not shallow/deep copy entity objects, only pass around references.
@@ -151,9 +151,11 @@ class Entity {
    * @return {Object} The original entity that setWithFallback() was called on, so that operations can be chained.
    */
   setWithFallback(component, fallback, ...args) {
-    if (this.valid() && component in this.world.components) {
+    if (this.valid() && component in this.world.entities.componentClasses) {
       // Create component and store in entity
-      this.data[component] = new this.world.components[component](...args)
+      this.data[component] = new this.world.entities.componentClasses[
+        component
+      ](...args)
 
       // Inject parent entity into component
       this.data[component].entity = this
@@ -164,7 +166,7 @@ class Entity {
 
     // Update the index with this new component
     if (this.valid()) {
-      this.world.index.add(this, component)
+      this.world.entities.addToIndex(this, component)
     }
 
     // Call custom onCreate to initialize component, and any additional arguments passed into set()
@@ -192,7 +194,7 @@ class Entity {
 
     // Update the index with this new component
     if (this.valid()) {
-      this.world.index.add(this, component)
+      this.world.entities.addToIndex(this, component)
     }
 
     return this
@@ -218,7 +220,7 @@ class Entity {
 
         // Remove from index
         if (this.valid()) {
-          this.world.index.remove(this, component)
+          this.world.entities.removeFromIndex(this, component)
         }
 
         // Remove from entity
@@ -262,9 +264,18 @@ class Entity {
 
     if (this.valid()) {
       // Remove from world
-      this.world.entities.delete(this._id)
+      this.world.entities.entities.delete(this._id)
       this._id = undefined
     }
+  }
+
+  /**
+   * Returns an array of component names this entity currently has.
+   *
+   * @return {Array<String>} Array of component names.
+   */
+  get components() {
+    return Object.keys(this.data)
   }
 
   /**
@@ -334,9 +345,9 @@ class Entity {
     if (world && !this.valid()) {
       // Assign new id, and reattach to world
       this.world = world
-      this._id = this.world.idCounter++
-      this.world.entities.set(this._id, this)
-      this.world.index.add(this, ...this.components)
+      this._id = this.world.entities.nextEntityId++
+      this.world.entities.entities.set(this._id, this)
+      this.world.entities.addToIndex(this, ...this.components)
     }
   }
 
@@ -352,8 +363,8 @@ class Entity {
   detach() {
     if (this.valid()) {
       // Remove from current world
-      this.world.index.remove(this, ...this.components)
-      this.world.entities.delete(this._id)
+      this.world.entities.removeFromIndex(this, ...this.components)
+      this.world.entities.entities.delete(this._id)
       this._id = undefined
       this.world = undefined
     }
@@ -429,10 +440,12 @@ class Entity {
     const component = this.get(name)
     const args = invoke(component, 'cloneArgs') || []
 
-    if (name in targetEntity.world.components) {
+    if (name in targetEntity.world.entities.componentClasses) {
       // Registered component, so create new using constructor, inject
       // entity, and call optional clone
-      const newComponent = new targetEntity.world.components[name](...args)
+      const newComponent = new targetEntity.world.entities.componentClasses[
+        name
+      ](...args)
       newComponent.entity = targetEntity
       targetEntity.data[name] = newComponent
       invoke(component, 'clone', newComponent)
@@ -442,7 +455,7 @@ class Entity {
     }
 
     // Update the index with this new component
-    targetEntity.world.index.add(targetEntity, name)
+    targetEntity.world.entities.addToIndex(targetEntity, name)
 
     // Call custom onCreate to initialize component, and any additional arguments passed into set()
     invoke(targetEntity.data[name], 'onCreate', ...args)
@@ -450,5 +463,3 @@ class Entity {
     return this
   }
 }
-
-exports.Entity = Entity

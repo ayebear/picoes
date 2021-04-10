@@ -7,7 +7,7 @@ import { EntityStorage } from './entity_storage.js'
  *
  * @class World (name)
  */
-class World {
+export class World {
   /**
    * Constructs an instance of the world.
    */
@@ -15,7 +15,7 @@ class World {
     /** @ignore */
     this.systems = new SystemStorage()
     /** @ignore */
-    this.entities = new EntityStorage()
+    this.entities = new EntityStorage(this)
   }
 
   /**
@@ -207,5 +207,3 @@ class World {
     return this.entities.each(...args)
   }
 }
-
-exports.World = World
