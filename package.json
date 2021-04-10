@@ -1,11 +1,15 @@
 {
   "name": "picoes",
-  "version": "1.0.0-alpha4",
-  "description": "Pico Entity System for JavaScript (ES6).",
-  "main": "./index.js",
+  "version": "1.0.0-alpha7",
+  "description": "Pico Entity System for JavaScript",
+  "main": "index.js",
+  "files": [
+    "src",
+    "index.js"
+  ],
   "scripts": {
-    "test": "jest --coverage",
-    "doc": "node ./node_modules/.bin/esdoc",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
+    "doc": "node --experimental-vm-modules ./node_modules/.bin/esdoc",
     "deploy": "gh-pages -d docs"
   },
   "repository": {
@@ -17,8 +21,7 @@
     "component",
     "system",
     "ecs",
-    "picoes",
-    "es6"
+    "picoes"
   ],
   "author": "Eric Hebert",
   "license": "MIT",
@@ -34,7 +37,16 @@
     "esdoc-undocumented-identifier-plugin": "^1.0.0",
     "esdoc-unexported-identifier-plugin": "^1.0.0",
     "gh-pages": "^3.1.0",
-    "jest": "^26.6.3"
+    "husky": "^6.0.0",
+    "jest": "^26.6.3",
+    "prettier": "2.2.1",
+    "pretty-quick": "^3.1.0"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "type": "module",
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  }
 }
