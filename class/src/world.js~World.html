@@ -343,7 +343,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber21">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber24">source</a></span></span>
     </span>
   </h3>
 
@@ -366,8 +366,9 @@
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" class="code" data-depth="0">options</td>
       <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>The initial systems, components, and context to setup in the world.</p>
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="description"><p>The initial systems, components, and context to setup in the world.
+Each one is optional. See below for registering these after world construction.</p>
 </td>
     </tr>
 </tbody>
@@ -391,7 +392,9 @@
   <div class="example-doc" data-ice="exampleDoc">
       
       <pre class="prettyprint source-code"><code data-ice="exampleCode">const world = new World({
-
+  components: { position, velocity },
+  systems: [Input, Physics, Render],
+  context: { state },
 })</code></pre>
     </div>
 </div>
@@ -417,7 +420,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber52">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber55">source</a></span></span>
     </span>
   </h3>
 
@@ -469,7 +472,7 @@ Does not affect any registered systems or components.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber82">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber85">source</a></span></span>
     </span>
   </h3>
 
@@ -572,7 +575,7 @@ world.entity().set(&apos;myComponent&apos;, 10, 500)</code></pre>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber118">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber121">source</a></span></span>
     </span>
   </h3>
 
@@ -598,7 +601,7 @@ available in the constructor.</p>
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" class="code" data-depth="0">data</td>
       <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
-      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="appendix"></td>
       <td data-ice="description"><p>The object to use as context to pass to systems.
 All the keys inside the context object will be spread into the top-level of the system.</p>
 </td>
@@ -664,7 +667,7 @@ world.system(...)</code></pre>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber229">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber232">source</a></span></span>
     </span>
   </h3>
 
@@ -769,7 +772,7 @@ world.each(&apos;compA&apos;, [&apos;more&apos;, &apos;comps&apos;], &apos;compB
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber94">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber97">source</a></span></span>
     </span>
   </h3>
 
@@ -833,7 +836,7 @@ world.each(&apos;compA&apos;, [&apos;more&apos;, &apos;comps&apos;], &apos;compB
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber191">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber194">source</a></span></span>
     </span>
   </h3>
 
@@ -912,7 +915,7 @@ world.system(systemB)
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber168">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber171">source</a></span></span>
     </span>
   </h3>
 
@@ -944,7 +947,7 @@ constructor(), init(), run(), or any other custom methods/properties.</p>
 <tr data-ice="property" data-depth="0">
       <td data-ice="name" class="code" data-depth="0">args</td>
       <td data-ice="type" class="code">...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
-      <td data-ice="appendix"></td>
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
       <td data-ice="description"><p>The arguments to forward to the system&apos;s constructor and init.
 Note that it is recommended to use init if using context, see world.context().</p>
 </td>
