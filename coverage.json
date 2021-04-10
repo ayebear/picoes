@@ -1,40 +1,40 @@
 {
-  "coverage": "76%",
-  "expectCount": 75,
-  "actualCount": 57,
+  "coverage": "73.01%",
+  "expectCount": 63,
+  "actualCount": 46,
   "files": {
     "src/entity.js": {
-      "expectCount": 29,
-      "actualCount": 29,
+      "expectCount": 25,
+      "actualCount": 25,
       "undocumentLines": []
     },
-    "src/memoized_query_index.js": {
-      "expectCount": 10,
-      "actualCount": 1,
+    "src/entity_storage.js": {
+      "expectCount": 17,
+      "actualCount": 7,
       "undocumentLines": [
-        8,
-        9,
-        14,
-        15,
-        19,
-        40,
-        46,
-        64,
-        77
+        13,
+        34,
+        49,
+        58,
+        66,
+        71,
+        80,
+        87,
+        93,
+        121
       ]
     },
-    "src/simple_index.js": {
-      "expectCount": 10,
-      "actualCount": 2,
+    "src/system_storage.js": {
+      "expectCount": 8,
+      "actualCount": 1,
       "undocumentLines": [
-        14,
-        15,
-        20,
-        21,
-        25,
-        30,
-        52,
-        59
+        5,
+        6,
+        7,
+        10,
+        22,
+        38,
+        46
       ]
     },
     "src/utilities.js": {
@@ -43,11 +43,9 @@
       "undocumentLines": []
     },
     "src/world.js": {
-      "expectCount": 24,
-      "actualCount": 23,
-      "undocumentLines": [
-        50
-      ]
+      "expectCount": 11,
+      "actualCount": 11,
+      "undocumentLines": []
     }
   }
 }

@@ -8,7 +8,7 @@
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
   <script src="script/manual.js"></script>
-<meta name="description" content="Pico Entity System for JavaScript (ES6)."><meta property="twitter:card" content="summary"><meta property="twitter:title" content="picoes"><meta property="twitter:description" content="Pico Entity System for JavaScript (ES6)."></head>
+<meta name="description" content="Pico Entity System for JavaScript"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="picoes"><meta property="twitter:description" content="Pico Entity System for JavaScript"></head>
 <body class="layout-container" data-ice="rootContainer">
 
 <header>
@@ -30,21 +30,19 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/entity.js~Entity.html">Entity</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/memoized_query_index.js~MemoizedQueryIndex.html">MemoizedQueryIndex</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/simple_index.js~SimpleIndex.html">SimpleIndex</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/world.js~World.html">World</a></span></span></li>
 </ul>
 </div>
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode"></code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {World} from &apos;<span><a href="file/src/world.js.html#lineNumber10">picoes/src/world.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/src/world.js.html#lineNumber15">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/src/world.js.html#lineNumber10">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -97,7 +95,7 @@
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-constructor-constructor">constructor</a></span></span><span class="code" data-ice="signature">(indexer: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>)</span>
+          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-constructor-constructor">constructor</a></span></span><span class="code" data-ice="signature">(options: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></span>)</span>
         </p>
       </div>
       <div>
@@ -115,70 +113,7 @@
 </tbody>
 </table>
 </div>
-<div data-ice="memberSummary"><h2>Member Summary</h2><table class="summary" data-ice="summary">
-  <thead><tr><td data-ice="title" colspan="3">Public Members</td></tr></thead>
-  <tbody>
-  
-  <tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
-          
-          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-member-contextData">contextData</a></span></span><span class="code" data-ice="signature">: <span>*</span></span>
-        </p>
-      </div>
-      <div>
-        
-        
-        <div data-ice="description"><p>Context information</p>
-</div>
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
-          
-          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-member-contextKey">contextKey</a></span></span><span class="code" data-ice="signature">: <span>*</span></span>
-        </p>
-      </div>
-      <div>
-        
-        
-        
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-</tbody>
-</table>
-</div>
+
 <div data-ice="methodSummary"><h2>Method Summary</h2><table class="summary" data-ice="summary">
   <thead><tr><td data-ice="title" colspan="3">Public Methods</td></tr></thead>
   <tbody>
@@ -255,7 +190,7 @@
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-method-context">context</a></span></span><span class="code" data-ice="signature">(data: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>, key: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span><a href="class/src/entity.js~Entity.html">Entity</a></span></span>
+          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-method-context">context</a></span></span><span class="code" data-ice="signature">(data: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="class/src/entity.js~Entity.html">Entity</a></span></span>
         </p>
       </div>
       <div>
@@ -313,102 +248,13 @@
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-method-entity">entity</a></span></span><span class="code" data-ice="signature">(name: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span><a href="class/src/entity.js~Entity.html">Entity</a></span></span>
+          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-method-entity">entity</a></span></span><span class="code" data-ice="signature">(): <span><a href="class/src/entity.js~Entity.html">Entity</a></span></span>
         </p>
       </div>
       <div>
         
         
         <div data-ice="description"><p>Creates a new entity in the world</p>
-</div>
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
-          
-          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-method-get">get</a></span></span><span class="code" data-ice="signature">(componentNames: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span></span>
-        </p>
-      </div>
-      <div>
-        
-        
-        <div data-ice="description"><p>Returns an array of entities with matching components
-Simplified version of each(), returns an array instead of an iterator.</p>
-</div>
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
-          
-          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-method-getEntityById">getEntityById</a></span></span><span class="code" data-ice="signature">(entityId: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>): <span><a href="class/src/entity.js~Entity.html">Entity</a></span></span>
-        </p>
-      </div>
-      <div>
-        
-        
-        <div data-ice="description"><p>Returns an entity by ID
-Returns undefined if it doesn&apos;t exist</p>
-</div>
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
-          
-          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-method-prototype">prototype</a></span></span><span class="code" data-ice="signature">(data: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></span>
-        </p>
-      </div>
-      <div>
-        
-        
-        <div data-ice="description"><p>Registers entity prototype(s).</p>
 </div>
       </div>
     </td>
@@ -460,7 +306,7 @@ Returns undefined if it doesn&apos;t exist</p>
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-method-system">system</a></span></span><span class="code" data-ice="signature">(systemClass: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></span>
+          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-method-system">system</a></span></span><span class="code" data-ice="signature">(systemClass: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>)</span>
         </p>
       </div>
       <div>
@@ -493,7 +339,7 @@ Returns undefined if it doesn&apos;t exist</p>
     
     
     
-    <span class="code" data-ice="name">constructor</span><span class="code" data-ice="signature">(indexer: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>)</span>
+    <span class="code" data-ice="name">constructor</span><span class="code" data-ice="signature">(options: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></span>)</span>
     <span class="right-info">
       
       
@@ -518,11 +364,10 @@ Returns undefined if it doesn&apos;t exist</p>
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" class="code" data-depth="0">indexer</td>
-      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></td>
-      <td data-ice="appendix"><ul><li>optional</li>
-<li>default: SimpleIndex</li></ul></td>
-      <td data-ice="description"><p>The indexer to use. Default is SimpleIndex. Can use MemoizedQueryIndex if better querying performance is needed, for increased component creation/removal costs.</p>
+      <td data-ice="name" class="code" data-depth="0">options</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>The initial systems, components, and context to setup in the world.</p>
 </td>
     </tr>
 </tbody>
@@ -540,97 +385,16 @@ Returns undefined if it doesn&apos;t exist</p>
 
   
 
-  
-
-  
-
-  
-  
-</div>
-</div>
-<div data-ice="memberDetails"><h2 data-ice="title">Public Members</h2>
-
-<div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-member-contextData">
-    <span class="access" data-ice="access">public</span>
+  <div data-ice="example">
+    <h4>Example:</h4>
     
-    
-    
-    
-    
-    <span class="code" data-ice="name">contextData</span><span class="code" data-ice="signature">: <span>*</span></span>
-    <span class="right-info">
+  <div class="example-doc" data-ice="exampleDoc">
       
-      
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber49">source</a></span></span>
-    </span>
-  </h3>
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">const world = new World({
 
-  
-  
-  
-  <div data-ice="description"><p>Context information</p>
+})</code></pre>
+    </div>
 </div>
-
-  
-
-  <div data-ice="properties">
-</div>
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-  
-</div>
-<div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-member-contextKey">
-    <span class="access" data-ice="access">public</span>
-    
-    
-    
-    
-    
-    <span class="code" data-ice="name">contextKey</span><span class="code" data-ice="signature">: <span>*</span></span>
-    <span class="right-info">
-      
-      
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber50">source</a></span></span>
-    </span>
-  </h3>
-
-  
-  
-  
-  
-
-  
-
-  <div data-ice="properties">
-</div>
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
 
   
 
@@ -638,6 +402,7 @@ Returns undefined if it doesn&apos;t exist</p>
   
 </div>
 </div>
+
 <div data-ice="methodDetails"><h2 data-ice="title">Public Methods</h2>
 
 <div class="detail" data-ice="detail">
@@ -652,7 +417,7 @@ Returns undefined if it doesn&apos;t exist</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber60">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber52">source</a></span></span>
     </span>
   </h3>
 
@@ -660,7 +425,7 @@ Returns undefined if it doesn&apos;t exist</p>
   
   
   <div data-ice="description"><p>Removes all entities from the world.
-Does not affect registered systems, components, or prototypes.</p>
+Does not affect any registered systems or components.</p>
 </div>
 
   
@@ -704,7 +469,7 @@ Does not affect registered systems, components, or prototypes.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber101">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber82">source</a></span></span>
     </span>
   </h3>
 
@@ -803,11 +568,11 @@ world.entity().set(&apos;myComponent&apos;, 10, 500)</code></pre>
     
     
     
-    <span class="code" data-ice="name">context</span><span class="code" data-ice="signature">(data: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>, key: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span><a href="class/src/entity.js~Entity.html">Entity</a></span></span>
+    <span class="code" data-ice="name">context</span><span class="code" data-ice="signature">(data: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="class/src/entity.js~Entity.html">Entity</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber163">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber118">source</a></span></span>
     </span>
   </h3>
 
@@ -834,16 +599,8 @@ available in the constructor.</p>
       <td data-ice="name" class="code" data-depth="0">data</td>
       <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
       <td data-ice="appendix"><ul><li>optional</li></ul></td>
-      <td data-ice="description"><p>The object to use as context to pass to systems</p>
-</td>
-    </tr>
-<tr data-ice="property" data-depth="0">
-      <td data-ice="name" class="code" data-depth="0">key</td>
-      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
-      <td data-ice="appendix"><ul><li>optional</li></ul></td>
-      <td data-ice="description"><p>The top-level key to inject into systems for the context object.
-If no key is specified, then all the keys inside the context object will be spread into the
-top-level of the system.</p>
+      <td data-ice="description"><p>The object to use as context to pass to systems.
+All the keys inside the context object will be spread into the top-level of the system.</p>
 </td>
     </tr>
 </tbody>
@@ -907,7 +664,7 @@ world.system(...)</code></pre>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber306">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber229">source</a></span></span>
     </span>
   </h3>
 
@@ -1008,11 +765,11 @@ world.each(&apos;compA&apos;, [&apos;more&apos;, &apos;comps&apos;], &apos;compB
     
     
     
-    <span class="code" data-ice="name">entity</span><span class="code" data-ice="signature">(name: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span><a href="class/src/entity.js~Entity.html">Entity</a></span></span>
+    <span class="code" data-ice="name">entity</span><span class="code" data-ice="signature">(): <span><a href="class/src/entity.js~Entity.html">Entity</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber122">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber94">source</a></span></span>
     </span>
   </h3>
 
@@ -1024,24 +781,7 @@ world.each(&apos;compA&apos;, [&apos;more&apos;, &apos;comps&apos;], &apos;compB
 
   
 
-  <div data-ice="properties"><div data-ice="properties">
-  <h4 data-ice="title">Params:</h4>
-  <table class="params">
-    <thead>
-    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-    
-    <tr data-ice="property" data-depth="0">
-      <td data-ice="name" class="code" data-depth="0">name</td>
-      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
-      <td data-ice="appendix"><ul><li>optional</li></ul></td>
-      <td data-ice="description"><p>The prototype name to use</p>
-</td>
-    </tr>
-</tbody>
-  </table>
-</div>
+  <div data-ice="properties">
 </div>
 
   <div class="return-params" data-ice="returnParams">
@@ -1074,261 +814,6 @@ world.each(&apos;compA&apos;, [&apos;more&apos;, &apos;comps&apos;], &apos;compB
       
       <pre class="prettyprint source-code"><code data-ice="exampleCode">world.entity()</code></pre>
     </div>
-<div class="example-doc" data-ice="exampleDoc">
-      
-      <pre class="prettyprint source-code"><code data-ice="exampleCode">world.entity(&apos;Player&apos;)</code></pre>
-    </div>
-</div>
-
-  
-
-  
-  
-</div>
-<div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-method-get">
-    <span class="access" data-ice="access">public</span>
-    
-    
-    
-    
-    
-    <span class="code" data-ice="name">get</span><span class="code" data-ice="signature">(componentNames: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span></span>
-    <span class="right-info">
-      
-      
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber358">source</a></span></span>
-    </span>
-  </h3>
-
-  
-  
-  
-  <div data-ice="description"><p>Returns an array of entities with matching components
-Simplified version of each(), returns an array instead of an iterator.</p>
-</div>
-
-  
-
-  <div data-ice="properties"><div data-ice="properties">
-  <h4 data-ice="title">Params:</h4>
-  <table class="params">
-    <thead>
-    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-    
-    <tr data-ice="property" data-depth="0">
-      <td data-ice="name" class="code" data-depth="0">componentNames</td>
-      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>The component names to match on. See each() for how this matches.</p>
-</td>
-    </tr>
-</tbody>
-  </table>
-</div>
-</div>
-
-  <div class="return-params" data-ice="returnParams">
-    <h4>Return:</h4>
-    <table>
-      <tbody>
-        <tr>
-          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span></td>
-          <td class="return-desc" data-ice="returnDescription"><p>Array of entities, instead of iterator like each().</p>
-</td>
-        </tr>
-      </tbody>
-    </table>
-    <div data-ice="returnProperties">
-</div>
-  </div>
-
-  
-
-  
-
-  
-
-  
-
-  <div data-ice="example">
-    <h4>Example:</h4>
-    
-  <div class="example-doc" data-ice="exampleDoc">
-      
-      <pre class="prettyprint source-code"><code data-ice="exampleCode">const entities = world.get(&apos;player&apos;, &apos;sprite&apos;)</code></pre>
-    </div>
-</div>
-
-  
-
-  
-  
-</div>
-<div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-method-getEntityById">
-    <span class="access" data-ice="access">public</span>
-    
-    
-    
-    
-    
-    <span class="code" data-ice="name">getEntityById</span><span class="code" data-ice="signature">(entityId: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>): <span><a href="class/src/entity.js~Entity.html">Entity</a></span></span>
-    <span class="right-info">
-      
-      
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber373">source</a></span></span>
-    </span>
-  </h3>
-
-  
-  
-  
-  <div data-ice="description"><p>Returns an entity by ID
-Returns undefined if it doesn&apos;t exist</p>
-</div>
-
-  
-
-  <div data-ice="properties"><div data-ice="properties">
-  <h4 data-ice="title">Params:</h4>
-  <table class="params">
-    <thead>
-    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-    
-    <tr data-ice="property" data-depth="0">
-      <td data-ice="name" class="code" data-depth="0">entityId</td>
-      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>The entity ID to lookup for the entity</p>
-</td>
-    </tr>
-</tbody>
-  </table>
-</div>
-</div>
-
-  <div class="return-params" data-ice="returnParams">
-    <h4>Return:</h4>
-    <table>
-      <tbody>
-        <tr>
-          <td class="return-type code" data-ice="returnType"><span><a href="class/src/entity.js~Entity.html">Entity</a></span></td>
-          <td class="return-desc" data-ice="returnDescription"><p>Entity if found, otherwise undefined</p>
-</td>
-        </tr>
-      </tbody>
-    </table>
-    <div data-ice="returnProperties">
-</div>
-  </div>
-
-  
-
-  
-
-  
-
-  
-
-  <div data-ice="example">
-    <h4>Example:</h4>
-    
-  <div class="example-doc" data-ice="exampleDoc">
-      
-      <pre class="prettyprint source-code"><code data-ice="exampleCode">world.getEntityById(123)</code></pre>
-    </div>
-</div>
-
-  
-
-  
-  
-</div>
-<div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-method-prototype">
-    <span class="access" data-ice="access">public</span>
-    
-    
-    
-    
-    
-    <span class="code" data-ice="name">prototype</span><span class="code" data-ice="signature">(data: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></span>
-    <span class="right-info">
-      
-      
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber393">source</a></span></span>
-    </span>
-  </h3>
-
-  
-  
-  
-  <div data-ice="description"><p>Registers entity prototype(s). Any existing prototype names that are the same will be overwritten</p>
-</div>
-
-  
-
-  <div data-ice="properties"><div data-ice="properties">
-  <h4 data-ice="title">Params:</h4>
-  <table class="params">
-    <thead>
-    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-    
-    <tr data-ice="property" data-depth="0">
-      <td data-ice="name" class="code" data-depth="0">data</td>
-      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>Object structure to register as a prototype. Should be a dictionary with the top level keys
-being the prototype names. Can also be a JSON formatted string.</p>
-</td>
-    </tr>
-</tbody>
-  </table>
-</div>
-</div>
-
-  <div class="return-params" data-ice="returnParams">
-    <h4>Return:</h4>
-    <table>
-      <tbody>
-        <tr>
-          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
-          <td class="return-desc" data-ice="returnDescription"><p>Number of prototypes added.</p>
-</td>
-        </tr>
-      </tbody>
-    </table>
-    <div data-ice="returnProperties">
-</div>
-  </div>
-
-  
-
-  
-
-  
-
-  
-
-  <div data-ice="example">
-    <h4>Example:</h4>
-    
-  <div class="example-doc" data-ice="exampleDoc">
-      
-      <pre class="prettyprint source-code"><code data-ice="exampleCode">world.prototype({
-    Movable: {
-        position: {},
-        velocity: {}
-    }
-})</code></pre>
-    </div>
 </div>
 
   
@@ -1348,7 +833,7 @@ being the prototype names. Can also be a JSON formatted string.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber256">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber191">source</a></span></span>
     </span>
   </h3>
 
@@ -1423,11 +908,11 @@ world.system(systemB)
     
     
     
-    <span class="code" data-ice="name">system</span><span class="code" data-ice="signature">(systemClass: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></span>
+    <span class="code" data-ice="name">system</span><span class="code" data-ice="signature">(systemClass: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber221">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber168">source</a></span></span>
     </span>
   </h3>
 
@@ -1469,20 +954,7 @@ Note that it is recommended to use init if using context, see world.context().</
 </div>
 </div>
 
-  <div class="return-params" data-ice="returnParams">
-    <h4>Return:</h4>
-    <table>
-      <tbody>
-        <tr>
-          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
-          <td class="return-desc" data-ice="returnDescription"><p>Unique ID of the system on success or undefined on failure</p>
-</td>
-        </tr>
-      </tbody>
-    </table>
-    <div data-ice="returnProperties">
-</div>
-  </div>
+  
 
   
 

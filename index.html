@@ -8,7 +8,7 @@
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
   <script src="script/manual.js"></script>
-<meta name="description" content="Pico Entity System for JavaScript (ES6)."><meta property="twitter:card" content="summary"><meta property="twitter:title" content="picoes"><meta property="twitter:description" content="Pico Entity System for JavaScript (ES6)."></head>
+<meta name="description" content="Pico Entity System for JavaScript"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="picoes"><meta property="twitter:description" content="Pico Entity System for JavaScript"></head>
 <body class="layout-container" data-ice="rootContainer">
 
 <header>
@@ -30,8 +30,6 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/entity.js~Entity.html">Entity</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/memoized_query_index.js~MemoizedQueryIndex.html">MemoizedQueryIndex</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/simple_index.js~SimpleIndex.html">SimpleIndex</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/world.js~World.html">World</a></span></span></li>
 </ul>
 </div>
@@ -63,7 +61,7 @@
 </ul>
 </li>
 <li><strong>No formal declarations required</strong><ul>
-<li>Can create components and entities in a world and query on them, without needing to define structured systems and components</li>
+<li>Can create <strong>unlimited</strong> (within memory limits) components and entities in a world and query on them, without needing to define structured systems and components</li>
 </ul>
 </li>
 <li><strong>Strings as component keys</strong><ul>
@@ -74,22 +72,10 @@
 <li>No need to pass state to each system, can have a single context that gets injected into all systems automatically</li>
 </ul>
 </li>
-<li><strong>High performance indexing options</strong><ul>
-<li>SimpleIndex (Default): O(1) component add/remove, O(m) query time<ul>
-<li>Where <code>m</code> is the smallest size component index</li>
-</ul>
-</li>
-<li>MemoizedQueryIndex: O(q) component add/remove, O(1) average query time (memoized), O(n) worst query time (initial)<ul>
-<li>Where <code>q</code> is the total number of memoized queries</li>
-<li>And <code>n</code> is the total number of entities</li>
-</ul>
-</li>
-<li><em>Note: Above time complexities are amortized assuming the number of components used is a known constant</em></li>
-<li>Can also write your own and pass it to the World constructor! Needs clear, add, remove, and query.</li>
-</ul>
-</li>
-<li><strong>Prototypes</strong><ul>
-<li>Allows entity definitions to be data-driven, outside of code</li>
+<li><strong>Balanced performance</strong><ul>
+<li>See <a href="https://github.com/noctjs/ecs-benchmark">ECS benchmark comparison</a></li>
+<li>Entity/Component adding/removing performance is decent with PicoES, which is important for many games.</li>
+<li>Active research and work is being done to significantly improve PicoES performance as much as possible without making it harder to use.</li>
 </ul>
 </li>
 </ul>
@@ -102,15 +88,11 @@
 <li>Example: Position + Health could represent a player</li>
 </ul>
 </li>
-<li><strong>Prototype:</strong> A template of components used for creating entities<ul>
-<li>Example: Player could contain Position, Velocity, and Health</li>
-</ul>
-</li>
 <li><strong>System:</strong> Logic loop that processes entities<ul>
 <li>Example: Movement system which handles positions and velocities</li>
 </ul>
 </li>
-<li><strong>World:</strong> Lets you register components, systems, and prototypes in a self-contained object - which avoids the use of singletons. This is also where you can create entities from.</li>
+<li><strong>World:</strong> The entry point of all PicoES features. Can register components/systems and create/query entities in a self-contained object - which avoids the use of singletons.</li>
 </ul>
 <h3 id="license">License</h3><p>MIT</p>
 <h3 id="author">Author</h3><p>Eric Hebert</p>
@@ -119,126 +101,30 @@
 </code></pre>
 <h4 id="npm">NPM</h4><pre><code class="lang-bash"><code class="source-code prettyprint">npm i -D picoes</code>
 </code></pre>
-<h3 id="documentation">Documentation</h3><p><a href="https://ayebear.com/picoes">PicoES Documentation</a></p>
-<h3 id="examples">Examples</h3><h4 id="shorthand-anonymous-components-and-systems">Shorthand anonymous components and systems</h4><pre><code class="lang-javascript"><code class="source-code prettyprint">// import { World } from &apos;picoes&apos;
-const { World } = require(&apos;picoes&apos;)
+<h3 id="documentation">Documentation</h3><p>The full reference documentation can be found here:</p>
+<p><a href="https://ayebear.com/picoes">PicoES Documentation</a></p>
+<h3 id="examples">Examples</h3><h4 id="shorthand-anonymous-components-and-systems">Shorthand anonymous components and systems</h4><pre><code class="lang-javascript"><code class="source-code prettyprint">import { World } from &apos;picoes&apos;
 
 // Create a world to store entities in
 const world = new World()
 
-// Create player with anonymous health component
+// Create a player entity with health component
 const player = world.entity().set(&apos;health&apos;, { value: 100 })
 
 // Create enemies
 world.entity().set(&apos;damages&apos;, 10)
 world.entity().set(&apos;damages&apos;, 30)
 
-// Apply damage
+// Apply damage to player from enemies
 world.each(&apos;damages&apos;, ({ damages }) =&gt; {
-    player.get(&apos;health&apos;).value -= damages
+  player.get(&apos;health&apos;).value -= damages
 })
 
 // Player now has reduced health
 console.assert(player.get(&apos;health&apos;).value === 60)</code>
 </code></pre>
-<h4 id="full-component-and-system-definitions">Full component and system definitions</h4><pre><code class="lang-javascript"><code class="source-code prettyprint">// const { World } = require(&apos;picoes&apos;)
-import { World } from &apos;picoes&apos;
-
-// Create a world to store entities in
-const world = new World()
-
-// Define and register components
-class Vec2 {
-    constructor(x = 0, y = 0) {
-        this.x = x
-        this.y = y
-    }
-}
-world.component(&apos;position&apos;, Vec2)
-world.component(&apos;velocity&apos;, Vec2)
-world.component(&apos;health&apos;, class {
-    constructor(start = 100) {
-        this.value = start
-    }
-})
-
-// Example of using onCreate and onRemove
-world.component(&apos;sprite&apos;, class {
-    onCreate(texture) {
-        // this.entity is auto-injected into registered components
-        // It is not available in the constructor, but is available in onCreate
-        this.container = this.entity.get(&apos;gameContainer&apos;)
-        this.sprite = new Sprite(texture)
-        this.container.add(this.sprite)
-    }
-
-    onRemove() {
-        this.container.remove(this.sprite)
-    }
-})
-
-// Define systems
-// Log statements are to show flow order below
-class MovementSystem {
-    init(...args) {
-        // Context is available here as well
-        console.log(&apos;init() called with args:&apos;, ...args)
-    }
-
-    run(dt) {
-        console.log(`run(${dt}) called`)
-        world.each(&apos;position&apos;, &apos;velocity&apos;, ({ position, velocity }, entity) =&gt; {
-            console.log(`each() called for entity ${entity.id}`)
-            position.x += velocity.x * dt
-            position.y += velocity.y * dt
-        })
-    }
-}
-
-// Register systems
-world.system(MovementSystem, &apos;extra&apos;, &apos;args&apos;)
-
-// Create entity without prototype
-const entityA = world.entity().set(&apos;position&apos;).set(&apos;velocity&apos;)
-console.assert(entityA.has(&apos;position&apos;))
-console.assert(entityA.has(&apos;velocity&apos;))
-
-// Create entity with prototype (results are the same as above)
-world.prototype({
-    Movable: {
-        position: {},
-        velocity: {},
-    },
-})
-const entityB = world.entity(&apos;Movable&apos;)
-console.assert(entityB.has(&apos;position&apos;))
-console.assert(entityB.has(&apos;velocity&apos;))
-
-// This will re-create the component using the constructor
-entityB.set(&apos;position&apos;, 100, 100)
-
-// This set a property in the existing component
-entityA.get(&apos;position&apos;).x = 100
-
-// Set velocities by using update()
-entityA.update(&apos;velocity&apos;, { x: 10, y: 10 })
-entityB.update(&apos;velocity&apos;, { x: -10, y: -10 })
-
-// Run systems (pass one second for dt)
-world.run(1.0)
-
-// Since the movement system ran once, the positions changed by the amount of their velocity
-console.assert(entityA.get(&apos;position&apos;).x === 110)
-console.assert(entityA.get(&apos;position&apos;).y === 10)
-console.assert(entityB.get(&apos;position&apos;).x === 90)
-console.assert(entityB.get(&apos;position&apos;).y === 90)</code>
-</code></pre>
-<p>Expected output:</p>
-<pre><code><code class="source-code prettyprint">init() called with args: extra args
-run(1) called
-each() called for entity 1
-each() called for entity 2</code>
-</code></pre></div>
+<p>More complete examples coming with final 1.0.0 release! For now, refer to the <a href="https://ayebear.com/picoes">full documentation</a>.</p>
+</div>
 </div>
 
 <footer class="footer">

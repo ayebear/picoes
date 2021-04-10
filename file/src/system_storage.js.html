@@ -2,8 +2,8 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <base data-ice="baseUrl">
-  <title data-ice="title">Reference | picoes</title>
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/system_storage.js | picoes</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -35,83 +35,63 @@
 </div>
 </nav>
 
-<div class="content" data-ice="content"><h1>References</h1>
+<div class="content" data-ice="content"><h1 data-ice="title">src/system_storage.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import { invoke } from &apos;./utilities.js&apos;
 
-<div class="identifiers-wrap">
-  <div>
-    
-  <div data-ice="dirSummaryWrap">
-      
-      <div data-ice="dirSummary"><table class="summary" data-ice="summary">
-  <thead><tr><td data-ice="title" colspan="3">summary</td></tr></thead>
-  <tbody>
-  
-  <tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          <span data-ice="kind-icon" class="kind-class">C</span>
-          
-          
-          <span class="code" data-ice="name"><span><a href="class/src/entity.js~Entity.html">Entity</a></span></span>
-        </p>
-      </div>
-      <div>
-        
-        
-        <div data-ice="description"><p>Entity class used for storing components.</p>
-</div>
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          <span data-ice="kind-icon" class="kind-class">C</span>
-          
-          
-          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html">World</a></span></span>
-        </p>
-      </div>
-      <div>
-        
-        
-        <div data-ice="description"><p>Class for world.</p>
-</div>
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-</tbody>
-</table>
-</div>
-    </div>
-</div>
+/** @ignore */
+export class SystemStorage {
+  constructor() {
+    this.systems = []
+    this.context = undefined
+  }
 
-  
-</div>
+  register(systemClass, ...args) {
+    // Make sure the system is valid
+    if (typeof systemClass !== &apos;function&apos;) {
+      throw new Error(&apos;System is not a valid function or class.&apos;)
+    }
+    // Create and add the system with context
+    const newSystem = new systemClass(...args)
+    this._injectContext(newSystem)
+    invoke(newSystem, &apos;init&apos;, ...args)
+    this.systems.push(newSystem)
+  }
+
+  run(...args) {
+    let status = true
+    // Continue rerunning while any systems return true
+    while (status) {
+      status = undefined
+      for (const system of this.systems) {
+        // Try to call the &quot;run&quot; method
+        const result = invoke(system, &apos;run&apos;, ...args)
+        status = status || result
+      }
+      // Clear args after first run, so re-runs can be identified
+      args.length = 0
+    }
+  }
+
+  // Update existing systems&apos; context
+  setContext(data) {
+    this.context = data
+    for (const system of this.systems) {
+      this._injectContext(system)
+    }
+  }
+
+  // Injects context into a system based on current context state
+  _injectContext(system) {
+    if (this.context) {
+      // Inject as keys of context
+      for (const key in this.context) {
+        system[key] = this.context[key]
+      }
+    }
+  }
+}
+</code></pre>
+
 </div>
 
 <footer class="footer">

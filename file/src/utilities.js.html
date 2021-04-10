@@ -8,7 +8,7 @@
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
   <script src="script/manual.js"></script>
-<meta name="description" content="Pico Entity System for JavaScript (ES6)."><meta property="twitter:card" content="summary"><meta property="twitter:title" content="picoes"><meta property="twitter:description" content="Pico Entity System for JavaScript (ES6)."></head>
+<meta name="description" content="Pico Entity System for JavaScript"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="picoes"><meta property="twitter:description" content="Pico Entity System for JavaScript"></head>
 <body class="layout-container" data-ice="rootContainer">
 
 <header>
@@ -30,8 +30,6 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/entity.js~Entity.html">Entity</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/memoized_query_index.js~MemoizedQueryIndex.html">MemoizedQueryIndex</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/simple_index.js~SimpleIndex.html">SimpleIndex</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/world.js~World.html">World</a></span></span></li>
 </ul>
 </div>
@@ -49,10 +47,10 @@
  *
  * @return {Object} Returns what the called method returns
  */
-function invoke(object, method, ...args) {
-	if (object &amp;&amp; typeof object[method] === &apos;function&apos;) {
-		return object[method].call(object, ...args)
-	}
+export function invoke(object, method, ...args) {
+  if (object &amp;&amp; typeof object[method] === &apos;function&apos;) {
+    return object[method].call(object, ...args)
+  }
 }
 
 /**
@@ -60,17 +58,14 @@ function invoke(object, method, ...args) {
  *
  * @ignore
  */
-function shallowClone(val) {
-	if (Array.isArray(val)) {
-		return [...val]
-	} else if (typeof val === &apos;object&apos;) {
-		return {...val}
-	}
-	return val
+export function shallowClone(val) {
+  if (Array.isArray(val)) {
+    return [...val]
+  } else if (typeof val === &apos;object&apos;) {
+    return { ...val }
+  }
+  return val
 }
-
-exports.invoke = invoke
-exports.shallowClone = shallowClone
 </code></pre>
 
 </div>
