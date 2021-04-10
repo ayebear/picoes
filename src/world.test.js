@@ -245,8 +245,8 @@ test('component: test detach and attach', () => {
   assert(spriteCount === 2)
   assert(world.entities.size === 1)
   assert(getSize(world.each('position')) === 1)
-  assert(world.get('position').length === 1)
-  assert(world.get('position')[0].get('position').x === 2)
+  assert(world.each('position').length === 1)
+  assert(world.each('position')[0].get('position').x === 2)
   assert(ent.get('position').x === 1)
 
   // Test attaching
@@ -255,7 +255,7 @@ test('component: test detach and attach', () => {
   assert(spriteCount === 2)
   assert(world.entities.size === 2)
   assert(getSize(world.each('position')) === 2)
-  assert(world.get('position').length === 2)
+  assert(world.each('position').length === 2)
   assert(ent.get('position').x === 1)
 
   // Test edge cases
@@ -560,15 +560,15 @@ test('system: system edge cases', () => {
 test('system: adding entities to index', () => {
   const world = new World()
   world.entity().set('a').set('b')
-  assert(world.get('a', 'b').length === 1)
-  world.get('a', 'b')[0].destroy()
-  assert(world.get('a', 'b').length === 0)
+  assert(world.each('a', 'b').length === 1)
+  world.each('a', 'b')[0].destroy()
+  assert(world.each('a', 'b').length === 0)
   world.entity().set('a')
-  assert(world.get('a', 'b').length === 0)
+  assert(world.each('a', 'b').length === 0)
   world.entity().set('b')
-  assert(world.get('a', 'b').length === 0)
+  assert(world.each('a', 'b').length === 0)
   world.entity().set('b').set('a')
-  assert(world.get('a', 'b').length === 1)
+  assert(world.each('a', 'b').length === 1)
 })
 
 test('system: onRemove edge cases', () => {
@@ -647,16 +647,16 @@ test('system: indexing edge cases', () => {
 
     // Ensure initial indexes are good
     for (let i = 0; i < REPEAT; ++i) {
-      assert(world.get('noOtherComponents').length === 1)
-      assert(world.get('sideEffect').length === 0)
-      assert(world.get('sprite').length === 4)
-      assert(world.get('velocity').length === 4)
-      assert(world.get().length === 8)
-      assert(world.get('position').length === 4)
-      assert(world.get('position', 'velocity').length === 2)
-      assert(world.get('position', 'sprite').length === 2)
-      assert(world.get('position', 'velocity', 'sprite').length === 1)
-      assert(world.get('velocity', 'sprite').length === 2)
+      assert(world.each('noOtherComponents').length === 1)
+      assert(world.each('sideEffect').length === 0)
+      assert(world.each('sprite').length === 4)
+      assert(world.each('velocity').length === 4)
+      assert(world.each().length === 8)
+      assert(world.each('position').length === 4)
+      assert(world.each('position', 'velocity').length === 2)
+      assert(world.each('position', 'sprite').length === 2)
+      assert(world.each('position', 'velocity', 'sprite').length === 1)
+      assert(world.each('velocity', 'sprite').length === 2)
     }
 
     // Remove test entities, create more test entities
@@ -678,12 +678,12 @@ test('system: indexing edge cases', () => {
 
     // Ensure indexes are still good
     for (let i = 0; i < REPEAT; ++i) {
-      assert(world.get().length === 4)
-      assert(world.get('noOtherComponents').length === 1)
-      assert(world.get('sideEffect').length === 1)
-      assert(world.get('sprite').length === 0)
-      assert(world.get('velocity').length === 2)
-      assert(world.get('position').length === 2)
+      assert(world.each().length === 4)
+      assert(world.each('noOtherComponents').length === 1)
+      assert(world.each('sideEffect').length === 1)
+      assert(world.each('sprite').length === 0)
+      assert(world.each('velocity').length === 2)
+      assert(world.each('position').length === 2)
     }
 
     count = 0
@@ -702,12 +702,12 @@ test('system: indexing edge cases', () => {
 
     // Ensure indexes are still good
     for (let i = 0; i < REPEAT; ++i) {
-      assert(world.get().length === 2)
-      assert(world.get('noOtherComponents').length === 1)
-      assert(world.get('sideEffect').length === 0)
-      assert(world.get('sprite').length === 0)
-      assert(world.get('velocity').length === 0)
-      assert(world.get('position').length === 1)
+      assert(world.each().length === 2)
+      assert(world.each('noOtherComponents').length === 1)
+      assert(world.each('sideEffect').length === 0)
+      assert(world.each('sprite').length === 0)
+      assert(world.each('velocity').length === 0)
+      assert(world.each('position').length === 1)
     }
 
     count = 0
@@ -724,16 +724,16 @@ test('system: indexing edge cases', () => {
     })
     assert(count === 0)
 
-    world.get('noOtherComponents')[0].destroy()
+    world.each('noOtherComponents')[0].destroy()
 
     // Ensure new indexes are good
     for (let i = 0; i < REPEAT; ++i) {
-      assert(world.get().length === 0)
-      assert(world.get('noOtherComponents').length === 0)
-      assert(world.get('sideEffect').length === 0)
-      assert(world.get('sprite').length === 0)
-      assert(world.get('velocity').length === 0)
-      assert(world.get('position').length === 0)
+      assert(world.each().length === 0)
+      assert(world.each('noOtherComponents').length === 0)
+      assert(world.each('sideEffect').length === 0)
+      assert(world.each('sprite').length === 0)
+      assert(world.each('velocity').length === 0)
+      assert(world.each('position').length === 0)
     }
   }
 })
@@ -816,7 +816,7 @@ test('system: use the each() method', () => {
   assert(count === 1)
 
   // And just to be sure there are more than 1
-  count = world.get('position').length
+  count = world.each('position').length
   assert(count === 2)
 
   // Invalid args

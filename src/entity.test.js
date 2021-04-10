@@ -19,7 +19,7 @@ test('entity: test if ID is read-only', () => {
 test('entity: valid entities', () => {
   const world = new World()
   let entityA = world.entity().set('test')
-  let entityB = world.get('test')[0]
+  let entityB = world.each('test')[0]
   assert(entityA.valid())
   assert(entityB.valid())
   assert(entityA.id === entityB.id)
@@ -28,17 +28,6 @@ test('entity: valid entities', () => {
   entityA.destroy()
   assert(!entityA.valid())
   assert(!entityB.valid())
-})
-
-test('entity: get entity by id', () => {
-  const world = new World()
-  const entityA = world.entity().set('test')
-  const id = entityA.id
-  assert(world.getEntityById(id) === entityA)
-  assert(world.getEntityById(id).id === id)
-  entityA.destroy()
-  assert(world.getEntityById(id) === undefined)
-  assert(!entityA.valid())
 })
 
 test('entity: remove an entity', () => {
