@@ -1,6 +1,6 @@
 export function getSize(it) {
   let num = 0
-  for (let _elem of it) {
+  for (let _elem in it) {
     ++num
   }
   return num

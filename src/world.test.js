@@ -8,6 +8,42 @@ test('world: create a world', () => {
   assert(typeof world.component === 'function')
 })
 
+test('world: create a world with options', () => {
+  // Define components
+  class position {}
+  class velocity {}
+  // Define systems
+  class input {}
+  class physics {}
+  class render {}
+  // Define state
+  const state = {}
+  // Make worlds
+  const world1 = new World({})
+  expect(world1).toBeInstanceOf(World)
+  expect(world1.systems.systems).toHaveLength(0)
+  expect(getSize(world1.entities.componentClasses)).toBe(0)
+  expect(getSize(world1.systems.context)).toBe(0)
+  const world2 = new World({
+    components: {},
+    systems: [],
+    context: {},
+  })
+  expect(world2).toBeInstanceOf(World)
+  expect(world2.systems.systems).toHaveLength(0)
+  expect(getSize(world2.entities.componentClasses)).toBe(0)
+  expect(getSize(world2.systems.context)).toBe(0)
+  const world3 = new World({
+    components: { position, velocity },
+    systems: [input, physics, render],
+    context: { state },
+  })
+  expect(world3).toBeInstanceOf(World)
+  expect(world3.systems.systems).toHaveLength(3)
+  expect(getSize(world3.entities.componentClasses)).toBe(2)
+  expect(getSize(world3.systems.context)).toBe(1)
+})
+
 test('component: define a component', () => {
   const world = new World()
   world.component('position', function (x = 0, y = 0) {
@@ -391,7 +427,7 @@ test('system: define a system with context (specific key)', () => {
     }
   }
   world.system(velocitySystem, true) // Existing system
-  world.context(state, 'state') // Set keyed context
+  world.context({ state }) // Set keyed context
   world.system(velocitySystem, false) // New system
   expect(world.systems.systems.length).toEqual(2)
   world.run()

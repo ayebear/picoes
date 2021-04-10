@@ -10,12 +10,36 @@ import { EntityStorage } from './entity_storage.js'
 export class World {
   /**
    * Constructs an instance of the world.
+   *
+   * @param {object} options - The initial systems, components, and context to setup in the world.
+   *
+   * @example
+   * const world = new World({
+   *
+   * })
    */
-  constructor() {
+  constructor(options) {
     /** @ignore */
     this.systems = new SystemStorage()
     /** @ignore */
     this.entities = new EntityStorage(this)
+
+    // Register components, context, and systems
+    if (options) {
+      if (options.components) {
+        for (const name in options.components) {
+          this.component(name, options.components[name])
+        }
+      }
+      if (options.context) {
+        this.context(options.context)
+      }
+      if (options.systems) {
+        for (const systemClass of options.systems) {
+          this.system(systemClass)
+        }
+      }
+    }
   }
 
   /**
@@ -77,10 +101,8 @@ export class World {
    * you can only start to use the injected context in systems starting with init(). It is not
    * available in the constructor.
    *
-   * @param {Object} [data] - The object to use as context to pass to systems
-   * @param {string} [key] - The top-level key to inject into systems for the context object.
-   * If no key is specified, then all the keys inside the context object will be spread into the
-   * top-level of the system.
+   * @param {Object} [data] - The object to use as context to pass to systems.
+   * All the keys inside the context object will be spread into the top-level of the system.
    *
    * @example
    * const state = { app: new PIXI.Application() }
@@ -93,8 +115,8 @@ export class World {
    *
    * @return {Entity} The new entity created
    */
-  context(data, key) {
-    this.systems.setContext(data, key)
+  context(data) {
+    this.systems.setContext(data)
   }
 
   /**
