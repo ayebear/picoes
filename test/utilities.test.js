@@ -1,4 +1,4 @@
-import { invoke, shallowClone } from './utilities.js'
+import { invoke, shallowClone } from '../src/utilities.js'
 
 test('utilities: invoke', () => {
   const obj = {

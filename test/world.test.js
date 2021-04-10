@@ -1,5 +1,5 @@
 import { World } from '../index.js'
-import { Entity } from './entity.js'
+import { Entity } from '../src/entity.js'
 import { getSize, has, assert } from './test_utils.js'
 
 test('world: create a world', () => {

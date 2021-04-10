@@ -165,9 +165,8 @@ export class World {
    * @param {...Object} args - The arguments to forward to the system's constructor and init.
    * Note that it is recommended to use init if using context, see world.context().
    */
-  // TODO: Get rid of args because of context
-  // TODO: Rename to systems() and take an array or multiple systems (pick ONE)
   system(systemClass, ...args) {
+    // TODO: Get rid of args because of context
     this.systems.register(systemClass, ...args)
   }
 
