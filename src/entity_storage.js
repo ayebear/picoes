@@ -1,5 +1,5 @@
-import { Entity } from './entity'
-import { invoke } from './utilities'
+import { Entity } from './entity.js'
+import { invoke } from './utilities.js'
 
 /**
  * @ignore

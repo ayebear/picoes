@@ -1,4 +1,4 @@
-import { invoke } from './utilities'
+import { invoke } from './utilities.js'
 
 /** @ignore */
 export class SystemStorage {
