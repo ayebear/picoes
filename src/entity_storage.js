@@ -8,6 +8,7 @@ import { invoke } from './utilities.js'
 const minIndexReducer = (minIndex, value, index, values) =>
   value < values[minIndex] ? index : minIndex
 
+/** @ignore */
 export class EntityStorage {
   constructor(world) {
     /** @ignore */
