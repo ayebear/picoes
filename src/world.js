@@ -11,11 +11,14 @@ export class World {
   /**
    * Constructs an instance of the world.
    *
-   * @param {object} options - The initial systems, components, and context to setup in the world.
+   * @param {object} [options] - The initial systems, components, and context to setup in the world.
+   * Each one is optional. See below for registering these after world construction.
    *
    * @example
    * const world = new World({
-   *
+   *   components: { position, velocity },
+   *   systems: [Input, Physics, Render],
+   *   context: { state },
    * })
    */
   constructor(options) {
@@ -101,7 +104,7 @@ export class World {
    * you can only start to use the injected context in systems starting with init(). It is not
    * available in the constructor.
    *
-   * @param {Object} [data] - The object to use as context to pass to systems.
+   * @param {Object} data - The object to use as context to pass to systems.
    * All the keys inside the context object will be spread into the top-level of the system.
    *
    * @example
@@ -162,7 +165,7 @@ export class World {
    * @param {Function} systemClass - The system class to instantiate. Can contain a
    * constructor(), init(), run(), or any other custom methods/properties.
    *
-   * @param {...Object} args - The arguments to forward to the system's constructor and init.
+   * @param {...Object} [args] - The arguments to forward to the system's constructor and init.
    * Note that it is recommended to use init if using context, see world.context().
    */
   system(systemClass, ...args) {
