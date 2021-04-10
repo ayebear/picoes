@@ -85,20 +85,19 @@ The full reference documentation can be found here:
 #### Shorthand anonymous components and systems
 
 ```javascript
-// import { World } from 'picoes'
-const { World } = require('picoes')
+import { World } from 'picoes'
 
 // Create a world to store entities in
 const world = new World()
 
-// Create player with anonymous health component
+// Create a player entity with health component
 const player = world.entity().set('health', { value: 100 })
 
 // Create enemies
 world.entity().set('damages', 10)
 world.entity().set('damages', 30)
 
-// Apply damage
+// Apply damage to player from enemies
 world.each('damages', ({ damages }) => {
   player.get('health').value -= damages
 })
@@ -107,102 +106,4 @@ world.each('damages', ({ damages }) => {
 console.assert(player.get('health').value === 60)
 ```
 
-#### Full component and system definitions
-
-```javascript
-// const { World } = require('picoes')
-import { World } from 'picoes'
-
-// Create a world to store entities in
-const world = new World()
-
-// Define and register components
-class Vec2 {
-  constructor(x = 0, y = 0) {
-    this.x = x
-    this.y = y
-  }
-}
-world.component('position', Vec2)
-world.component('velocity', Vec2)
-world.component(
-  'health',
-  class {
-    constructor(start = 100) {
-      this.value = start
-    }
-  }
-)
-
-// Example of using onCreate and onRemove
-world.component(
-  'sprite',
-  class {
-    onCreate(texture) {
-      // this.entity is auto-injected into registered components
-      // It is not available in the constructor, but is available in onCreate
-      this.container = this.entity.get('gameContainer')
-      this.sprite = new Sprite(texture)
-      this.container.add(this.sprite)
-    }
-
-    onRemove() {
-      this.container.remove(this.sprite)
-    }
-  }
-)
-
-// Define systems
-// Log statements are to show flow order below
-class MovementSystem {
-  init(...args) {
-    // Context is available here as well
-    console.log('init() called with args:', ...args)
-  }
-
-  run(dt) {
-    console.log(`run(${dt}) called`)
-    world.each('position', 'velocity', ({ position, velocity }, entity) => {
-      console.log(`each() called for entity ${entity.id}`)
-      position.x += velocity.x * dt
-      position.y += velocity.y * dt
-    })
-  }
-}
-
-// Register systems
-world.system(MovementSystem, 'extra', 'args')
-
-// Create entity with components
-const entityA = world.entity().set('position').set('velocity')
-console.assert(entityA.has('position'))
-console.assert(entityA.has('velocity'))
-
-// This will re-create the component using the constructor
-entityB.set('position', 100, 100)
-
-// This set a property in the existing component
-entityA.get('position').x = 100
-
-// Set velocities
-entityA.set('velocity', { x: 10, y: 10 })
-entityB.set('velocity', { x: -10, y: -10 })
-
-// Run systems (pass one second for dt)
-world.run(1.0)
-
-// Since the movement system ran once, the positions changed by the amount of their velocity
-console.assert(entityA.get('position').x === 110)
-console.assert(entityA.get('position').y === 10)
-console.assert(entityB.get('position').x === 90)
-console.assert(entityB.get('position').y === 90)
-```
-
-Expected output:
-
-```
-init() called with args: extra args
-run(1) called
-each() called for entity 1
-each() called for entity 2
-```
+More complete examples coming with final 1.0.0 release! For now, refer to the [full documentation](https://ayebear.com/picoes).
