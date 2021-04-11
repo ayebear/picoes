@@ -567,7 +567,7 @@
     "__docId__": 48,
     "kind": "file",
     "name": "src/entity.js",
-    "content": "/** @ignore */\nimport { invoke, shallowClone } from './utilities.js'\n\n/**\n * Entity class used for storing components.\n *\n * @class      Entity (name)\n */\nexport class Entity {\n  /**\n   * Do not construct an Entity yourself - use the entity() method in World instead.\n   * Also, do not shallow/deep copy entity objects, only pass around references.\n   *\n   * @private\n   *\n   * @param {World}  world - The world\n   * @param {number} id    - The identifier\n   */\n  constructor(world, id) {\n    /** @ignore */\n    this.world = world\n\n    /** @ignore */\n    this._id = id\n\n    /** @ignore */\n    this.data = {}\n  }\n\n  /**\n   * Return the entity ID.\n   *\n   * @return {number} Integer entity ID\n   */\n  get id() {\n    return this._id\n  }\n\n  /**\n   * ID is read-only, attempting to set it will throw an error.\n   *\n   * @private\n   *\n   * @throws {Error} Cannot set entity id\n   */\n  set id(id) {\n    throw new Error('Cannot set entity id')\n  }\n\n  /**\n   * Returns true if the entity has ALL of the specified component names.\n   * Additional components that the entity has, which are not specified in has(), will be ignored.\n   * If no component names are specified, this method returns true.\n   *\n   * @example\n   * if (entity.has('position', 'velocity')) {...}\n   *\n   * @param {...string} [components] - The component names to check for\n   *\n   * @return {boolean} true or false\n   */\n  has(...components) {\n    return components.every(name => name in this.data)\n  }\n\n  /**\n   * Returns true if the entity has ANY of the specified component names.\n   * If no component names are specified, this method returns false.\n   *\n   * @example\n   * if (entity.hasAny('position', 'velocity')) {...}\n   *\n   * @param {...string} [components] - The component names to check for\n   *\n   * @return {boolean} true or false\n   */\n  hasAny(...components) {\n    return components.some(name => name in this.data)\n  }\n\n  /**\n   * Returns a component by name, or undefined if it doesn't exist\n   *\n   * @example\n   * let position = entity.get('position')\n   *\n   * @param {string} component - The component name to get\n   *\n   * @return {Object} The component if defined, otherwise undefined\n   */\n  get(component) {\n    return this.data[component]\n  }\n\n  /**\n   * Returns a component by name (automatically created if it doesn't exist)\n   * For unregistered components, passing no arguments to this will create a {} component,\n   * if the component does not exist. The argument behavior is exactly the same as set().\n   *\n   * @example\n   * const position = entity.access('position', 3, 4)\n   *\n   * @example\n   * entity.access('anything').foo = 'bar'\n   * // 'anything' now has { foo: 'bar' }\n   *\n   * @example\n   * entity.access('anything', { foo: 'bar' }).foo2 = 'bar2'\n   * // 'anything' now has { foo: 'bar', foo2: 'bar2' }\n   *\n   * @param {string}    component - The component name to create/get\n   * @param {...Object} [args]    - The arguments to forward to create the new component, only if it doesn't exist.\n   *\n   * @return {Object} Always returns either the existing component, or the newly created one.\n   */\n  access(component, ...args) {\n    if (!this.has(component)) {\n      this.set(component, ...args)\n    }\n    return this.data[component]\n  }\n\n  /**\n   * Adds a new component, or re-creates and overwrites an existing component\n   *\n   * @example\n   * entity.set('position', 1, 2)\n   * // If position was registered: { x: 1, y: 2 }\n   * // If position was not registered: 1\n   * // This is because only the first arg is used for unregistered components\n   *\n   * @example\n   * entity.set('anonymousComponent', { keys: 'values' })\n   *\n   * @example\n   * entity.set('someString', 'Any type of any value')\n   *\n   * @example\n   * entity.set('thisCompIsUndefined', undefined)\n   *\n   * @example\n   * entity.set('thisCompIsEmptyObject')\n   *\n   * @param {string}    compName - The component name to create. If there is a registered component for this name,\n   * then its constructor will be called with (...args) and an object of that type will be created. The parent\n   * entity reference gets injected into registered components after they are constructed. The onCreate method\n   * gets called after the component is added to the entity, and after the entity is injected. The onCreate method\n   * also gets passed the same (...args) as the component's constructor.\n   * @param {...Object} [args]    - The arguments to forward to the registered component type. If the component type\n   * is not registered, then only the first additional argument will be used as the value of the entire component.\n   *\n   * @return {Object} The original entity that set() was called on, so that operations can be chained.\n   */\n  set(compName, ...args) {\n    const compClass = this.world?.entities.componentClasses[compName]\n    if (compClass) {\n      // Create registered component\n      const comp = new compClass(...args)\n      comp.entity = this\n      this.data[compName] = comp\n    } else if (args.length > 0) {\n      // Use first argument as component value\n      this.data[compName] = args[0]\n    } else {\n      // Set to an empty object if no args were specified\n      this.data[compName] = {}\n    }\n\n    // Update the index with this component\n    if (this.valid()) {\n      this.world.entities.addToIndex(this, compName)\n    }\n\n    // Call custom onCreate to initialize component, and any additional arguments passed into set()\n    invoke(this.data[compName], 'onCreate', ...args)\n\n    return this\n  }\n\n  /**\n   * Low level method to set components directly. It is recommended to use set() instead, unless\n   * you know what you are doing. The onCreate method is not called, and it is expected that you\n   * pass an already initialized component. By default, an error will be thrown if you try calling\n   * this on a registered component, as that could have unintended consequences in your systems.\n   * This method can be useful for saving and restoring components without serialization.\n   *\n   * @example\n   * entity.replace('position', position)\n   *\n   * @param {string} compName  - The component name to set.\n   * @param {Object} value     - Should be a previous component instance, or whatever is expected for\n   * the component name.\n   * @param {boolean} overwriteRegistered - Whether or not to proceed with overwriting components\n   * in this entity that are registered components. By default, this is false.\n   *\n   * @return {Object} The original entity that replace() was called on, so that operations can be chained.\n   */\n  replace(compName, value, overwriteRegistered = false) {\n    // Registered component check\n    if (\n      !overwriteRegistered &&\n      this.world?.entities.componentClasses[compName]\n    ) {\n      throw new Error(\n        `Cannot replace() component \"${compName}\" because it is registered. Please refer to the docs for details.`\n      )\n    }\n\n    // Directly set value\n    this.data[compName] = value\n\n    // Update the index with this component\n    if (this.valid()) {\n      this.world.entities.addToIndex(this, compName)\n    }\n\n    return this\n  }\n\n  /**\n   * Removes a component from the entity - has no effect when it doesn't exist.\n   * Can specify an onRemove() method in your component which gets called before it is removed.\n   * If nothing is specified, then nothing will be removed. Use removeAll() to remove all components.\n   *\n   * @example\n   * entity.remove('position')\n   *\n   * @param {...string} [components] - The component names to remove from the entity.\n   *\n   * @return {Object} The original entity that remove() was called on, so that operations can be chained.\n   */\n  remove(...components) {\n    for (let component of components) {\n      if (component in this.data) {\n        // Call custom onRemove\n        invoke(this.data[component], 'onRemove')\n\n        // Remove from index\n        if (this.valid()) {\n          this.world.entities.removeFromIndex(this, component)\n        }\n\n        // Remove from entity\n        delete this.data[component]\n      }\n    }\n    return this\n  }\n\n  // Remove all components\n\n  /**\n   * Removes all components from the entity.\n   *\n   * @example\n   * entity.removeAll()\n   *\n   * @return {Object} The original entity that removeAll() was called on, so that operations can be chained.\n   */\n  removeAll() {\n    this.remove(...this.components)\n\n    if (this.components.length > 0) {\n      throw new Error(\n        'Failed to remove all components. Components must have been added during the removeAll().'\n      )\n    }\n\n    return this\n  }\n\n  /**\n   * Remove this entity and all of its components from the world. After an entity is destroyed, the object should be discarded,\n   * and it is recommended to avoid re-using it.\n   *\n   * @example\n   * entity.destroy()\n   */\n  destroy() {\n    this.removeAll()\n\n    if (this.valid()) {\n      // Remove from world\n      this.world.entities.entities.delete(this._id)\n      this._id = undefined\n    }\n  }\n\n  /**\n   * Returns an array of component names this entity currently has.\n   *\n   * @return {Array<String>} Array of component names.\n   */\n  get components() {\n    return Object.keys(this.data)\n  }\n\n  /**\n   * Returns true if this is a valid, existing, and usable entity, which is attached to a world.\n   *\n   * @example\n   * if (entity.valid()) {...}\n   *\n   * @return {boolean} true or false\n   */\n  valid() {\n    // Note: No need to actually look in the world for the ID, if entities are only ever copied by reference.\n    // If entities are ever deep/shallow copied, this function will need to check this to be more robust.\n    return this.world && this._id !== undefined\n  }\n\n  /**\n   * Serializes entire entity and components to JSON.\n   * Note: Defining toJSON methods in your components will override the built-in behavior.\n   *\n   * @example\n   * let serializedEntity = entity.toJSON()\n   *\n   * @return {string} JSON encoded string\n   */\n  toJSON() {\n    return JSON.stringify(this.data)\n  }\n\n  /**\n   * Deserializes data from JSON, creating new components and overwriting existing components.\n   * Note: Defining fromJSON methods in your components will override the built-in behavior.\n   *\n   * @example\n   * entity.fromJSON(serializedEntity)\n   *\n   * @param {string} data - A JSON string containing component data to parse, and store in this entity.\n   *\n   * @return {Object} The original entity that fromJSON() was called on, so that operations can be chained.\n   */\n  fromJSON(data) {\n    const parsed = JSON.parse(data)\n    for (const name in parsed) {\n      const comp = this.access(name, {})\n\n      // Either call custom method or copy all properties\n      if (typeof comp.fromJSON === 'function') {\n        comp.fromJSON(parsed[name])\n      } else {\n        Object.assign(this.access(name, {}), parsed[name])\n      }\n    }\n    return this\n  }\n\n  /**\n   * Attaches a currently detached entity back to a world.\n   * Note: Do not use detached entities, get() may be safe, but avoid calling other methods\n   * Note: The ID will be reassigned, so do not rely on this\n   *\n   * @example\n   * entity.attach(world)\n   *\n   * @param {World} world - The world to attach this entity to\n   */\n  attach(world) {\n    if (world && !this.valid()) {\n      // Assign new id, and reattach to world\n      this.world = world\n      this._id = this.world.entities.nextEntityId++\n      this.world.entities.entities.set(this._id, this)\n      this.world.entities.addToIndex(this, ...this.components)\n    }\n  }\n\n  /**\n   * Removes this entity from the current world, without removing any components or data.\n   * It can be re-attached to another world (or the same world), using the attach() method.\n   * Note: Do not use detached entities, get() may be safe, but avoid calling other methods\n   * Note: The ID will be reassigned, so do not rely on this\n   *\n   * @example\n   * entity.detach()\n   */\n  detach() {\n    if (this.valid()) {\n      // Remove from current world\n      this.world.entities.removeFromIndex(this, ...this.components)\n      this.world.entities.entities.delete(this._id)\n      this._id = undefined\n      this.world = undefined\n    }\n  }\n\n  /**\n   * Creates a copy of this entity with all of the components cloned and returns it.\n   * Individual components are either shallow or deep copied, depending on component\n   * registration status and if a clone() method is defined. See entity.cloneComponentTo().\n   *\n   * @example\n   * entity.clone()\n   */\n  clone() {\n    if (!this.valid()) {\n      throw new Error('Cannot clone detached or invalid entity.')\n    }\n\n    // Clone each component in this entity, to a new entity\n    const newEntity = this.world.entity()\n    for (const name in this.data) {\n      this.cloneComponentTo(newEntity, name)\n    }\n\n    // Return the cloned entity\n    return newEntity\n  }\n\n  /**\n   * Clones a component from this entity to the target entity.\n   *\n   * @example\n   * const source = world.entity().set('foo', 'bar')\n   * const target = world.entity()\n   * source.cloneComponentTo(target, 'foo')\n   * assert(target.get('foo') === 'bar')\n   *\n   * @example\n   * world.component('foo', class {\n   *   onCreate(bar, baz) {\n   *     this.bar = bar\n   *     this.baz = baz\n   *     this.qux = false\n   *   }\n   *   setQux(qux = true) {\n   *     this.qux = qux\n   *   }\n   *   cloneArgs() {\n   *     return [this.bar, this.baz]\n   *   }\n   *   clone(target) {\n   *     target.qux = this.qux\n   *   }\n   * })\n   * const source = world.entity()\n   *   .set('foo', 'bar', 'baz')\n   *   .set('qux', true)\n   * const target = world.entity()\n   * source.cloneComponentTo(target, 'foo')\n   * assert(source.get('foo').bar === target.get('foo').bar)\n   * assert(source.get('foo').baz === target.get('foo').baz)\n   * assert(source.get('foo').qux === target.get('foo').qux)\n   *\n   * @param {Entity} targetEntity - Must be a valid entity. Could be part of another world, but it\n   * is undefined behavior if the registered components are different types.\n   * @param {string} name         - Component name of both source and target components.\n   *\n   * @return {Object} The original entity that cloneComponentTo() was called on,\n   * so that operations can be chained.\n   */\n  cloneComponentTo(targetEntity, name) {\n    // Get component and optional arguments for cloning\n    const component = this.get(name)\n    const args = invoke(component, 'cloneArgs') || []\n\n    if (name in targetEntity.world.entities.componentClasses) {\n      // Registered component, so create new using constructor, inject\n      // entity, and call optional clone\n      const newComponent = new targetEntity.world.entities.componentClasses[\n        name\n      ](...args)\n      newComponent.entity = targetEntity\n      targetEntity.data[name] = newComponent\n      invoke(component, 'clone', newComponent)\n    } else {\n      // Unregistered component, so just shallow clone it\n      targetEntity.data[name] = shallowClone(component)\n    }\n\n    // Update the index with this new component\n    targetEntity.world.entities.addToIndex(targetEntity, name)\n\n    // Call custom onCreate to initialize component, and any additional arguments passed into set()\n    invoke(targetEntity.data[name], 'onCreate', ...args)\n\n    return this\n  }\n}\n",
+    "content": "/** @ignore */\nimport { invoke, shallowClone } from './utilities.js'\n\n/**\n * Entity class used for storing components.\n *\n * @class      Entity (name)\n */\nexport class Entity {\n  /**\n   * Do not construct an Entity yourself - use the entity() method in World instead.\n   * Also, do not shallow/deep copy entity objects, only pass around references.\n   *\n   * @private\n   *\n   * @param {World}  world - The world\n   * @param {number} id    - The identifier\n   */\n  constructor(world, id) {\n    /** @ignore */\n    this.world = world\n\n    /** @ignore */\n    this._id = id\n\n    /** @ignore */\n    this.data = {}\n  }\n\n  /**\n   * Return the entity ID.\n   *\n   * @return {number} Integer entity ID\n   */\n  get id() {\n    return this._id\n  }\n\n  /**\n   * ID is read-only, attempting to set it will throw an error.\n   *\n   * @private\n   *\n   * @throws {Error} Cannot set entity id\n   */\n  set id(id) {\n    throw new Error('Cannot set entity id')\n  }\n\n  /**\n   * Returns true if the entity has the specified component name.\n   *\n   * @example\n   * entity.has('position')\n   *\n   * @param {string} name - The component name to check for\n   *\n   * @return {boolean} true or false\n   */\n  has(name) {\n    return name in this.data\n  }\n\n  /**\n   * Returns a component by name, or undefined if it doesn't exist\n   *\n   * @example\n   * let position = entity.get('position')\n   *\n   * @param {string} component - The component name to get\n   *\n   * @return {Object} The component if defined, otherwise undefined\n   */\n  get(component) {\n    return this.data[component]\n  }\n\n  /**\n   * Returns a component by name (automatically created if it doesn't exist)\n   * For unregistered components, passing no arguments to this will create a {} component,\n   * if the component does not exist. The argument behavior is exactly the same as set().\n   *\n   * @example\n   * const position = entity.access('position', 3, 4)\n   *\n   * @example\n   * entity.access('anything').foo = 'bar'\n   * // 'anything' now has { foo: 'bar' }\n   *\n   * @example\n   * entity.access('anything', { foo: 'bar' }).foo2 = 'bar2'\n   * // 'anything' now has { foo: 'bar', foo2: 'bar2' }\n   *\n   * @param {string}    component - The component name to create/get\n   * @param {...Object} [args]    - The arguments to forward to create the new component, only if it doesn't exist.\n   *\n   * @return {Object} Always returns either the existing component, or the newly created one.\n   */\n  access(component, ...args) {\n    if (!this.has(component)) {\n      this.set(component, ...args)\n    }\n    return this.data[component]\n  }\n\n  /**\n   * Adds a new component, or re-creates and overwrites an existing component\n   *\n   * @example\n   * entity.set('position', 1, 2)\n   * // If position was registered: { x: 1, y: 2 }\n   * // If position was not registered: 1\n   * // This is because only the first arg is used for unregistered components\n   *\n   * @example\n   * entity.set('anonymousComponent', { keys: 'values' })\n   *\n   * @example\n   * entity.set('someString', 'Any type of any value')\n   *\n   * @example\n   * entity.set('thisCompIsUndefined', undefined)\n   *\n   * @example\n   * entity.set('thisCompIsEmptyObject')\n   *\n   * @param {string}    compName - The component name to create. If there is a registered component for this name,\n   * then its constructor will be called with (...args) and an object of that type will be created. The parent\n   * entity reference gets injected into registered components after they are constructed. The onCreate method\n   * gets called after the component is added to the entity, and after the entity is injected. The onCreate method\n   * also gets passed the same (...args) as the component's constructor.\n   * @param {...Object} [args]    - The arguments to forward to the registered component type. If the component type\n   * is not registered, then only the first additional argument will be used as the value of the entire component.\n   *\n   * @return {Object} The original entity that set() was called on, so that operations can be chained.\n   */\n  set(compName, ...args) {\n    const compClass = this.world?.entities.componentClasses[compName]\n    if (compClass) {\n      // Create registered component\n      const comp = new compClass(...args)\n      comp.entity = this\n      this.data[compName] = comp\n    } else if (args.length > 0) {\n      // Use first argument as component value\n      this.data[compName] = args[0]\n    } else {\n      // Set to an empty object if no args were specified\n      this.data[compName] = {}\n    }\n\n    // Update the index with this component\n    if (this.valid()) {\n      this.world.entities.addToIndex(this, compName)\n    }\n\n    // Call custom onCreate to initialize component, and any additional arguments passed into set()\n    invoke(this.data[compName], 'onCreate', ...args)\n\n    return this\n  }\n\n  /**\n   * Low level method to set components directly. It is recommended to use set() instead, unless\n   * you know what you are doing. The onCreate method is not called, and it is expected that you\n   * pass an already initialized component. By default, an error will be thrown if you try calling\n   * this on a registered component, as that could have unintended consequences in your systems.\n   * This method can be useful for saving and restoring components without serialization.\n   *\n   * @example\n   * entity.replace('position', position)\n   *\n   * @param {string} compName  - The component name to set.\n   * @param {Object} value     - Should be a previous component instance, or whatever is expected for\n   * the component name.\n   * @param {boolean} overwriteRegistered - Whether or not to proceed with overwriting components\n   * in this entity that are registered components. By default, this is false.\n   *\n   * @return {Object} The original entity that replace() was called on, so that operations can be chained.\n   */\n  replace(compName, value, overwriteRegistered = false) {\n    // Registered component check\n    if (\n      !overwriteRegistered &&\n      this.world?.entities.componentClasses[compName]\n    ) {\n      throw new Error(\n        `Cannot replace() component \"${compName}\" because it is registered. Please refer to the docs for details.`\n      )\n    }\n\n    // Directly set value\n    this.data[compName] = value\n\n    // Update the index with this component\n    if (this.valid()) {\n      this.world.entities.addToIndex(this, compName)\n    }\n\n    return this\n  }\n\n  /**\n   * Removes a component from the entity - has no effect when it doesn't exist.\n   * Can specify an onRemove() method in your component which gets called before it is removed.\n   * If nothing is specified, then nothing will be removed.\n   *\n   * @example\n   * entity.remove('position')\n   *\n   * @param {...string} [components] - The component names to remove from the entity.\n   *\n   * @return {Object} The original entity that remove() was called on, so that operations can be chained.\n   */\n  remove(...components) {\n    for (let component of components) {\n      if (component in this.data) {\n        // Call custom onRemove\n        invoke(this.data[component], 'onRemove')\n\n        // Remove from index\n        if (this.valid()) {\n          this.world.entities.removeFromIndex(this, component)\n        }\n\n        // Remove from entity\n        delete this.data[component]\n      }\n    }\n    return this\n  }\n\n  /**\n   * Remove this entity and all of its components from the world. After an entity is destroyed, the object should be discarded,\n   * and it is recommended to avoid re-using it.\n   *\n   * @example\n   * entity.destroy()\n   */\n  destroy() {\n    this.remove(...this.components)\n\n    if (this.components.length > 0) {\n      throw new Error(\n        'Failed to remove all components. Components must have been added inside onRemove().'\n      )\n    }\n\n    if (this.valid()) {\n      // Remove from world\n      this.world.entities.entities.delete(this._id)\n      this._id = undefined\n    }\n  }\n\n  /**\n   * Returns an array of component names this entity currently has.\n   *\n   * @return {Array<String>} Array of component names.\n   */\n  get components() {\n    return Object.keys(this.data)\n  }\n\n  /**\n   * Returns true if this is a valid, existing, and usable entity, which is attached to a world.\n   *\n   * @example\n   * if (entity.valid()) {...}\n   *\n   * @return {boolean} true or false\n   */\n  valid() {\n    // Note: No need to actually look in the world for the ID, if entities are only ever copied by reference.\n    // If entities are ever deep/shallow copied, this function will need to check this to be more robust.\n    return this.world && this._id !== undefined\n  }\n\n  /**\n   * Serializes entire entity and components to JSON.\n   * Note: Defining toJSON methods in your components will override the built-in behavior.\n   *\n   * @example\n   * let serializedEntity = entity.toJSON()\n   *\n   * @return {string} JSON encoded string\n   */\n  toJSON() {\n    return JSON.stringify(this.data)\n  }\n\n  /**\n   * Deserializes data from JSON, creating new components and overwriting existing components.\n   * Note: Defining fromJSON methods in your components will override the built-in behavior.\n   *\n   * @example\n   * entity.fromJSON(serializedEntity)\n   *\n   * @param {string} data - A JSON string containing component data to parse, and store in this entity.\n   *\n   * @return {Object} The original entity that fromJSON() was called on, so that operations can be chained.\n   */\n  fromJSON(data) {\n    const parsed = JSON.parse(data)\n    for (const name in parsed) {\n      const comp = this.access(name)\n\n      // Either call custom method or copy all properties\n      if (typeof comp.fromJSON === 'function') {\n        comp.fromJSON(parsed[name])\n      } else {\n        Object.assign(this.access(name), parsed[name])\n      }\n    }\n    return this\n  }\n\n  /**\n   * Attaches a currently detached entity back to a world.\n   * Note: Do not use detached entities, get() may be safe, but avoid calling other methods\n   * Note: The ID will be reassigned, so do not rely on this\n   *\n   * @example\n   * entity.attach(world)\n   *\n   * @param {World} world - The world to attach this entity to\n   */\n  attach(world) {\n    if (world && !this.valid()) {\n      // Assign new id, and reattach to world\n      this.world = world\n      this._id = this.world.entities.nextEntityId++\n      this.world.entities.entities.set(this._id, this)\n      this.world.entities.addToIndex(this, ...this.components)\n    }\n  }\n\n  /**\n   * Removes this entity from the current world, without removing any components or data.\n   * It can be re-attached to another world (or the same world), using the attach() method.\n   * Note: Do not use detached entities, get() may be safe, but avoid calling other methods\n   * Note: The ID will be reassigned, so do not rely on this\n   *\n   * @example\n   * entity.detach()\n   */\n  detach() {\n    if (this.valid()) {\n      // Remove from current world\n      this.world.entities.removeFromIndex(this, ...this.components)\n      this.world.entities.entities.delete(this._id)\n      this._id = undefined\n      this.world = undefined\n    }\n  }\n\n  /**\n   * Creates a copy of this entity with all of the components cloned and returns it.\n   * Individual components are either shallow or deep copied, depending on component\n   * registration status and if a clone() method is defined.\n   *\n   * @example\n   * const clonedEntity = entity.clone()\n   *\n   * @example\n   * // How to define custom clone methods\n   * world.component('foo', class {\n   *   onCreate(bar, baz) {\n   *     this.bar = bar\n   *     this.baz = baz\n   *     this.qux = false\n   *   }\n   *   setQux(qux = true) {\n   *     this.qux = qux\n   *   }\n   *   cloneArgs() {\n   *     return [this.bar, this.baz]\n   *   }\n   *   clone(target) {\n   *     target.qux = this.qux\n   *   }\n   * })\n   */\n  clone() {\n    if (!this.valid()) {\n      throw new Error('Cannot clone detached or invalid entity.')\n    }\n\n    // Clone each component in this entity, to a new entity\n    const newEntity = this.world.entity()\n    for (const name in this.data) {\n      this._cloneComponentTo(newEntity, name)\n    }\n\n    // Return the cloned entity\n    return newEntity\n  }\n\n  /**\n   * @ignore\n   * Clones a component from this entity to the target entity.\n   *\n   * @example\n   * const source = world.entity().set('foo', 'bar')\n   * const target = world.entity()\n   * source._cloneComponentTo(target, 'foo')\n   * assert(target.get('foo') === 'bar')\n   *\n   * @example\n   * world.component('foo', class {\n   *   onCreate(bar, baz) {\n   *     this.bar = bar\n   *     this.baz = baz\n   *     this.qux = false\n   *   }\n   *   setQux(qux = true) {\n   *     this.qux = qux\n   *   }\n   *   cloneArgs() {\n   *     return [this.bar, this.baz]\n   *   }\n   *   clone(target) {\n   *     target.qux = this.qux\n   *   }\n   * })\n   * const source = world.entity()\n   *   .set('foo', 'bar', 'baz')\n   *   .set('qux', true)\n   * const target = world.entity()\n   * source._cloneComponentTo(target, 'foo')\n   * assert(source.get('foo').bar === target.get('foo').bar)\n   * assert(source.get('foo').baz === target.get('foo').baz)\n   * assert(source.get('foo').qux === target.get('foo').qux)\n   *\n   * @param {Entity} targetEntity - Must be a valid entity. Could be part of another world, but it\n   * is undefined behavior if the registered components are different types.\n   * @param {string} name         - Component name of both source and target components.\n   *\n   * @return {Object} The original entity that _cloneComponentTo() was called on,\n   * so that operations can be chained.\n   */\n  _cloneComponentTo(targetEntity, name) {\n    // Get component and optional arguments for cloning\n    const component = this.get(name)\n    const args = invoke(component, 'cloneArgs') || []\n    const compClass = targetEntity.world.entities.componentClasses[name]\n    if (compClass) {\n      // Registered component, so create new using constructor, inject\n      // entity, and call optional clone\n      const newComponent = new compClass(...args)\n      newComponent.entity = targetEntity\n      targetEntity.data[name] = newComponent\n      invoke(component, 'clone', newComponent)\n    } else {\n      // Unregistered component, so just shallow clone it\n      targetEntity.data[name] = shallowClone(component)\n    }\n\n    // Update the index with this new component\n    targetEntity.world.entities.addToIndex(targetEntity, name)\n\n    // Call custom onCreate to initialize component, and any additional arguments passed into set()\n    invoke(targetEntity.data[name], 'onCreate', ...args)\n\n    return this\n  }\n}\n",
     "static": true,
     "longname": "/home/eric/dev/picoes/src/entity.js",
     "access": "public",
@@ -738,21 +738,21 @@
     "static": false,
     "longname": "src/entity.js~Entity#has",
     "access": "public",
-    "description": "Returns true if the entity has ALL of the specified component names.\nAdditional components that the entity has, which are not specified in has(), will be ignored.\nIf no component names are specified, this method returns true.",
+    "description": "Returns true if the entity has the specified component name.",
     "examples": [
-      "if (entity.has('position', 'velocity')) {...}"
+      "entity.has('position')"
     ],
-    "lineNumber": 62,
+    "lineNumber": 60,
     "params": [
       {
         "nullable": null,
         "types": [
-          "...string"
+          "string"
         ],
-        "spread": true,
-        "optional": true,
-        "name": "components",
-        "description": "The component names to check for"
+        "spread": false,
+        "optional": false,
+        "name": "name",
+        "description": "The component name to check for"
       }
     ],
     "return": {
@@ -767,42 +767,6 @@
   {
     "__docId__": 57,
     "kind": "method",
-    "name": "hasAny",
-    "memberof": "src/entity.js~Entity",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "src/entity.js~Entity#hasAny",
-    "access": "public",
-    "description": "Returns true if the entity has ANY of the specified component names.\nIf no component names are specified, this method returns false.",
-    "examples": [
-      "if (entity.hasAny('position', 'velocity')) {...}"
-    ],
-    "lineNumber": 77,
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "...string"
-        ],
-        "spread": true,
-        "optional": true,
-        "name": "components",
-        "description": "The component names to check for"
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "boolean"
-      ],
-      "spread": false,
-      "description": "true or false"
-    }
-  },
-  {
-    "__docId__": 58,
-    "kind": "method",
     "name": "get",
     "memberof": "src/entity.js~Entity",
     "generator": false,
@@ -814,7 +778,7 @@
     "examples": [
       "let position = entity.get('position')"
     ],
-    "lineNumber": 91,
+    "lineNumber": 74,
     "params": [
       {
         "nullable": null,
@@ -837,7 +801,7 @@
     }
   },
   {
-    "__docId__": 59,
+    "__docId__": 58,
     "kind": "method",
     "name": "access",
     "memberof": "src/entity.js~Entity",
@@ -852,7 +816,7 @@
       "entity.access('anything').foo = 'bar'\n// 'anything' now has { foo: 'bar' }",
       "entity.access('anything', { foo: 'bar' }).foo2 = 'bar2'\n// 'anything' now has { foo: 'bar', foo2: 'bar2' }"
     ],
-    "lineNumber": 116,
+    "lineNumber": 99,
     "params": [
       {
         "nullable": null,
@@ -885,7 +849,7 @@
     }
   },
   {
-    "__docId__": 60,
+    "__docId__": 59,
     "kind": "method",
     "name": "set",
     "memberof": "src/entity.js~Entity",
@@ -902,7 +866,7 @@
       "entity.set('thisCompIsUndefined', undefined)",
       "entity.set('thisCompIsEmptyObject')"
     ],
-    "lineNumber": 154,
+    "lineNumber": 137,
     "params": [
       {
         "nullable": null,
@@ -935,7 +899,7 @@
     }
   },
   {
-    "__docId__": 61,
+    "__docId__": 60,
     "kind": "method",
     "name": "replace",
     "memberof": "src/entity.js~Entity",
@@ -948,7 +912,7 @@
     "examples": [
       "entity.replace('position', position)"
     ],
-    "lineNumber": 198,
+    "lineNumber": 181,
     "params": [
       {
         "nullable": null,
@@ -991,7 +955,7 @@
     }
   },
   {
-    "__docId__": 62,
+    "__docId__": 61,
     "kind": "method",
     "name": "remove",
     "memberof": "src/entity.js~Entity",
@@ -1000,11 +964,11 @@
     "static": false,
     "longname": "src/entity.js~Entity#remove",
     "access": "public",
-    "description": "Removes a component from the entity - has no effect when it doesn't exist.\nCan specify an onRemove() method in your component which gets called before it is removed.\nIf nothing is specified, then nothing will be removed. Use removeAll() to remove all components.",
+    "description": "Removes a component from the entity - has no effect when it doesn't exist.\nCan specify an onRemove() method in your component which gets called before it is removed.\nIf nothing is specified, then nothing will be removed.",
     "examples": [
       "entity.remove('position')"
     ],
-    "lineNumber": 232,
+    "lineNumber": 215,
     "params": [
       {
         "nullable": null,
@@ -1027,32 +991,7 @@
     }
   },
   {
-    "__docId__": 63,
-    "kind": "method",
-    "name": "removeAll",
-    "memberof": "src/entity.js~Entity",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "src/entity.js~Entity#removeAll",
-    "access": "public",
-    "description": "Removes all components from the entity.",
-    "examples": [
-      "entity.removeAll()"
-    ],
-    "lineNumber": 260,
-    "return": {
-      "nullable": null,
-      "types": [
-        "Object"
-      ],
-      "spread": false,
-      "description": "The original entity that removeAll() was called on, so that operations can be chained."
-    },
-    "params": []
-  },
-  {
-    "__docId__": 64,
+    "__docId__": 62,
     "kind": "method",
     "name": "destroy",
     "memberof": "src/entity.js~Entity",
@@ -1065,12 +1004,12 @@
     "examples": [
       "entity.destroy()"
     ],
-    "lineNumber": 279,
+    "lineNumber": 240,
     "params": [],
     "return": null
   },
   {
-    "__docId__": 66,
+    "__docId__": 64,
     "kind": "get",
     "name": "components",
     "memberof": "src/entity.js~Entity",
@@ -1080,7 +1019,7 @@
     "longname": "src/entity.js~Entity#components",
     "access": "public",
     "description": "Returns an array of component names this entity currently has.",
-    "lineNumber": 294,
+    "lineNumber": 261,
     "return": {
       "nullable": null,
       "types": [
@@ -1096,7 +1035,7 @@
     }
   },
   {
-    "__docId__": 67,
+    "__docId__": 65,
     "kind": "method",
     "name": "valid",
     "memberof": "src/entity.js~Entity",
@@ -1109,7 +1048,7 @@
     "examples": [
       "if (entity.valid()) {...}"
     ],
-    "lineNumber": 306,
+    "lineNumber": 273,
     "return": {
       "nullable": null,
       "types": [
@@ -1121,7 +1060,7 @@
     "params": []
   },
   {
-    "__docId__": 68,
+    "__docId__": 66,
     "kind": "method",
     "name": "toJSON",
     "memberof": "src/entity.js~Entity",
@@ -1134,7 +1073,7 @@
     "examples": [
       "let serializedEntity = entity.toJSON()"
     ],
-    "lineNumber": 321,
+    "lineNumber": 288,
     "return": {
       "nullable": null,
       "types": [
@@ -1146,7 +1085,7 @@
     "params": []
   },
   {
-    "__docId__": 69,
+    "__docId__": 67,
     "kind": "method",
     "name": "fromJSON",
     "memberof": "src/entity.js~Entity",
@@ -1159,7 +1098,7 @@
     "examples": [
       "entity.fromJSON(serializedEntity)"
     ],
-    "lineNumber": 336,
+    "lineNumber": 303,
     "params": [
       {
         "nullable": null,
@@ -1182,7 +1121,7 @@
     }
   },
   {
-    "__docId__": 70,
+    "__docId__": 68,
     "kind": "method",
     "name": "attach",
     "memberof": "src/entity.js~Entity",
@@ -1195,7 +1134,7 @@
     "examples": [
       "entity.attach(world)"
     ],
-    "lineNumber": 361,
+    "lineNumber": 328,
     "params": [
       {
         "nullable": null,
@@ -1211,7 +1150,7 @@
     "return": null
   },
   {
-    "__docId__": 73,
+    "__docId__": 71,
     "kind": "method",
     "name": "detach",
     "memberof": "src/entity.js~Entity",
@@ -1224,12 +1163,12 @@
     "examples": [
       "entity.detach()"
     ],
-    "lineNumber": 380,
+    "lineNumber": 347,
     "params": [],
     "return": null
   },
   {
-    "__docId__": 76,
+    "__docId__": 74,
     "kind": "method",
     "name": "clone",
     "memberof": "src/entity.js~Entity",
@@ -1238,11 +1177,12 @@
     "static": false,
     "longname": "src/entity.js~Entity#clone",
     "access": "public",
-    "description": "Creates a copy of this entity with all of the components cloned and returns it.\nIndividual components are either shallow or deep copied, depending on component\nregistration status and if a clone() method is defined. See entity.cloneComponentTo().",
+    "description": "Creates a copy of this entity with all of the components cloned and returns it.\nIndividual components are either shallow or deep copied, depending on component\nregistration status and if a clone() method is defined.",
     "examples": [
-      "entity.clone()"
+      "const clonedEntity = entity.clone()",
+      "// How to define custom clone methods\nworld.component('foo', class {\n  onCreate(bar, baz) {\n    this.bar = bar\n    this.baz = baz\n    this.qux = false\n  }\n  setQux(qux = true) {\n    this.qux = qux\n  }\n  cloneArgs() {\n    return [this.bar, this.baz]\n  }\n  clone(target) {\n    target.qux = this.qux\n  }\n})"
     ],
-    "lineNumber": 398,
+    "lineNumber": 384,
     "params": [],
     "return": {
       "types": [
@@ -1251,21 +1191,22 @@
     }
   },
   {
-    "__docId__": 77,
+    "__docId__": 75,
     "kind": "method",
-    "name": "cloneComponentTo",
+    "name": "_cloneComponentTo",
     "memberof": "src/entity.js~Entity",
     "generator": false,
     "async": false,
     "static": false,
-    "longname": "src/entity.js~Entity#cloneComponentTo",
-    "access": "public",
-    "description": "Clones a component from this entity to the target entity.",
+    "longname": "src/entity.js~Entity#_cloneComponentTo",
+    "access": "private",
+    "description": "",
     "examples": [
-      "const source = world.entity().set('foo', 'bar')\nconst target = world.entity()\nsource.cloneComponentTo(target, 'foo')\nassert(target.get('foo') === 'bar')",
-      "world.component('foo', class {\n  onCreate(bar, baz) {\n    this.bar = bar\n    this.baz = baz\n    this.qux = false\n  }\n  setQux(qux = true) {\n    this.qux = qux\n  }\n  cloneArgs() {\n    return [this.bar, this.baz]\n  }\n  clone(target) {\n    target.qux = this.qux\n  }\n})\nconst source = world.entity()\n  .set('foo', 'bar', 'baz')\n  .set('qux', true)\nconst target = world.entity()\nsource.cloneComponentTo(target, 'foo')\nassert(source.get('foo').bar === target.get('foo').bar)\nassert(source.get('foo').baz === target.get('foo').baz)\nassert(source.get('foo').qux === target.get('foo').qux)"
+      "const source = world.entity().set('foo', 'bar')\nconst target = world.entity()\nsource._cloneComponentTo(target, 'foo')\nassert(target.get('foo') === 'bar')",
+      "world.component('foo', class {\n  onCreate(bar, baz) {\n    this.bar = bar\n    this.baz = baz\n    this.qux = false\n  }\n  setQux(qux = true) {\n    this.qux = qux\n  }\n  cloneArgs() {\n    return [this.bar, this.baz]\n  }\n  clone(target) {\n    target.qux = this.qux\n  }\n})\nconst source = world.entity()\n  .set('foo', 'bar', 'baz')\n  .set('qux', true)\nconst target = world.entity()\nsource._cloneComponentTo(target, 'foo')\nassert(source.get('foo').bar === target.get('foo').bar)\nassert(source.get('foo').baz === target.get('foo').baz)\nassert(source.get('foo').qux === target.get('foo').qux)"
     ],
-    "lineNumber": 455,
+    "lineNumber": 442,
+    "ignore": true,
     "params": [
       {
         "nullable": null,
@@ -1294,14 +1235,14 @@
         "Object"
       ],
       "spread": false,
-      "description": "The original entity that cloneComponentTo() was called on,\nso that operations can be chained."
+      "description": "The original entity that _cloneComponentTo() was called on,\nso that operations can be chained."
     }
   },
   {
-    "__docId__": 78,
+    "__docId__": 76,
     "kind": "file",
     "name": "src/entity_storage.js",
-    "content": "import { Entity } from './entity.js'\nimport { invoke } from './utilities.js'\n\n/**\n * @ignore\n * Returns index of smallest element\n */\nconst minIndexReducer = (minIndex, value, index, values) =>\n  value < values[minIndex] ? index : minIndex\n\n/** @ignore */\nexport class EntityStorage {\n  constructor(world) {\n    /** @ignore */\n    this.world = world\n    /** @ignore */\n    this.componentClasses = {}\n    /** @ignore */\n    this.nextEntityId = 1\n\n    /**\n     * Maps entity IDs to entities\n     * @ignore\n     */\n    this.entities = new Map()\n\n    /**\n     * Maps component keys to entities\n     * @ignore\n     */\n    this.index = new Map()\n  }\n\n  clear() {\n    // Call onRemove on all components of all entities\n    for (const [, entity] of this.entities) {\n      for (let componentName in entity.data) {\n        // Get component, and call onRemove if it exists as a function\n        let component = entity.data[componentName]\n        invoke(component, 'onRemove')\n      }\n    }\n\n    // Clear entities\n    this.entities.clear()\n    this.index.clear()\n  }\n\n  registerComponent(name, componentClass) {\n    // Only allow functions and classes to be components\n    if (typeof componentClass !== 'function') {\n      throw new Error('Component is not a valid function or class.')\n    }\n    this.componentClasses[name] = componentClass\n  }\n\n  // Creates a new entity attached to the world\n  createEntity() {\n    const entityId = this.nextEntityId++\n    const entity = new Entity(this.world, entityId)\n    this.entities.set(entityId, entity)\n    return entity\n  }\n\n  // Forwards query args from world\n  each(...args) {\n    return this.queryIndex(this.queryArgs(...args))\n  }\n\n  // Returns an existing or new index\n  accessIndex(component) {\n    // TODO: Compare with object based approach for performance\n    return (\n      this.index.get(component) ||\n      this.index.set(component, new Map()).get(component)\n    )\n  }\n\n  // Add certain components with an entity to the index\n  addToIndex(entity, ...componentNames) {\n    for (let component of componentNames) {\n      this.accessIndex(component).set(entity.id, entity)\n    }\n  }\n\n  // Remove certain components from the index for an entity\n  removeFromIndex(entity, ...componentNames) {\n    for (let component of componentNames) {\n      this.accessIndex(component).delete(entity.id)\n    }\n  }\n\n  queryArgs(...args) {\n    // Gather component names and a callback (if any) from args\n    const result = {\n      componentNames: [],\n      callback: null,\n    }\n    for (const arg of args) {\n      if (typeof arg === 'string') {\n        result.componentNames.push(arg)\n      } else if (typeof arg === 'function') {\n        result.callback = arg\n      } else if (Array.isArray(arg)) {\n        // Add 1-level deep arrays of strings as separate component names\n        for (const name of arg) {\n          result.componentNames.push(name)\n        }\n      } else {\n        throw new Error(\n          `Unknown argument ${arg} with type ${typeof arg} passed to world.each().`\n        )\n      }\n    }\n    return result\n  }\n\n  // Uses an existing index or builds a new index, to get entities with the specified components\n  // If callback is defined, it will be called for each entity with component data, and returns undefined\n  // If callback is not defined, an array of entities will be returned\n  queryIndex({ componentNames, callback }) {\n    // Return all entities (array if no callback)\n    if (componentNames.length === 0) {\n      const iter = this.entities.values()\n      if (!callback) {\n        return [...iter]\n      }\n      for (const entity of iter) {\n        if (callback(entity.data, entity) === false) {\n          break\n        }\n      }\n      return\n    }\n\n    // Get the index name with the least number of entities\n    const minCompIndex = componentNames\n      .map(name => this.accessIndex(name).size)\n      .reduce(minIndexReducer, 0)\n    const minComp = componentNames[minCompIndex]\n\n    // Return matching entities (array if no callback)\n    const iter = this.index.get(minComp).values()\n    if (!callback) {\n      const results = []\n      for (const entity of iter) {\n        if (entity.has(...componentNames)) {\n          results.push(entity)\n        }\n      }\n      return results\n    }\n    for (const entity of iter) {\n      if (\n        entity.has(...componentNames) &&\n        callback(entity.data, entity) === false\n      ) {\n        return\n      }\n    }\n  }\n}\n",
+    "content": "import { Entity } from './entity.js'\nimport { invoke } from './utilities.js'\n\n/**\n * @ignore\n * Returns index of smallest element\n */\nconst minIndexReducer = (minIndex, value, index, values) =>\n  value < values[minIndex] ? index : minIndex\n\n/** @ignore */\nexport class EntityStorage {\n  constructor(world) {\n    /** @ignore */\n    this.world = world\n    /** @ignore */\n    this.componentClasses = {}\n    /** @ignore */\n    this.nextEntityId = 1\n\n    /**\n     * Maps entity IDs to entities\n     * @ignore\n     */\n    this.entities = new Map()\n\n    /**\n     * Maps component keys to entities\n     * @ignore\n     */\n    this.index = new Map()\n  }\n\n  clear() {\n    // Call onRemove on all components of all entities\n    for (const [, entity] of this.entities) {\n      for (let componentName in entity.data) {\n        // Get component, and call onRemove if it exists as a function\n        let component = entity.data[componentName]\n        invoke(component, 'onRemove')\n      }\n    }\n\n    // Clear entities\n    this.entities.clear()\n    this.index.clear()\n  }\n\n  registerComponent(name, componentClass) {\n    // Only allow functions and classes to be components\n    if (typeof componentClass !== 'function') {\n      throw new Error('Component is not a valid function or class.')\n    }\n    this.componentClasses[name] = componentClass\n  }\n\n  // Creates a new entity attached to the world\n  createEntity() {\n    const entityId = this.nextEntityId++\n    const entity = new Entity(this.world, entityId)\n    this.entities.set(entityId, entity)\n    return entity\n  }\n\n  // Forwards query args from world\n  each(...args) {\n    return this.queryIndex(this.queryArgs(...args))\n  }\n\n  // Returns an existing or new index\n  accessIndex(component) {\n    // TODO: Compare with object based approach for performance\n    return (\n      this.index.get(component) ||\n      this.index.set(component, new Map()).get(component)\n    )\n  }\n\n  // Add certain components with an entity to the index\n  addToIndex(entity, ...componentNames) {\n    for (let component of componentNames) {\n      this.accessIndex(component).set(entity.id, entity)\n    }\n  }\n\n  // Remove certain components from the index for an entity\n  removeFromIndex(entity, ...componentNames) {\n    for (let component of componentNames) {\n      this.accessIndex(component).delete(entity.id)\n    }\n  }\n\n  queryArgs(...args) {\n    // Gather component names and a callback (if any) from args\n    const result = {\n      componentNames: [],\n      callback: null,\n    }\n    for (const arg of args) {\n      if (typeof arg === 'string') {\n        result.componentNames.push(arg)\n      } else if (typeof arg === 'function') {\n        result.callback = arg\n      } else if (Array.isArray(arg)) {\n        // Add 1-level deep arrays of strings as separate component names\n        for (const name of arg) {\n          result.componentNames.push(name)\n        }\n      } else {\n        throw new Error(\n          `Unknown argument ${arg} with type ${typeof arg} passed to world.each().`\n        )\n      }\n    }\n    return result\n  }\n\n  // Uses an existing index or builds a new index, to get entities with the specified components\n  // If callback is defined, it will be called for each entity with component data, and returns undefined\n  // If callback is not defined, an array of entities will be returned\n  queryIndex({ componentNames, callback }) {\n    // Return all entities (array if no callback)\n    if (componentNames.length === 0) {\n      const iter = this.entities.values()\n      if (!callback) {\n        return [...iter]\n      }\n      for (const entity of iter) {\n        if (callback(entity.data, entity) === false) {\n          break\n        }\n      }\n      return\n    }\n\n    // Get the index name with the least number of entities\n    const minCompIndex = componentNames\n      .map(name => this.accessIndex(name).size)\n      .reduce(minIndexReducer, 0)\n    const minComp = componentNames[minCompIndex]\n    const iter = this.index.get(minComp).values()\n\n    // Return array of matched entities\n    if (!callback) {\n      const results = []\n      for (const entity of iter) {\n        const { data } = entity\n        if (componentNames.every(name => name in data)) {\n          results.push(entity)\n        }\n      }\n      return results\n    }\n\n    // Invoke callback for each matched entity\n    for (const entity of iter) {\n      const { data } = entity\n      if (\n        componentNames.every(name => name in data) &&\n        callback(data, entity) === false\n      ) {\n        return\n      }\n    }\n  }\n}\n",
     "static": true,
     "longname": "/home/eric/dev/picoes/src/entity_storage.js",
     "access": "public",
@@ -1309,7 +1250,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 79,
+    "__docId__": 77,
     "kind": "function",
     "name": "minIndexReducer",
     "memberof": "src/entity_storage.js",
@@ -1353,7 +1294,7 @@
     "return": null
   },
   {
-    "__docId__": 80,
+    "__docId__": 78,
     "kind": "class",
     "name": "EntityStorage",
     "memberof": "src/entity_storage.js",
@@ -1369,7 +1310,7 @@
     "interface": false
   },
   {
-    "__docId__": 81,
+    "__docId__": 79,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/entity_storage.js~EntityStorage",
@@ -1383,7 +1324,7 @@
     "undocument": true
   },
   {
-    "__docId__": 82,
+    "__docId__": 80,
     "kind": "member",
     "name": "world",
     "memberof": "src/entity_storage.js~EntityStorage",
@@ -1400,7 +1341,7 @@
     }
   },
   {
-    "__docId__": 83,
+    "__docId__": 81,
     "kind": "member",
     "name": "componentClasses",
     "memberof": "src/entity_storage.js~EntityStorage",
@@ -1417,7 +1358,7 @@
     }
   },
   {
-    "__docId__": 84,
+    "__docId__": 82,
     "kind": "member",
     "name": "nextEntityId",
     "memberof": "src/entity_storage.js~EntityStorage",
@@ -1434,7 +1375,7 @@
     }
   },
   {
-    "__docId__": 85,
+    "__docId__": 83,
     "kind": "member",
     "name": "entities",
     "memberof": "src/entity_storage.js~EntityStorage",
@@ -1451,7 +1392,7 @@
     }
   },
   {
-    "__docId__": 86,
+    "__docId__": 84,
     "kind": "member",
     "name": "index",
     "memberof": "src/entity_storage.js~EntityStorage",
@@ -1468,7 +1409,7 @@
     }
   },
   {
-    "__docId__": 87,
+    "__docId__": 85,
     "kind": "method",
     "name": "clear",
     "memberof": "src/entity_storage.js~EntityStorage",
@@ -1484,7 +1425,7 @@
     "return": null
   },
   {
-    "__docId__": 88,
+    "__docId__": 86,
     "kind": "method",
     "name": "registerComponent",
     "memberof": "src/entity_storage.js~EntityStorage",
@@ -1513,7 +1454,7 @@
     "return": null
   },
   {
-    "__docId__": 89,
+    "__docId__": 87,
     "kind": "method",
     "name": "createEntity",
     "memberof": "src/entity_storage.js~EntityStorage",
@@ -1533,7 +1474,7 @@
     }
   },
   {
-    "__docId__": 90,
+    "__docId__": 88,
     "kind": "method",
     "name": "each",
     "memberof": "src/entity_storage.js~EntityStorage",
@@ -1561,7 +1502,7 @@
     }
   },
   {
-    "__docId__": 91,
+    "__docId__": 89,
     "kind": "method",
     "name": "accessIndex",
     "memberof": "src/entity_storage.js~EntityStorage",
@@ -1588,7 +1529,7 @@
     }
   },
   {
-    "__docId__": 92,
+    "__docId__": 90,
     "kind": "method",
     "name": "addToIndex",
     "memberof": "src/entity_storage.js~EntityStorage",
@@ -1618,7 +1559,7 @@
     "return": null
   },
   {
-    "__docId__": 93,
+    "__docId__": 91,
     "kind": "method",
     "name": "removeFromIndex",
     "memberof": "src/entity_storage.js~EntityStorage",
@@ -1648,7 +1589,7 @@
     "return": null
   },
   {
-    "__docId__": 94,
+    "__docId__": 92,
     "kind": "method",
     "name": "queryArgs",
     "memberof": "src/entity_storage.js~EntityStorage",
@@ -1676,7 +1617,7 @@
     }
   },
   {
-    "__docId__": 95,
+    "__docId__": 93,
     "kind": "method",
     "name": "queryIndex",
     "memberof": "src/entity_storage.js~EntityStorage",
@@ -1708,7 +1649,7 @@
     }
   },
   {
-    "__docId__": 96,
+    "__docId__": 94,
     "kind": "file",
     "name": "src/system_storage.js",
     "content": "import { invoke } from './utilities.js'\n\n/** @ignore */\nexport class SystemStorage {\n  constructor() {\n    this.systems = []\n    this.context = undefined\n  }\n\n  register(systemClass, ...args) {\n    // Make sure the system is valid\n    if (typeof systemClass !== 'function') {\n      throw new Error('System is not a valid function or class.')\n    }\n    // Create and add the system with context\n    const newSystem = new systemClass(...args)\n    this._injectContext(newSystem)\n    invoke(newSystem, 'init', ...args)\n    this.systems.push(newSystem)\n  }\n\n  run(...args) {\n    let status = true\n    // Continue rerunning while any systems return true\n    while (status) {\n      status = undefined\n      for (const system of this.systems) {\n        // Try to call the \"run\" method\n        const result = invoke(system, 'run', ...args)\n        status = status || result\n      }\n      // Clear args after first run, so re-runs can be identified\n      args.length = 0\n    }\n  }\n\n  // Update existing systems' context\n  setContext(data) {\n    this.context = data\n    for (const system of this.systems) {\n      this._injectContext(system)\n    }\n  }\n\n  // Injects context into a system based on current context state\n  _injectContext(system) {\n    if (this.context) {\n      // Inject as keys of context\n      for (const key in this.context) {\n        system[key] = this.context[key]\n      }\n    }\n  }\n}\n",
@@ -1719,7 +1660,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 97,
+    "__docId__": 95,
     "kind": "class",
     "name": "SystemStorage",
     "memberof": "src/system_storage.js",
@@ -1735,7 +1676,7 @@
     "interface": false
   },
   {
-    "__docId__": 98,
+    "__docId__": 96,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/system_storage.js~SystemStorage",
@@ -1749,7 +1690,7 @@
     "undocument": true
   },
   {
-    "__docId__": 99,
+    "__docId__": 97,
     "kind": "member",
     "name": "systems",
     "memberof": "src/system_storage.js~SystemStorage",
@@ -1766,7 +1707,7 @@
     }
   },
   {
-    "__docId__": 100,
+    "__docId__": 98,
     "kind": "member",
     "name": "context",
     "memberof": "src/system_storage.js~SystemStorage",
@@ -1783,7 +1724,7 @@
     }
   },
   {
-    "__docId__": 101,
+    "__docId__": 99,
     "kind": "method",
     "name": "register",
     "memberof": "src/system_storage.js~SystemStorage",
@@ -1813,7 +1754,7 @@
     "return": null
   },
   {
-    "__docId__": 102,
+    "__docId__": 100,
     "kind": "method",
     "name": "run",
     "memberof": "src/system_storage.js~SystemStorage",
@@ -1837,7 +1778,7 @@
     "return": null
   },
   {
-    "__docId__": 103,
+    "__docId__": 101,
     "kind": "method",
     "name": "setContext",
     "memberof": "src/system_storage.js~SystemStorage",
@@ -1860,7 +1801,7 @@
     "return": null
   },
   {
-    "__docId__": 105,
+    "__docId__": 103,
     "kind": "method",
     "name": "_injectContext",
     "memberof": "src/system_storage.js~SystemStorage",
@@ -1883,7 +1824,7 @@
     "return": null
   },
   {
-    "__docId__": 106,
+    "__docId__": 104,
     "kind": "file",
     "name": "src/utilities.js",
     "content": "/**\n * Utility function for invoking methods inside objects, binding \"this\" to the object.\n *\n * @ignore\n *\n * @param {Object}   object - The object\n * @param {Function} method - The method\n * @param {Array}    args   - The arguments\n *\n * @return {Object} Returns what the called method returns\n */\nexport function invoke(object, method, ...args) {\n  if (object && typeof object[method] === 'function') {\n    return object[method].call(object, ...args)\n  }\n}\n\n/**\n * Shallow clones any type of variable.\n *\n * @ignore\n */\nexport function shallowClone(val) {\n  if (Array.isArray(val)) {\n    return [...val]\n  } else if (typeof val === 'object') {\n    return { ...val }\n  }\n  return val\n}\n",
@@ -1894,7 +1835,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 107,
+    "__docId__": 105,
     "kind": "function",
     "name": "invoke",
     "memberof": "src/utilities.js",
@@ -1951,7 +1892,7 @@
     }
   },
   {
-    "__docId__": 108,
+    "__docId__": 106,
     "kind": "function",
     "name": "shallowClone",
     "memberof": "src/utilities.js",
@@ -1981,7 +1922,7 @@
     }
   },
   {
-    "__docId__": 109,
+    "__docId__": 107,
     "kind": "file",
     "name": "src/world.js",
     "content": "import { Entity } from './entity.js'\nimport { SystemStorage } from './system_storage.js'\nimport { EntityStorage } from './entity_storage.js'\n\n/**\n * Class for world.\n *\n * @class World (name)\n */\nexport class World {\n  /**\n   * Constructs an instance of the world.\n   *\n   * @param {object} [options] - The initial systems, components, and context to setup in the world.\n   * Each one is optional. See below for registering these after world construction.\n   *\n   * @example\n   * const world = new World({\n   *   components: { position, velocity },\n   *   systems: [Input, Physics, Render],\n   *   context: { state },\n   * })\n   */\n  constructor(options) {\n    /** @ignore */\n    this.systems = new SystemStorage()\n    /** @ignore */\n    this.entities = new EntityStorage(this)\n\n    // Register components, context, and systems\n    if (options) {\n      if (options.components) {\n        for (const name in options.components) {\n          this.component(name, options.components[name])\n        }\n      }\n      if (options.context) {\n        this.context(options.context)\n      }\n      if (options.systems) {\n        for (const systemClass of options.systems) {\n          this.system(systemClass)\n        }\n      }\n    }\n  }\n\n  /**\n   * Removes all entities from the world.\n   * Does not affect any registered systems or components.\n   *\n   * @example\n   * world.clear()\n   */\n  clear() {\n    this.entities.clear()\n  }\n\n  /**\n   * Registers a component type to the world. Components must be constructable. If the component has\n   * an onCreate(), it is passed all of the arguments from methods like entity.set(). Also, components\n   * can have an onRemove() method, which gets called when removing that component from an entity.\n   *\n   * @param {string}   name           - The name\n   * @param {function} componentClass - The component class, must be a constructable class or function\n   *\n   * @example\n   * world.component('myComponent', class {\n   *     // It is highly recommended to use onCreate() over constructor(), because the component\n   *     // will have already been added to the entity. In the constructor(), it is not safe to use\n   *     // \"entity\" because it does not contain the current component while still in the constructor.\n   *     onCreate(some, args) {\n   *         this.some = some\n   *         this.args = args\n   *         this.entity.set('whatever') // this.entity is auto-injected, and this is safe to do here\n   *     }\n   * })\n   * // entity === the new entity object\n   * // some === 10\n   * // args === 500\n   * world.entity().set('myComponent', 10, 500)\n   *\n   * @return {string} Registered component name on success, undefined on failure\n   */\n  component(name, componentClass) {\n    this.entities.registerComponent(name, componentClass)\n  }\n\n  /**\n   * Creates a new entity in the world\n   *\n   * @example\n   * world.entity()\n   *\n   * @return {Entity} The new entity created\n   */\n  entity() {\n    return this.entities.createEntity()\n  }\n\n  /**\n   * Sets a context object that is automatically injected into all existing and new systems.\n   * Calling this multiple times will overwrite any previous contexts passed. One caveat is that\n   * you can only start to use the injected context in systems starting with init(). It is not\n   * available in the constructor.\n   *\n   * @param {Object} data - The object to use as context to pass to systems.\n   * All the keys inside the context object will be spread into the top-level of the system.\n   *\n   * @example\n   * const state = { app: new PIXI.Application() }\n   * const world = new World()\n   * world.context(state) // systems can directly use this.app\n   * world.system(...)\n   *\n   * @example\n   * world.context(state, 'state') // systems use this.state.app\n   *\n   * @return {Entity} The new entity created\n   */\n  context(data) {\n    this.systems.setContext(data)\n  }\n\n  /**\n   * Registers a system to the world.\n   * The order the systems get registered, is the order then run in.\n   *\n   * @example\n   * // Movement system (basic example)\n   * class MovementSystem {\n   *   run(dt) {\n   *     world.each('position', 'velocity', ({ position, velocity }) => {\n   *       position.x += velocity.x * dt\n   *       position.y += velocity.y * dt\n   *     })\n   *   }\n   * }\n   * // Input system (advanced example)\n   * class InputSystem {\n   *   init(key) {\n   *     // Have access to this.keyboard here, but not in constructor\n   *     this.key = key\n   *   }\n   *   run(dt) {\n   *     if (this.keyboard.isPressed(this.key)) {\n   *       world.each('controlled', 'velocity', ({ velocity }, entity) => {\n   *         // Start moving all controlled entities to the right\n   *         velocity.x = 1\n   *         velocity.y = 0\n   *         // Can also use the full entity here, in this case to add a new component\n   *         entity.set('useFuel')\n   *       })\n   *     }\n   *   }\n   * }\n   * // Inject context (see world.context())\n   * world.context({ keyboard: new Keyboard() })\n   * // Register systems in order (this method)\n   * world.system(InputSystem, 'w') // pass arguments to init/constructor\n   * world.system(MovementSystem)\n   * // Run systems (can get dt or frame time)\n   * world.run(1000.0 / 60.0)\n   *\n   * @param {Function} systemClass - The system class to instantiate. Can contain a\n   * constructor(), init(), run(), or any other custom methods/properties.\n   *\n   * @param {...Object} [args] - The arguments to forward to the system's constructor and init.\n   * Note that it is recommended to use init if using context, see world.context().\n   */\n  system(systemClass, ...args) {\n    // TODO: Get rid of args because of context\n    this.systems.register(systemClass, ...args)\n  }\n\n  /**\n   * Calls run() on all systems. These methods can return true to cause an additional rerun of all systems.\n   * Reruns will not receive the args passed into run(), as a way to identify reruns.\n   *\n   * @example\n   * world.run(deltaTime)\n   *\n   * @example\n   * // Example flow of method call order:\n   * // Setup systems:\n   * world.system(systemA)\n   * world.system(systemB)\n   * // During world.run():\n   * // systemA.run()\n   * // systemB.run()\n   *\n   * @param {...Object} [args] - The arguments to forward to the systems' methods\n   */\n  run(...args) {\n    this.systems.run(...args)\n  }\n\n  /**\n   * Iterate through components and entities with all of the specified component names\n   *\n   * @example\n   * // Use a callback to process entities one-by-one\n   * world.each('comp', ({ comp }) => { comp.value = 0 })\n   *\n   * @example\n   * // Get an iterator for the entities\n   * const it = world.each('comp')\n   * for (let entity of it) {...}\n   *\n   * @example\n   * // Pass multiple components, arrays, use extra entity parameter,\n   * // and destructure components outside the query\n   * world.each('compA', ['more', 'comps'], 'compB', ({ compA, compC }, entity) => {\n   *   if (compC) compC.foo(compC.bar)\n   *   compA.foo = 'bar'\n   *   entity.remove('compB')\n   * })\n   *\n   * @param {...Object} args - Can pass component names, arrays of component names, and a callback,\n   * in any order.\n   *\n   * **{...string}**: The component names to match entities with. This checks if the entity\n   * has ALL of the specified components, but does not check for additional components.\n   *\n   * **{Function}**: The callback to call for each matched entity. Takes (entity.data, entity).\n   * Entity data is an object of {[componentName]: [component]}, that can be destructured with syntax\n   * shown in the examples.\n   *\n   * @return {MapIterator} If no callback specified, then returns a one-time-use iterator to the entities.\n   * Otherwise, returns the last loop iteration status, returned by the callback.\n   */\n  each(...args) {\n    return this.entities.each(...args)\n  }\n}\n",
@@ -1992,7 +1933,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 110,
+    "__docId__": 108,
     "kind": "class",
     "name": "World",
     "memberof": "src/world.js",
@@ -2013,7 +1954,7 @@
     "interface": false
   },
   {
-    "__docId__": 111,
+    "__docId__": 109,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/world.js~World",
@@ -2041,7 +1982,7 @@
     ]
   },
   {
-    "__docId__": 112,
+    "__docId__": 110,
     "kind": "member",
     "name": "systems",
     "memberof": "src/world.js~World",
@@ -2058,7 +1999,7 @@
     }
   },
   {
-    "__docId__": 113,
+    "__docId__": 111,
     "kind": "member",
     "name": "entities",
     "memberof": "src/world.js~World",
@@ -2075,7 +2016,7 @@
     }
   },
   {
-    "__docId__": 114,
+    "__docId__": 112,
     "kind": "method",
     "name": "clear",
     "memberof": "src/world.js~World",
@@ -2093,7 +2034,7 @@
     "return": null
   },
   {
-    "__docId__": 115,
+    "__docId__": 113,
     "kind": "method",
     "name": "component",
     "memberof": "src/world.js~World",
@@ -2139,7 +2080,7 @@
     }
   },
   {
-    "__docId__": 116,
+    "__docId__": 114,
     "kind": "method",
     "name": "entity",
     "memberof": "src/world.js~World",
@@ -2164,7 +2105,7 @@
     "params": []
   },
   {
-    "__docId__": 117,
+    "__docId__": 115,
     "kind": "method",
     "name": "context",
     "memberof": "src/world.js~World",
@@ -2201,7 +2142,7 @@
     }
   },
   {
-    "__docId__": 118,
+    "__docId__": 116,
     "kind": "method",
     "name": "system",
     "memberof": "src/world.js~World",
@@ -2240,7 +2181,7 @@
     "return": null
   },
   {
-    "__docId__": 119,
+    "__docId__": 117,
     "kind": "method",
     "name": "run",
     "memberof": "src/world.js~World",
@@ -2270,7 +2211,7 @@
     "return": null
   },
   {
-    "__docId__": 120,
+    "__docId__": 118,
     "kind": "method",
     "name": "each",
     "memberof": "src/world.js~World",
@@ -2317,7 +2258,7 @@
   },
   {
     "kind": "packageJSON",
-    "content": "{\n  \"name\": \"picoes\",\n  \"version\": \"1.0.0-alpha7\",\n  \"description\": \"Pico Entity System for JavaScript\",\n  \"main\": \"index.js\",\n  \"files\": [\n    \"src\",\n    \"index.js\"\n  ],\n  \"scripts\": {\n    \"test\": \"node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage\",\n    \"doc\": \"node --experimental-vm-modules ./node_modules/.bin/esdoc\",\n    \"deploy\": \"gh-pages -d docs\"\n  },\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"git+https://github.com/ayebear/picoes.git\"\n  },\n  \"keywords\": [\n    \"entity\",\n    \"component\",\n    \"system\",\n    \"ecs\",\n    \"picoes\"\n  ],\n  \"author\": \"Eric Hebert\",\n  \"license\": \"MIT\",\n  \"bugs\": {\n    \"url\": \"https://github.com/ayebear/picoes/issues\"\n  },\n  \"homepage\": \"https://github.com/ayebear/picoes#readme\",\n  \"devDependencies\": {\n    \"esdoc\": \"^1.1.0\",\n    \"esdoc-ecmascript-proposal-plugin\": \"^1.0.0\",\n    \"esdoc-flow-type-plugin\": \"^1.1.0\",\n    \"esdoc-standard-plugin\": \"^1.0.0\",\n    \"esdoc-undocumented-identifier-plugin\": \"^1.0.0\",\n    \"esdoc-unexported-identifier-plugin\": \"^1.0.0\",\n    \"gh-pages\": \"^3.1.0\",\n    \"husky\": \"^6.0.0\",\n    \"jest\": \"^26.6.3\",\n    \"prettier\": \"2.2.1\",\n    \"pretty-quick\": \"^3.1.0\"\n  },\n  \"dependencies\": {},\n  \"type\": \"module\",\n  \"husky\": {\n    \"hooks\": {\n      \"pre-commit\": \"pretty-quick --staged\"\n    }\n  }\n}\n",
+    "content": "{\n  \"name\": \"picoes\",\n  \"version\": \"1.0.0-alpha8\",\n  \"description\": \"Pico Entity System for JavaScript\",\n  \"main\": \"index.js\",\n  \"files\": [\n    \"src\",\n    \"index.js\"\n  ],\n  \"scripts\": {\n    \"test\": \"node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage\",\n    \"doc\": \"node --experimental-vm-modules ./node_modules/.bin/esdoc\",\n    \"deploy\": \"gh-pages -d docs\"\n  },\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"git+https://github.com/ayebear/picoes.git\"\n  },\n  \"keywords\": [\n    \"entity\",\n    \"component\",\n    \"system\",\n    \"ecs\",\n    \"picoes\"\n  ],\n  \"author\": \"Eric Hebert\",\n  \"license\": \"MIT\",\n  \"bugs\": {\n    \"url\": \"https://github.com/ayebear/picoes/issues\"\n  },\n  \"homepage\": \"https://github.com/ayebear/picoes#readme\",\n  \"devDependencies\": {\n    \"esdoc\": \"^1.1.0\",\n    \"esdoc-ecmascript-proposal-plugin\": \"^1.0.0\",\n    \"esdoc-flow-type-plugin\": \"^1.1.0\",\n    \"esdoc-standard-plugin\": \"^1.0.0\",\n    \"esdoc-undocumented-identifier-plugin\": \"^1.0.0\",\n    \"esdoc-unexported-identifier-plugin\": \"^1.0.0\",\n    \"gh-pages\": \"^3.1.0\",\n    \"husky\": \"^6.0.0\",\n    \"jest\": \"^26.6.3\",\n    \"prettier\": \"2.2.1\",\n    \"pretty-quick\": \"^3.1.0\"\n  },\n  \"dependencies\": {},\n  \"type\": \"module\",\n  \"husky\": {\n    \"hooks\": {\n      \"pre-commit\": \"pretty-quick --staged\"\n    }\n  }\n}\n",
     "longname": "/home/eric/dev/picoes/package.json",
     "name": "package.json",
     "static": true,

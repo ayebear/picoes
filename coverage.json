@@ -1,11 +1,11 @@
 {
-  "coverage": "72.58%",
-  "expectCount": 62,
-  "actualCount": 45,
+  "coverage": "71.66%",
+  "expectCount": 60,
+  "actualCount": 43,
   "files": {
     "src/entity.js": {
-      "expectCount": 24,
-      "actualCount": 24,
+      "expectCount": 22,
+      "actualCount": 22,
       "undocumentLines": []
     },
     "src/entity_storage.js": {

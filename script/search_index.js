@@ -318,12 +318,6 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/entity.js~entity#clonecomponentto",
-    "class/src/entity.js~Entity.html#instance-method-cloneComponentTo",
-    "src/entity.js~Entity#cloneComponentTo",
-    "method"
-  ],
-  [
     "src/entity.js~entity#components",
     "class/src/entity.js~Entity.html#instance-get-components",
     "src/entity.js~Entity#components",
@@ -366,12 +360,6 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/entity.js~entity#hasany",
-    "class/src/entity.js~Entity.html#instance-method-hasAny",
-    "src/entity.js~Entity#hasAny",
-    "method"
-  ],
-  [
     "src/entity.js~entity#id",
     "class/src/entity.js~Entity.html#instance-get-id",
     "src/entity.js~Entity#id",
@@ -387,12 +375,6 @@ window.esdocSearchIndex = [
     "src/entity.js~entity#remove",
     "class/src/entity.js~Entity.html#instance-method-remove",
     "src/entity.js~Entity#remove",
-    "method"
-  ],
-  [
-    "src/entity.js~entity#removeall",
-    "class/src/entity.js~Entity.html#instance-method-removeAll",
-    "src/entity.js~Entity#removeAll",
     "method"
   ],
   [
