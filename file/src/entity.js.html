@@ -132,19 +132,28 @@ export class Entity {
 
   /**
    * Returns a component by name (automatically created if it doesn&apos;t exist)
+   * For unregistered components, passing no arguments to this will create a {} component,
+   * if the component does not exist. The argument behavior is exactly the same as set().
    *
    * @example
-   * let position = entity.access(&apos;position&apos;, 3, 4)
+   * const position = entity.access(&apos;position&apos;, 3, 4)
+   *
+   * @example
+   * entity.access(&apos;anything&apos;).foo = &apos;bar&apos;
+   * // &apos;anything&apos; now has { foo: &apos;bar&apos; }
+   *
+   * @example
+   * entity.access(&apos;anything&apos;, { foo: &apos;bar&apos; }).foo2 = &apos;bar2&apos;
+   * // &apos;anything&apos; now has { foo: &apos;bar&apos;, foo2: &apos;bar2&apos; }
    *
    * @param {string}    component - The component name to create/get
-   * @param {Object}    fallback  - The value to set the component as for unregistered components
    * @param {...Object} [args]    - The arguments to forward to create the new component, only if it doesn&apos;t exist.
    *
    * @return {Object} Always returns either the existing component, or the newly created one.
    */
-  access(component, fallback, ...args) {
+  access(component, ...args) {
     if (!this.has(component)) {
-      this.setWithFallback(component, fallback, ...args)
+      this.set(component, ...args)
     }
     return this.data[component]
   }
@@ -154,85 +163,93 @@ export class Entity {
    *
    * @example
    * entity.set(&apos;position&apos;, 1, 2)
+   * // If position was registered: { x: 1, y: 2 }
+   * // If position was not registered: 1
+   * // This is because only the first arg is used for unregistered components
    *
    * @example
    * entity.set(&apos;anonymousComponent&apos;, { keys: &apos;values&apos; })
    *
    * @example
-   * entity.set(&apos;anotherAnonymousComponent&apos;, &apos;Any type of any value&apos;)
+   * entity.set(&apos;someString&apos;, &apos;Any type of any value&apos;)
    *
-   * @param {string}    component - The component name to create. If there is a registered component for this name,
+   * @example
+   * entity.set(&apos;thisCompIsUndefined&apos;, undefined)
+   *
+   * @example
+   * entity.set(&apos;thisCompIsEmptyObject&apos;)
+   *
+   * @param {string}    compName - The component name to create. If there is a registered component for this name,
    * then its constructor will be called with (...args) and an object of that type will be created. The parent
    * entity reference gets injected into registered components after they are constructed. The onCreate method
-   * gets called after the component is added to the entity, and after the entity is injected. This method
-   * also gets passed the same parameters.
-   * @param {...Object} [args]    - The arguments to forward to the registered component type. If the component type is
-   * registered, then only the first additional argument will be used as the value of the entire component.
+   * gets called after the component is added to the entity, and after the entity is injected. The onCreate method
+   * also gets passed the same (...args) as the component&apos;s constructor.
+   * @param {...Object} [args]    - The arguments to forward to the registered component type. If the component type
+   * is not registered, then only the first additional argument will be used as the value of the entire component.
    *
    * @return {Object} The original entity that set() was called on, so that operations can be chained.
    */
-  set(component, ...args) {
-    // Use first argument as fallback
-    return this.setWithFallback(component, args[0], ...args)
-  }
-
-  /**
-   * Adds a new component, or re-creates and overwrites an existing component. Has separate fallback argument.
-   *
-   * @example
-   * entity.setWithFallback(&apos;position&apos;, { x: 1, y: 2 }, 1, 2)
-   *
-   * @param {string}    component - See entity.set() for details.
-   * @param {Object}    fallback  - The object or value to use as the component when there is no registered type.
-   * @param {...Object} [args]    - See entity.set() for details.
-   *
-   * @return {Object} The original entity that setWithFallback() was called on, so that operations can be chained.
-   */
-  setWithFallback(component, fallback, ...args) {
-    if (this.valid() &amp;&amp; component in this.world.entities.componentClasses) {
-      // Create component and store in entity
-      this.data[component] = new this.world.entities.componentClasses[
-        component
-      ](...args)
-
-      // Inject parent entity into component
-      this.data[component].entity = this
+  set(compName, ...args) {
+    const compClass = this.world?.entities.componentClasses[compName]
+    if (compClass) {
+      // Create registered component
+      const comp = new compClass(...args)
+      comp.entity = this
+      this.data[compName] = comp
+    } else if (args.length &gt; 0) {
+      // Use first argument as component value
+      this.data[compName] = args[0]
     } else {
-      // Use fallback argument as component value
-      this.data[component] = fallback
+      // Set to an empty object if no args were specified
+      this.data[compName] = {}
     }
 
-    // Update the index with this new component
+    // Update the index with this component
     if (this.valid()) {
-      this.world.entities.addToIndex(this, component)
+      this.world.entities.addToIndex(this, compName)
     }
 
     // Call custom onCreate to initialize component, and any additional arguments passed into set()
-    invoke(this.data[component], &apos;onCreate&apos;, ...args)
+    invoke(this.data[compName], &apos;onCreate&apos;, ...args)
 
     return this
   }
 
   /**
-   * Sets a component value directly. The onCreate method is not called, and it is expected that you
-   * pass an already initialized component.
+   * Low level method to set components directly. It is recommended to use set() instead, unless
+   * you know what you are doing. The onCreate method is not called, and it is expected that you
+   * pass an already initialized component. By default, an error will be thrown if you try calling
+   * this on a registered component, as that could have unintended consequences in your systems.
+   * This method can be useful for saving and restoring components without serialization.
    *
    * @example
-   * entity.set(&apos;position&apos;, position)
+   * entity.replace(&apos;position&apos;, position)
    *
-   * @param {string} component - The component name to set.
+   * @param {string} compName  - The component name to set.
    * @param {Object} value     - Should be a previous component instance, or whatever is expected for
    * the component name.
+   * @param {boolean} overwriteRegistered - Whether or not to proceed with overwriting components
+   * in this entity that are registered components. By default, this is false.
    *
-   * @return {Object} The original entity that setRaw() was called on, so that operations can be chained.
+   * @return {Object} The original entity that replace() was called on, so that operations can be chained.
    */
-  setRaw(component, value) {
-    // Directly set value
-    this.data[component] = value
+  replace(compName, value, overwriteRegistered = false) {
+    // Registered component check
+    if (
+      !overwriteRegistered &amp;&amp;
+      this.world?.entities.componentClasses[compName]
+    ) {
+      throw new Error(
+        `Cannot replace() component &quot;${compName}&quot; because it is registered. Please refer to the docs for details.`
+      )
+    }
 
-    // Update the index with this new component
+    // Directly set value
+    this.data[compName] = value
+
+    // Update the index with this component
     if (this.valid()) {
-      this.world.entities.addToIndex(this, component)
+      this.world.entities.addToIndex(this, compName)
     }
 
     return this

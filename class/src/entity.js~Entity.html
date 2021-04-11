@@ -231,13 +231,15 @@
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/entity.js~Entity.html#instance-method-access">access</a></span></span><span class="code" data-ice="signature">(component: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, fallback: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>, args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
+          <span class="code" data-ice="name"><span><a href="class/src/entity.js~Entity.html#instance-method-access">access</a></span></span><span class="code" data-ice="signature">(component: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Returns a component by name (automatically created if it doesn&apos;t exist)</p>
+        <div data-ice="description"><p>Returns a component by name (automatically created if it doesn&apos;t exist)
+For unregistered components, passing no arguments to this will create a {} component,
+if the component does not exist. The argument behavior is exactly the same as set().</p>
 </div>
       </div>
     </td>
@@ -581,71 +583,42 @@ If nothing is specified, then nothing will be removed. Use removeAll() to remove
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/entity.js~Entity.html#instance-method-set">set</a></span></span><span class="code" data-ice="signature">(component: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
+          <span class="code" data-ice="name"><span><a href="class/src/entity.js~Entity.html#instance-method-replace">replace</a></span></span><span class="code" data-ice="signature">(compName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, value: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>, overwriteRegistered: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Low level method to set components directly.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/entity.js~Entity.html#instance-method-set">set</a></span></span><span class="code" data-ice="signature">(compName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
         </p>
       </div>
       <div>
         
         
         <div data-ice="description"><p>Adds a new component, or re-creates and overwrites an existing component</p>
-</div>
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
-          
-          <span class="code" data-ice="name"><span><a href="class/src/entity.js~Entity.html#instance-method-setRaw">setRaw</a></span></span><span class="code" data-ice="signature">(component: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, value: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
-        </p>
-      </div>
-      <div>
-        
-        
-        <div data-ice="description"><p>Sets a component value directly.</p>
-</div>
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
-          
-          <span class="code" data-ice="name"><span><a href="class/src/entity.js~Entity.html#instance-method-setWithFallback">setWithFallback</a></span></span><span class="code" data-ice="signature">(component: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, fallback: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>, args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
-        </p>
-      </div>
-      <div>
-        
-        
-        <div data-ice="description"><p>Adds a new component, or re-creates and overwrites an existing component.</p>
 </div>
       </div>
     </td>
@@ -806,7 +779,7 @@ Also, do not shallow/deep copy entity objects, only pass around references.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber277">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber294">source</a></span></span>
     </span>
   </h3>
 
@@ -977,18 +950,20 @@ Also, do not shallow/deep copy entity objects, only pass around references.</p>
     
     
     
-    <span class="code" data-ice="name">access</span><span class="code" data-ice="signature">(component: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, fallback: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>, args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
+    <span class="code" data-ice="name">access</span><span class="code" data-ice="signature">(component: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber107">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber116">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Returns a component by name (automatically created if it doesn&apos;t exist)</p>
+  <div data-ice="description"><p>Returns a component by name (automatically created if it doesn&apos;t exist)
+For unregistered components, passing no arguments to this will create a {} component,
+if the component does not exist. The argument behavior is exactly the same as set().</p>
 </div>
 
   
@@ -1006,13 +981,6 @@ Also, do not shallow/deep copy entity objects, only pass around references.</p>
       <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"><p>The component name to create/get</p>
-</td>
-    </tr>
-<tr data-ice="property" data-depth="0">
-      <td data-ice="name" class="code" data-depth="0">fallback</td>
-      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>The value to set the component as for unregistered components</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="0">
@@ -1055,7 +1023,17 @@ Also, do not shallow/deep copy entity objects, only pass around references.</p>
     
   <div class="example-doc" data-ice="exampleDoc">
       
-      <pre class="prettyprint source-code"><code data-ice="exampleCode">let position = entity.access(&apos;position&apos;, 3, 4)</code></pre>
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">const position = entity.access(&apos;position&apos;, 3, 4)</code></pre>
+    </div>
+<div class="example-doc" data-ice="exampleDoc">
+      
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">entity.access(&apos;anything&apos;).foo = &apos;bar&apos;
+// &apos;anything&apos; now has { foo: &apos;bar&apos; }</code></pre>
+    </div>
+<div class="example-doc" data-ice="exampleDoc">
+      
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">entity.access(&apos;anything&apos;, { foo: &apos;bar&apos; }).foo2 = &apos;bar2&apos;
+// &apos;anything&apos; now has { foo: &apos;bar&apos;, foo2: &apos;bar2&apos; }</code></pre>
     </div>
 </div>
 
@@ -1076,7 +1054,7 @@ Also, do not shallow/deep copy entity objects, only pass around references.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber344">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber361">source</a></span></span>
     </span>
   </h3>
 
@@ -1146,7 +1124,7 @@ Note: The ID will be reassigned, so do not rely on this</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber381">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber398">source</a></span></span>
     </span>
   </h3>
 
@@ -1211,7 +1189,7 @@ registration status and if a clone() method is defined. See entity.cloneComponen
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber438">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber455">source</a></span></span>
     </span>
   </h3>
 
@@ -1331,7 +1309,7 @@ assert(source.get(&apos;foo&apos;).qux === target.get(&apos;foo&apos;).qux)</cod
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber262">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber279">source</a></span></span>
     </span>
   </h3>
 
@@ -1383,7 +1361,7 @@ and it is recommended to avoid re-using it.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber363">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber380">source</a></span></span>
     </span>
   </h3>
 
@@ -1437,7 +1415,7 @@ Note: The ID will be reassigned, so do not rely on this</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber319">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber336">source</a></span></span>
     </span>
   </h3>
 
@@ -1765,7 +1743,7 @@ If no component names are specified, this method returns false.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber215">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber232">source</a></span></span>
     </span>
   </h3>
 
@@ -1848,7 +1826,7 @@ If nothing is specified, then nothing will be removed. Use removeAll() to remove
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber243">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber260">source</a></span></span>
     </span>
   </h3>
 
@@ -1901,6 +1879,107 @@ If nothing is specified, then nothing will be removed. Use removeAll() to remove
   
 </div>
 <div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-replace">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">replace</span><span class="code" data-ice="signature">(compName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, value: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>, overwriteRegistered: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber198">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Low level method to set components directly. It is recommended to use set() instead, unless
+you know what you are doing. The onCreate method is not called, and it is expected that you
+pass an already initialized component. By default, an error will be thrown if you try calling
+this on a registered component, as that could have unintended consequences in your systems.
+This method can be useful for saving and restoring components without serialization.</p>
+</div>
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">compName</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>The component name to set.</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">value</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>Should be a previous component instance, or whatever is expected for
+the component name.</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">overwriteRegistered</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>Whether or not to proceed with overwriting components
+in this entity that are registered components. By default, this is false.</p>
+</td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+          <td class="return-desc" data-ice="returnDescription"><p>The original entity that replace() was called on, so that operations can be chained.</p>
+</td>
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  <div data-ice="example">
+    <h4>Example:</h4>
+    
+  <div class="example-doc" data-ice="exampleDoc">
+      
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">entity.replace(&apos;position&apos;, position)</code></pre>
+    </div>
+</div>
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
   <h3 data-ice="anchor" id="instance-method-set">
     <span class="access" data-ice="access">public</span>
     
@@ -1908,11 +1987,11 @@ If nothing is specified, then nothing will be removed. Use removeAll() to remove
     
     
     
-    <span class="code" data-ice="name">set</span><span class="code" data-ice="signature">(component: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
+    <span class="code" data-ice="name">set</span><span class="code" data-ice="signature">(compName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber136">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber154">source</a></span></span>
     </span>
   </h3>
 
@@ -1933,22 +2012,22 @@ If nothing is specified, then nothing will be removed. Use removeAll() to remove
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" class="code" data-depth="0">component</td>
+      <td data-ice="name" class="code" data-depth="0">compName</td>
       <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"><p>The component name to create. If there is a registered component for this name,
 then its constructor will be called with (...args) and an object of that type will be created. The parent
 entity reference gets injected into registered components after they are constructed. The onCreate method
-gets called after the component is added to the entity, and after the entity is injected. This method
-also gets passed the same parameters.</p>
+gets called after the component is added to the entity, and after the entity is injected. The onCreate method
+also gets passed the same (...args) as the component&apos;s constructor.</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="0">
       <td data-ice="name" class="code" data-depth="0">args</td>
       <td data-ice="type" class="code">...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
       <td data-ice="appendix"><ul><li>optional</li></ul></td>
-      <td data-ice="description"><p>The arguments to forward to the registered component type. If the component type is
-registered, then only the first additional argument will be used as the value of the entire component.</p>
+      <td data-ice="description"><p>The arguments to forward to the registered component type. If the component type
+is not registered, then only the first additional argument will be used as the value of the entire component.</p>
 </td>
     </tr>
 </tbody>
@@ -1984,7 +2063,10 @@ registered, then only the first additional argument will be used as the value of
     
   <div class="example-doc" data-ice="exampleDoc">
       
-      <pre class="prettyprint source-code"><code data-ice="exampleCode">entity.set(&apos;position&apos;, 1, 2)</code></pre>
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">entity.set(&apos;position&apos;, 1, 2)
+// If position was registered: { x: 1, y: 2 }
+// If position was not registered: 1
+// This is because only the first arg is used for unregistered components</code></pre>
     </div>
 <div class="example-doc" data-ice="exampleDoc">
       
@@ -1992,192 +2074,15 @@ registered, then only the first additional argument will be used as the value of
     </div>
 <div class="example-doc" data-ice="exampleDoc">
       
-      <pre class="prettyprint source-code"><code data-ice="exampleCode">entity.set(&apos;anotherAnonymousComponent&apos;, &apos;Any type of any value&apos;)</code></pre>
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">entity.set(&apos;someString&apos;, &apos;Any type of any value&apos;)</code></pre>
     </div>
-</div>
-
-  
-
-  
-  
-</div>
-<div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-method-setRaw">
-    <span class="access" data-ice="access">public</span>
-    
-    
-    
-    
-    
-    <span class="code" data-ice="name">setRaw</span><span class="code" data-ice="signature">(component: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, value: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
-    <span class="right-info">
+<div class="example-doc" data-ice="exampleDoc">
       
-      
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber191">source</a></span></span>
-    </span>
-  </h3>
-
-  
-  
-  
-  <div data-ice="description"><p>Sets a component value directly. The onCreate method is not called, and it is expected that you
-pass an already initialized component.</p>
-</div>
-
-  
-
-  <div data-ice="properties"><div data-ice="properties">
-  <h4 data-ice="title">Params:</h4>
-  <table class="params">
-    <thead>
-    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-    
-    <tr data-ice="property" data-depth="0">
-      <td data-ice="name" class="code" data-depth="0">component</td>
-      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>The component name to set.</p>
-</td>
-    </tr>
-<tr data-ice="property" data-depth="0">
-      <td data-ice="name" class="code" data-depth="0">value</td>
-      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>Should be a previous component instance, or whatever is expected for
-the component name.</p>
-</td>
-    </tr>
-</tbody>
-  </table>
-</div>
-</div>
-
-  <div class="return-params" data-ice="returnParams">
-    <h4>Return:</h4>
-    <table>
-      <tbody>
-        <tr>
-          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
-          <td class="return-desc" data-ice="returnDescription"><p>The original entity that setRaw() was called on, so that operations can be chained.</p>
-</td>
-        </tr>
-      </tbody>
-    </table>
-    <div data-ice="returnProperties">
-</div>
-  </div>
-
-  
-
-  
-
-  
-
-  
-
-  <div data-ice="example">
-    <h4>Example:</h4>
-    
-  <div class="example-doc" data-ice="exampleDoc">
-      
-      <pre class="prettyprint source-code"><code data-ice="exampleCode">entity.set(&apos;position&apos;, position)</code></pre>
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">entity.set(&apos;thisCompIsUndefined&apos;, undefined)</code></pre>
     </div>
-</div>
-
-  
-
-  
-  
-</div>
-<div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-method-setWithFallback">
-    <span class="access" data-ice="access">public</span>
-    
-    
-    
-    
-    
-    <span class="code" data-ice="name">setWithFallback</span><span class="code" data-ice="signature">(component: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, fallback: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>, args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
-    <span class="right-info">
+<div class="example-doc" data-ice="exampleDoc">
       
-      
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber153">source</a></span></span>
-    </span>
-  </h3>
-
-  
-  
-  
-  <div data-ice="description"><p>Adds a new component, or re-creates and overwrites an existing component. Has separate fallback argument.</p>
-</div>
-
-  
-
-  <div data-ice="properties"><div data-ice="properties">
-  <h4 data-ice="title">Params:</h4>
-  <table class="params">
-    <thead>
-    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-    
-    <tr data-ice="property" data-depth="0">
-      <td data-ice="name" class="code" data-depth="0">component</td>
-      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>See entity.set() for details.</p>
-</td>
-    </tr>
-<tr data-ice="property" data-depth="0">
-      <td data-ice="name" class="code" data-depth="0">fallback</td>
-      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>The object or value to use as the component when there is no registered type.</p>
-</td>
-    </tr>
-<tr data-ice="property" data-depth="0">
-      <td data-ice="name" class="code" data-depth="0">args</td>
-      <td data-ice="type" class="code">...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
-      <td data-ice="appendix"><ul><li>optional</li></ul></td>
-      <td data-ice="description"><p>See entity.set() for details.</p>
-</td>
-    </tr>
-</tbody>
-  </table>
-</div>
-</div>
-
-  <div class="return-params" data-ice="returnParams">
-    <h4>Return:</h4>
-    <table>
-      <tbody>
-        <tr>
-          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
-          <td class="return-desc" data-ice="returnDescription"><p>The original entity that setWithFallback() was called on, so that operations can be chained.</p>
-</td>
-        </tr>
-      </tbody>
-    </table>
-    <div data-ice="returnProperties">
-</div>
-  </div>
-
-  
-
-  
-
-  
-
-  
-
-  <div data-ice="example">
-    <h4>Example:</h4>
-    
-  <div class="example-doc" data-ice="exampleDoc">
-      
-      <pre class="prettyprint source-code"><code data-ice="exampleCode">entity.setWithFallback(&apos;position&apos;, { x: 1, y: 2 }, 1, 2)</code></pre>
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">entity.set(&apos;thisCompIsEmptyObject&apos;)</code></pre>
     </div>
 </div>
 
@@ -2198,7 +2103,7 @@ the component name.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber304">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber321">source</a></span></span>
     </span>
   </h3>
 
@@ -2263,7 +2168,7 @@ Note: Defining toJSON methods in your components will override the built-in beha
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber289">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber306">source</a></span></span>
     </span>
   </h3>
 

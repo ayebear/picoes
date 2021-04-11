@@ -396,21 +396,15 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/entity.js~entity#replace",
+    "class/src/entity.js~Entity.html#instance-method-replace",
+    "src/entity.js~Entity#replace",
+    "method"
+  ],
+  [
     "src/entity.js~entity#set",
     "class/src/entity.js~Entity.html#instance-method-set",
     "src/entity.js~Entity#set",
-    "method"
-  ],
-  [
-    "src/entity.js~entity#setraw",
-    "class/src/entity.js~Entity.html#instance-method-setRaw",
-    "src/entity.js~Entity#setRaw",
-    "method"
-  ],
-  [
-    "src/entity.js~entity#setwithfallback",
-    "class/src/entity.js~Entity.html#instance-method-setWithFallback",
-    "src/entity.js~Entity#setWithFallback",
     "method"
   ],
   [
