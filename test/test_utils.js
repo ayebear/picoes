@@ -14,8 +14,3 @@ export function has(it, target) {
   }
   return false
 }
-
-// TODO: Result of mocha/chai to jest upgrade, remove and use jest's "expect"
-export function assert(value) {
-  expect(Boolean(value)).toBe(true)
-}
