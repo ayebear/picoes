@@ -172,36 +172,57 @@ test('entity: check existence of components', () => {
   assert(!ent.hasAny('a', 'b', 'c', 'd'))
 })
 
-test('entity: setRaw', () => {
+test('entity: replace', () => {
   const world = new World()
   world.component('position', function (x = 0, y = 0) {
     this.x = x
     this.y = y
   })
-  let ent = world.entity()
-  ent.set('position', 10, 20)
-  assert(ent.has('position'))
-  assert(ent.get('position').x === 10)
-  assert(ent.get('position').y === 20)
+  const ent = world
+    .entity()
+    .set('position', 10, 20)
+    .set('existing', { foo: 'bar' })
+  expect(ent.has('position')).toBe(true)
+  expect(ent.get('position').x).toBe(10)
+  expect(ent.get('position').y).toBe(20)
+  expect(ent.has('existing')).toBe(true)
+  expect(ent.get('existing').foo).toBe('bar')
 
-  // Set raw tests
+  // replace() registered
   const previous = ent.get('position')
   ent.remove('position')
-  assert(!ent.has('position'))
+  expect(ent.has('position')).toBe(false)
+  ent.replace('position', previous, true)
+  expect(ent.has('position')).toBe(true)
+  expect(ent.get('position').x).toBe(10)
+  expect(ent.get('position').y).toBe(20)
 
-  ent.setRaw('position', previous)
-
-  assert(ent.has('position'))
-  assert(ent.get('position').x === 10)
-  assert(ent.get('position').y === 20)
-
-  // Invalid entity
+  // Replace with detached entity
   ent.remove('position')
   ent.detach()
-  ent.setRaw('position', previous)
-  assert(ent.has('position'))
-  assert(ent.get('position').x === 10)
-  assert(ent.get('position').y === 20)
+  ent.replace('position', previous, true)
+  expect(ent.has('position')).toBe(true)
+  expect(ent.get('position').x).toBe(10)
+  expect(ent.get('position').y).toBe(20)
+  ent.attach(world)
+
+  // replace() registered without flag
+  ent.remove('position')
+  expect(ent.has('position')).toBe(false)
+  expect(() => {
+    ent.replace('position', previous)
+  }).toThrow()
+  expect(ent.has('position')).toBe(false)
+
+  // replace() unregistered
+  expect(ent.get('existing').foo).toBe('bar')
+  expect(ent.replace('existing', { a: 'b' })).toBe(ent)
+  expect(ent.get('existing').foo).toBe(undefined)
+  expect(ent.get('existing').a).toBe('b')
+
+  // replace() unregistered new
+  ent.replace('foo', 'bar')
+  expect(ent.get('foo')).toBe('bar')
 })
 
 test('entity: remove components', () => {
