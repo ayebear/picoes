@@ -1,6 +1,6 @@
 {
   "name": "picoes",
-  "version": "1.0.0-alpha7",
+  "version": "1.0.0-alpha8",
   "description": "Pico Entity System for JavaScript",
   "main": "index.js",
   "files": [

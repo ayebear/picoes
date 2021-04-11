@@ -138,22 +138,26 @@ export class EntityStorage {
       .map(name => this.accessIndex(name).size)
       .reduce(minIndexReducer, 0)
     const minComp = componentNames[minCompIndex]
-
-    // Return matching entities (array if no callback)
     const iter = this.index.get(minComp).values()
+
+    // Return array of matched entities
     if (!callback) {
       const results = []
       for (const entity of iter) {
-        if (entity.has(...componentNames)) {
+        const { data } = entity
+        if (componentNames.every(name => name in data)) {
           results.push(entity)
         }
       }
       return results
     }
+
+    // Invoke callback for each matched entity
     for (const entity of iter) {
+      const { data } = entity
       if (
-        entity.has(...componentNames) &&
-        callback(entity.data, entity) === false
+        componentNames.every(name => name in data) &&
+        callback(data, entity) === false
       ) {
         return
       }

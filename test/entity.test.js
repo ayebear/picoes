@@ -1,32 +1,31 @@
 import { World } from '../index.js'
-import { assert } from './test_utils.js'
 
 test('entity: create an entity', () => {
   const world = new World()
   let ent = world.entity()
-  assert(world.entities.entities.size === 1)
-  assert(typeof ent.id === 'number' && ent.id === 1)
+  expect(world.entities.entities.size === 1).toBe(true)
+  expect(typeof ent.id === 'number' && ent.id === 1).toBe(true)
 })
 
 test('entity: test if ID is read-only', () => {
   const world = new World()
   let ent = world.entity()
   expect(() => (ent.id = 5)).toThrow()
-  assert(typeof ent.id === 'number' && ent.id === 1)
+  expect(typeof ent.id === 'number' && ent.id === 1).toBe(true)
 })
 
 test('entity: valid entities', () => {
   const world = new World()
   let entityA = world.entity().set('test')
   let entityB = world.each('test')[0]
-  assert(entityA.valid())
-  assert(entityB.valid())
-  assert(entityA.id === entityB.id)
-  assert(entityA === entityB)
+  expect(entityA.valid()).toBe(true)
+  expect(entityB.valid()).toBe(true)
+  expect(entityA.id === entityB.id).toBe(true)
+  expect(entityA === entityB).toBe(true)
 
   entityA.destroy()
-  assert(!entityA.valid())
-  assert(!entityB.valid())
+  expect(!entityA.valid()).toBe(true)
+  expect(!entityB.valid()).toBe(true)
 })
 
 test('entity: remove an entity', () => {
@@ -40,25 +39,25 @@ test('entity: remove an entity', () => {
   ent.get('position').val = 100
 
   expect(world.entities.entities.size).toBe(1)
-  assert(Object.keys(world.entities.componentClasses).length == 1)
-  assert(ent.has('position'))
-  assert(ent.get('position').val === 100)
-  assert(ent.valid())
+  expect(Object.keys(world.entities.componentClasses).length == 1).toBe(true)
+  expect(ent.has('position')).toBe(true)
+  expect(ent.get('position').val === 100).toBe(true)
+  expect(ent.valid()).toBe(true)
 
   ent.destroy()
 
-  assert(world.entities.entities.size == 0)
-  assert(Object.keys(world.entities.componentClasses).length == 1)
-  assert(!ent.valid())
-  assert(!ent.has('position'))
+  expect(world.entities.entities.size == 0).toBe(true)
+  expect(Object.keys(world.entities.componentClasses).length == 1).toBe(true)
+  expect(!ent.valid()).toBe(true)
+  expect(!ent.has('position')).toBe(true)
 
   // Just for safe measure
   ent.destroy()
 
-  assert(world.entities.entities.size == 0)
-  assert(Object.keys(world.entities.componentClasses).length == 1)
-  assert(!ent.valid())
-  assert(!ent.has('position'))
+  expect(world.entities.entities.size == 0).toBe(true)
+  expect(Object.keys(world.entities.componentClasses).length == 1).toBe(true)
+  expect(!ent.valid()).toBe(true)
+  expect(!ent.has('position')).toBe(true)
 })
 
 test('entity: get and set components', () => {
@@ -72,71 +71,65 @@ test('entity: get and set components', () => {
   }).toThrow()
   let ent = world.entity()
   ent.set('position', 5)
-  assert(ent.has('position'))
-  assert(ent.hasAny('position'))
-  assert(ent.components.length == 1)
-  assert(ent.get('position').x === 5)
-  assert(ent.get('position').y === 0)
+  expect(ent.has('position')).toBe(true)
+  expect(ent.components.length == 1).toBe(true)
+  expect(ent.get('position').x === 5).toBe(true)
+  expect(ent.get('position').y === 0).toBe(true)
 
   Object.assign(ent.access('position', {}), { y: 3 })
-  assert(ent.has('position'))
-  assert(ent.hasAny('position'))
-  assert(ent.components.length == 1)
-  assert(ent.get('position').x === 5)
-  assert(ent.get('position').y === 3)
+  expect(ent.has('position')).toBe(true)
+  expect(ent.components.length == 1).toBe(true)
+  expect(ent.get('position').x === 5).toBe(true)
+  expect(ent.get('position').y === 3).toBe(true)
 
   Object.assign(ent.access('object', {}), { val: 50 })
-  assert(ent.has('object'))
-  assert(ent.hasAny('object'))
-  assert(ent.components.length == 2)
-  assert(ent.get('object').val === 50)
+  expect(ent.has('object')).toBe(true)
+  expect(ent.components.length == 2).toBe(true)
+  expect(ent.get('object').val === 50).toBe(true)
 
   Object.assign(ent.access('empty', {}), { testing: 100 })
-  assert(ent.has('empty'))
-  assert(ent.hasAny('empty'))
-  assert(ent.components.length == 3)
-  assert(ent.get('empty').testing === 100)
+  expect(ent.has('empty')).toBe(true)
+  expect(ent.components.length == 3).toBe(true)
+  expect(ent.get('empty').testing === 100).toBe(true)
 
   ent.set('anonymous')
-  assert(ent.components.length == 4)
-  assert(ent.has('anonymous'))
-  assert(ent.hasAny('anonymous'))
+  expect(ent.components.length == 4).toBe(true)
+  expect(ent.has('anonymous')).toBe(true)
 
   // Access test
-  ent.removeAll()
-  assert(!ent.has('position'))
-  assert(!ent.hasAny('position'))
+  ent.destroy()
+  ent = world.entity()
+  expect(!ent.has('position')).toBe(true)
   ent.access('position').x = 300
-  assert(ent.has('position'))
-  assert(ent.hasAny('position'))
-  assert(ent.get('position').x === 300)
+  expect(ent.has('position')).toBe(true)
+  expect(ent.get('position').x === 300).toBe(true)
 
   // Get test
-  ent.removeAll()
-  assert(!ent.has('position'))
-  assert(ent.get('position') === undefined)
-  assert(!ent.has('position'))
+  ent.remove('position')
+  expect(!ent.has('position')).toBe(true)
+  expect(ent.get('position') === undefined).toBe(true)
+  expect(!ent.has('position')).toBe(true)
   ent.set('position', 333)
-  assert(ent.get('position').x === 333)
-  assert(ent.get('position').y === 0)
+  expect(ent.get('position').x === 333).toBe(true)
+  expect(ent.get('position').y === 0).toBe(true)
 
   // Undefined component tests
-  ent.removeAll()
+  ent.remove('position')
   ent.set('invalid', { a: 'test' })
-  assert(ent.get('invalid').a === 'test')
+  expect(ent.get('invalid').a === 'test').toBe(true)
 
   ent.set('invalid', { b: 'test2' })
-  assert(ent.get('invalid').a === undefined)
-  assert(ent.get('invalid').b === 'test2')
+  expect(ent.get('invalid').a === undefined).toBe(true)
+  expect(ent.get('invalid').b === 'test2').toBe(true)
 
   ent.set('invalid2', 5)
-  assert(ent.get('invalid2') === 5)
+  expect(ent.get('invalid2') === 5).toBe(true)
 
   ent.set('invalid2', 'test')
-  assert(ent.get('invalid2') === 'test')
+  expect(ent.get('invalid2') === 'test').toBe(true)
 
   ent.set('invalid2', ['test'])
-  assert(ent.get('invalid2')[0] === 'test')
+  expect(ent.get('invalid2')[0] === 'test').toBe(true)
 })
 
 test('entity: check existence of components', () => {
@@ -146,30 +139,20 @@ test('entity: check existence of components', () => {
     this.y = y
   })
   const ent = world.entity()
-  assert(!ent.hasAny())
-  assert(ent.has())
+  expect(ent.has()).toBe(false)
   ent.set('a')
   ent.set('b')
-  assert(ent.has())
-  assert(ent.has('a'))
-  assert(ent.has('a', 'b'))
-  assert(!ent.has('a', 'b', 'c', 'd'))
-  assert(!ent.hasAny())
-  assert(ent.hasAny('a'))
-  assert(ent.hasAny('a', 'b'))
-  assert(ent.hasAny('', 'a', 'c'))
-  assert(ent.hasAny('a', 'b', 'c', 'd'))
+  expect(ent.has()).toBe(false)
+  expect(ent.has('a')).toBe(true)
+  expect(ent.has('b')).toBe(true)
+  expect(ent.has('a', 'does not matter what goes here')).toBe(true)
+  expect(ent.has('c')).toBe(false)
 
-  ent.removeAll()
-  assert(ent.has())
-  assert(!ent.has('a'))
-  assert(!ent.has('a', 'b'))
-  assert(!ent.has('a', 'b', 'c', 'd'))
-  assert(!ent.hasAny())
-  assert(!ent.hasAny('a'))
-  assert(!ent.hasAny('a', 'b'))
-  assert(!ent.hasAny('', 'a', 'c'))
-  assert(!ent.hasAny('a', 'b', 'c', 'd'))
+  ent.destroy()
+  expect(ent.has()).toBe(false)
+  expect(ent.has('a')).toBe(false)
+  expect(ent.has('b')).toBe(false)
+  expect(ent.has('c')).toBe(false)
 })
 
 test('entity: replace', () => {
@@ -228,49 +211,50 @@ test('entity: replace', () => {
 test('entity: remove components', () => {
   const world = new World()
   let ent = world.entity().set('position').set('velocity')
-  assert(ent.components.length == 2)
-  assert(ent.has('position'))
-  assert(ent.has('velocity'))
+  expect(ent.components.length == 2).toBe(true)
+  expect(ent.has('position')).toBe(true)
+  expect(ent.has('velocity')).toBe(true)
 
   ent.remove('invalid')
   ent.remove()
 
   ent.remove('position')
-  assert(ent.components.length == 1)
-  assert(!ent.has('position'))
-  assert(ent.has('velocity'))
+  expect(ent.components.length == 1).toBe(true)
+  expect(!ent.has('position')).toBe(true)
+  expect(ent.has('velocity')).toBe(true)
 
   ent.remove('velocity')
-  assert(ent.components.length == 0)
-  assert(!ent.has('position'))
-  assert(!ent.has('velocity'))
+  expect(ent.components.length == 0).toBe(true)
+  expect(!ent.has('position')).toBe(true)
+  expect(!ent.has('velocity')).toBe(true)
 
   ent.set('position').set('velocity')
-  assert(ent.components.length == 2)
-  assert(ent.has('position'))
-  assert(ent.has('velocity'))
-  ent.removeAll()
-  assert(ent.components.length == 0)
-  assert(!ent.has('position'))
-  assert(!ent.has('velocity'))
+  expect(ent.components.length == 2).toBe(true)
+  expect(ent.has('position')).toBe(true)
+  expect(ent.has('velocity')).toBe(true)
+  ent.destroy()
+  ent = world.entity()
+  expect(ent.components.length == 0).toBe(true)
+  expect(!ent.has('position')).toBe(true)
+  expect(!ent.has('velocity')).toBe(true)
 
   // Remove many components
   ent.set('position').set('velocity').set('testA').set('testB')
-  assert(ent.components.length == 4)
-  assert(ent.has('position'))
-  assert(ent.has('velocity'))
-  assert(ent.has('testA'))
-  assert(ent.has('testB'))
+  expect(ent.components.length == 4).toBe(true)
+  expect(ent.has('position')).toBe(true)
+  expect(ent.has('velocity')).toBe(true)
+  expect(ent.has('testA')).toBe(true)
+  expect(ent.has('testB')).toBe(true)
   ent.remove('invalidA', 'position', 'testA', 'invalidB')
-  assert(!ent.has('position'))
-  assert(ent.has('velocity'))
-  assert(!ent.has('testA'))
-  assert(ent.has('testB'))
+  expect(!ent.has('position')).toBe(true)
+  expect(ent.has('velocity')).toBe(true)
+  expect(!ent.has('testA')).toBe(true)
+  expect(ent.has('testB')).toBe(true)
   ent.remove('velocity', 'testB')
-  assert(!ent.has('position'))
-  assert(!ent.has('velocity'))
-  assert(!ent.has('testA'))
-  assert(!ent.has('testB'))
+  expect(!ent.has('position')).toBe(true)
+  expect(!ent.has('velocity')).toBe(true)
+  expect(!ent.has('testA')).toBe(true)
+  expect(!ent.has('testB')).toBe(true)
 })
 
 test('entity: remove components - onRemove', () => {
@@ -288,42 +272,42 @@ test('entity: remove components - onRemove', () => {
     removed: false,
   }
   let ent = world.entity().set('test', obj)
-  assert(ent.has('test'))
-  assert(obj.created)
-  assert(!obj.removed)
+  expect(ent.has('test')).toBe(true)
+  expect(obj.created).toBe(true)
+  expect(!obj.removed).toBe(true)
 
   ent.remove('test')
-  assert(ent.components.length == 0)
-  assert(!ent.has('test'))
-  assert(obj.created)
-  assert(obj.removed)
+  expect(ent.components.length == 0).toBe(true)
+  expect(!ent.has('test')).toBe(true)
+  expect(obj.created).toBe(true)
+  expect(obj.removed).toBe(true)
 
   let obj2 = {
     created: false,
     removed: false,
   }
   let ent2 = world.entity().set('test', obj2)
-  assert(ent2.has('test'))
-  assert(obj2.created)
-  assert(!obj2.removed)
+  expect(ent2.has('test')).toBe(true)
+  expect(obj2.created).toBe(true)
+  expect(!obj2.removed).toBe(true)
 
   ent2.destroy()
-  assert(obj2.created)
-  assert(obj2.removed)
+  expect(obj2.created).toBe(true)
+  expect(obj2.removed).toBe(true)
 })
 
-test('entity: serialize components', () => {
+test('entity: serialize unregistered components', () => {
   const world = new World()
   let ent = world.entity().set('position', { x: 4, y: 6 })
 
   let data = JSON.parse(ent.toJSON())
-  assert(data)
-  assert(data.position)
-  assert(data.position.x === 4)
-  assert(data.position.y === 6)
+  expect(data).toBeDefined()
+  expect(data.position).toBeDefined()
+  expect(data.position.x === 4).toBe(true)
+  expect(data.position.y === 6).toBe(true)
 })
 
-test('entity: serialize custom components', () => {
+test('entity: serialize registered components', () => {
   const world = new World()
   world.component('position', function (x = 0, y = 0) {
     this.x = x
@@ -334,59 +318,65 @@ test('entity: serialize custom components', () => {
   let ent = world.entity().set('position', 4, 6)
 
   let data = JSON.parse(ent.toJSON())
-  assert(data)
-  assert(data.position)
-  assert(data.position.result === 24)
+  expect(data).toBeDefined()
+  expect(data.position).toBeDefined()
+  expect(data.position.result === 24).toBe(true)
 })
 
-test('entity: deserialize components', () => {
+test('entity: deserialize unregistered components', () => {
   const world = new World()
   let ent = world.entity()
-  assert(ent.components.length == 0)
+  expect(ent.components.length == 0).toBe(true)
 
   ent.fromJSON('{"position": {"x": 4, "y": 6}}')
-  assert(ent.has('position'))
-  assert(ent.components.length == 1)
-  assert(ent.get('position'))
-  assert(ent.get('position').x === 4)
-  assert(ent.get('position').y === 6)
+  expect(ent.has('position')).toBe(true)
+  expect(ent.components.length == 1).toBe(true)
+  expect(ent.get('position')).toEqual({ x: 4, y: 6 })
+  expect(ent.get('position').x === 4).toBe(true)
+  expect(ent.get('position').y === 6).toBe(true)
 })
 
-test('entity: deserialize custom components', () => {
-  const world = new World()
-  world.component('position', function (x = 0, y = 0) {
-    this.x = x
-    this.y = y
+test('entity: deserialize registered components', () => {
+  class position {
+    onCreate(x = 0, y = 0) {
+      this.x = x
+      this.y = y
+    }
 
-    this.toJSON = () => ({ result: this.x * this.y })
+    toJSON() {
+      return { result: this.x * this.y }
+    }
 
-    this.fromJSON = data => {
-      this.x = data.result / 2
+    fromJSON({ result }) {
+      this.x = result / 2
       this.y = 2
     }
-  })
+  }
+  const world = new World({ components: { position } })
+  const baseline = world.entity().set('position')
+  expect(baseline.get('position').x).toBe(0)
+  expect(baseline.get('position').y).toBe(0)
 
   // Old deserialization test
   let ent = world.entity()
-  assert(ent.components.length == 0)
+  expect(ent.components).toHaveLength(0)
   ent.fromJSON('{"position": {"result": 24}}')
-  assert(ent.has('position'))
-  assert(ent.components.length == 1)
-  assert(ent.get('position'))
-  assert(ent.get('position').x === 12)
-  assert(ent.get('position').y === 2)
+  expect(ent.has('position')).toBe(true)
+  expect(ent.components).toHaveLength(1)
+  expect(ent.get('position').x).toBe(12)
+  expect(ent.get('position').y).toBe(2)
 
   // Full entity-based serialization/deserialization test
   let ent2 = world.entity().set('position', 7, 4)
   let jsonData = ent2.toJSON()
   let ent3 = world.entity().fromJSON(jsonData)
-  assert(ent3.has('position'))
-  assert(ent3.get('position').x === 14)
-  assert(ent3.get('position').y === 2)
+  expect(ent3.has('position')).toBe(true)
+  expect(ent3.get('position').x).toBe(14)
+  expect(ent3.get('position').y).toBe(2)
   ent2.fromJSON(jsonData)
-  assert(ent2.has('position'))
-  assert(ent2.get('position').x === 14)
-  assert(ent2.get('position').y === 2)
+  expect(ent2.has('position')).toBe(true)
+  expect(ent2.get('position').x).toBe(14)
+  expect(ent2.get('position').y).toBe(2)
 })
 
 test('entity: check for existence of components', () => {
@@ -405,32 +395,24 @@ test('entity: check for existence of components', () => {
     .set('anonymous')
 
   // Check for existence
-  assert(
+  expect(
     ent.has('position') &&
       ent.has('velocity') &&
       ent.has('player') &&
       ent.has('anonymous')
-  )
-  assert(ent.has('position', 'velocity', 'player', 'anonymous'))
-  assert(!ent.has('position', 'invalid'))
-  assert(!ent.has('velocity', 'invalid'))
-  assert(!ent.has('player', 'invalid'))
-  assert(!ent.has('anonymous', 'invalid'))
-  assert(!ent.has('invalid'))
-
-  // This behavior is important for world.each to work properly when no components are specified
-  // Basically, it should return all entities when nothing is specified
-  assert(ent.has())
+  ).toBe(true)
+  expect(ent.has('invalid')).toBe(false)
+  expect(ent.has()).toBe(false)
   let ent2 = world.entity()
-  assert(ent2.has())
-  assert(!ent2.has('invalid'))
+  expect(ent2.has()).toBe(false)
+  expect(ent2.has('invalid')).toBe(false)
 })
 
 test('entity: cloning basic', () => {
   const world = new World()
   const source = world.entity().set('a', 'aaa')
   const target = world.entity()
-  source.cloneComponentTo(target, 'a')
+  source._cloneComponentTo(target, 'a')
   expect(target.get('a')).toEqual('aaa')
 })
 
@@ -457,7 +439,7 @@ test('entity: cloning advanced', () => {
   )
   const source = world.entity().set('foo', 'bar', 'baz').set('qux', true)
   const target = world.entity()
-  source.cloneComponentTo(target, 'foo')
+  source._cloneComponentTo(target, 'foo')
   expect(source.get('foo').bar).toEqual(target.get('foo').bar)
   expect(source.get('foo').baz).toEqual(target.get('foo').baz)
   expect(source.get('foo').qux).toEqual(target.get('foo').qux)

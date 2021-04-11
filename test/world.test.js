@@ -342,7 +342,7 @@ test('component: test detached entities', () => {
   assert(ent2.has('velocity', 'position'))
   assert(ent2.get('velocity').x === 30)
   assert(ent2.get('position') === 7)
-  ent2.removeAll()
+  ent2.remove('velocity', 'position')
   assert(!ent2.has('velocity'))
   assert(!ent2.has('position'))
 })
@@ -542,7 +542,7 @@ test('system: system edge cases', () => {
         world.each(['position', 'velocity'], ({ position, velocity }, ent) => {
           ++count
           if (count == 1) {
-            testEnt1.removeAll()
+            testEnt1.remove('position', 'velocity')
             testEnt2.remove('position')
             testEnt0.remove('velocity')
             return

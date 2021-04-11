@@ -48,34 +48,17 @@ export class Entity {
   }
 
   /**
-   * Returns true if the entity has ALL of the specified component names.
-   * Additional components that the entity has, which are not specified in has(), will be ignored.
-   * If no component names are specified, this method returns true.
+   * Returns true if the entity has the specified component name.
    *
    * @example
-   * if (entity.has('position', 'velocity')) {...}
+   * entity.has('position')
    *
-   * @param {...string} [components] - The component names to check for
+   * @param {string} name - The component name to check for
    *
    * @return {boolean} true or false
    */
-  has(...components) {
-    return components.every(name => name in this.data)
-  }
-
-  /**
-   * Returns true if the entity has ANY of the specified component names.
-   * If no component names are specified, this method returns false.
-   *
-   * @example
-   * if (entity.hasAny('position', 'velocity')) {...}
-   *
-   * @param {...string} [components] - The component names to check for
-   *
-   * @return {boolean} true or false
-   */
-  hasAny(...components) {
-    return components.some(name => name in this.data)
+  has(name) {
+    return name in this.data
   }
 
   /**
@@ -220,7 +203,7 @@ export class Entity {
   /**
    * Removes a component from the entity - has no effect when it doesn't exist.
    * Can specify an onRemove() method in your component which gets called before it is removed.
-   * If nothing is specified, then nothing will be removed. Use removeAll() to remove all components.
+   * If nothing is specified, then nothing will be removed.
    *
    * @example
    * entity.remove('position')
@@ -247,28 +230,6 @@ export class Entity {
     return this
   }
 
-  // Remove all components
-
-  /**
-   * Removes all components from the entity.
-   *
-   * @example
-   * entity.removeAll()
-   *
-   * @return {Object} The original entity that removeAll() was called on, so that operations can be chained.
-   */
-  removeAll() {
-    this.remove(...this.components)
-
-    if (this.components.length > 0) {
-      throw new Error(
-        'Failed to remove all components. Components must have been added during the removeAll().'
-      )
-    }
-
-    return this
-  }
-
   /**
    * Remove this entity and all of its components from the world. After an entity is destroyed, the object should be discarded,
    * and it is recommended to avoid re-using it.
@@ -277,7 +238,13 @@ export class Entity {
    * entity.destroy()
    */
   destroy() {
-    this.removeAll()
+    this.remove(...this.components)
+
+    if (this.components.length > 0) {
+      throw new Error(
+        'Failed to remove all components. Components must have been added inside onRemove().'
+      )
+    }
 
     if (this.valid()) {
       // Remove from world
@@ -336,13 +303,13 @@ export class Entity {
   fromJSON(data) {
     const parsed = JSON.parse(data)
     for (const name in parsed) {
-      const comp = this.access(name, {})
+      const comp = this.access(name)
 
       // Either call custom method or copy all properties
       if (typeof comp.fromJSON === 'function') {
         comp.fromJSON(parsed[name])
       } else {
-        Object.assign(this.access(name, {}), parsed[name])
+        Object.assign(this.access(name), parsed[name])
       }
     }
     return this
@@ -390,10 +357,29 @@ export class Entity {
   /**
    * Creates a copy of this entity with all of the components cloned and returns it.
    * Individual components are either shallow or deep copied, depending on component
-   * registration status and if a clone() method is defined. See entity.cloneComponentTo().
+   * registration status and if a clone() method is defined.
    *
    * @example
-   * entity.clone()
+   * const clonedEntity = entity.clone()
+   *
+   * @example
+   * // How to define custom clone methods
+   * world.component('foo', class {
+   *   onCreate(bar, baz) {
+   *     this.bar = bar
+   *     this.baz = baz
+   *     this.qux = false
+   *   }
+   *   setQux(qux = true) {
+   *     this.qux = qux
+   *   }
+   *   cloneArgs() {
+   *     return [this.bar, this.baz]
+   *   }
+   *   clone(target) {
+   *     target.qux = this.qux
+   *   }
+   * })
    */
   clone() {
     if (!this.valid()) {
@@ -403,7 +389,7 @@ export class Entity {
     // Clone each component in this entity, to a new entity
     const newEntity = this.world.entity()
     for (const name in this.data) {
-      this.cloneComponentTo(newEntity, name)
+      this._cloneComponentTo(newEntity, name)
     }
 
     // Return the cloned entity
@@ -411,12 +397,13 @@ export class Entity {
   }
 
   /**
+   * @ignore
    * Clones a component from this entity to the target entity.
    *
    * @example
    * const source = world.entity().set('foo', 'bar')
    * const target = world.entity()
-   * source.cloneComponentTo(target, 'foo')
+   * source._cloneComponentTo(target, 'foo')
    * assert(target.get('foo') === 'bar')
    *
    * @example
@@ -440,7 +427,7 @@ export class Entity {
    *   .set('foo', 'bar', 'baz')
    *   .set('qux', true)
    * const target = world.entity()
-   * source.cloneComponentTo(target, 'foo')
+   * source._cloneComponentTo(target, 'foo')
    * assert(source.get('foo').bar === target.get('foo').bar)
    * assert(source.get('foo').baz === target.get('foo').baz)
    * assert(source.get('foo').qux === target.get('foo').qux)
@@ -449,20 +436,18 @@ export class Entity {
    * is undefined behavior if the registered components are different types.
    * @param {string} name         - Component name of both source and target components.
    *
-   * @return {Object} The original entity that cloneComponentTo() was called on,
+   * @return {Object} The original entity that _cloneComponentTo() was called on,
    * so that operations can be chained.
    */
-  cloneComponentTo(targetEntity, name) {
+  _cloneComponentTo(targetEntity, name) {
     // Get component and optional arguments for cloning
     const component = this.get(name)
     const args = invoke(component, 'cloneArgs') || []
-
-    if (name in targetEntity.world.entities.componentClasses) {
+    const compClass = targetEntity.world.entities.componentClasses[name]
+    if (compClass) {
       // Registered component, so create new using constructor, inject
       // entity, and call optional clone
-      const newComponent = new targetEntity.world.entities.componentClasses[
-        name
-      ](...args)
+      const newComponent = new compClass(...args)
       newComponent.entity = targetEntity
       targetEntity.data[name] = newComponent
       invoke(component, 'clone', newComponent)
