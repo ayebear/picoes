@@ -2,9 +2,10 @@ import { invoke } from './utilities.js'
 
 /** @ignore */
 export class SystemStorage {
-  constructor() {
+  constructor(world) {
+    this.world = world
     this.systems = []
-    this.context = undefined
+    this.context = { world }
   }
 
   register(systemClass, ...args) {
@@ -36,7 +37,7 @@ export class SystemStorage {
 
   // Update existing systems' context
   setContext(data) {
-    this.context = data
+    this.context = { ...data, world: this.world }
     for (const system of this.systems) {
       this._injectContext(system)
     }
@@ -44,11 +45,8 @@ export class SystemStorage {
 
   // Injects context into a system based on current context state
   _injectContext(system) {
-    if (this.context) {
-      // Inject as keys of context
-      for (const key in this.context) {
-        system[key] = this.context[key]
-      }
+    for (const key in this.context) {
+      system[key] = this.context[key]
     }
   }
 }

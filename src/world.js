@@ -23,7 +23,7 @@ export class World {
    */
   constructor(options) {
     /** @ignore */
-    this.systems = new SystemStorage()
+    this.systems = new SystemStorage(this)
     /** @ignore */
     this.entities = new EntityStorage(this)
 

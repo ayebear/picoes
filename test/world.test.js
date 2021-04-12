@@ -23,7 +23,7 @@ test('world: create a world with options', () => {
   expect(world1).toBeInstanceOf(World)
   expect(world1.systems.systems).toHaveLength(0)
   expect(getSize(world1.entities.componentClasses)).toBe(0)
-  expect(getSize(world1.systems.context)).toBe(0)
+  expect(getSize(world1.systems.context)).toBe(1)
   const world2 = new World({
     components: {},
     systems: [],
@@ -32,7 +32,7 @@ test('world: create a world with options', () => {
   expect(world2).toBeInstanceOf(World)
   expect(world2.systems.systems).toHaveLength(0)
   expect(getSize(world2.entities.componentClasses)).toBe(0)
-  expect(getSize(world2.systems.context)).toBe(0)
+  expect(getSize(world2.systems.context)).toBe(1)
   const world3 = new World({
     components: { position, velocity },
     systems: [input, physics, render],
@@ -41,7 +41,8 @@ test('world: create a world with options', () => {
   expect(world3).toBeInstanceOf(World)
   expect(world3.systems.systems).toHaveLength(3)
   expect(getSize(world3.entities.componentClasses)).toBe(2)
-  expect(getSize(world3.systems.context)).toBe(1)
+  expect(getSize(world3.systems.context)).toBe(2)
+  expect(Object.keys(world3.systems.context)).toEqual(['state', 'world'])
 })
 
 test('component: define a component', () => {
@@ -438,17 +439,21 @@ test('system: system iteration', () => {
       run(dt, total) {
         expect(dt > 0).toBeTruthy()
         expect(total > 0).toBeTruthy()
-        world.each('position', 'velocity', ({ position, velocity }, ent) => {
-          expect(position).toBeTruthy()
-          expect(velocity).toBeTruthy()
-          position.x += velocity.x
-          position.y += velocity.y
-          expect(ent).toBeTruthy()
-          expect(ent.has('position')).toBeTruthy()
-          expect(ent.has('velocity')).toBeTruthy()
-          expect(dt > 0).toBeTruthy()
-          expect(total > 0).toBeTruthy()
-        })
+        this.world.each(
+          'position',
+          'velocity',
+          ({ position, velocity }, ent) => {
+            expect(position).toBeTruthy()
+            expect(velocity).toBeTruthy()
+            position.x += velocity.x
+            position.y += velocity.y
+            expect(ent).toBeTruthy()
+            expect(ent.has('position')).toBeTruthy()
+            expect(ent.has('velocity')).toBeTruthy()
+            expect(dt > 0).toBeTruthy()
+            expect(total > 0).toBeTruthy()
+          }
+        )
       }
     }
   )
@@ -507,7 +512,7 @@ test('system: system methods', () => {
       run() {
         ++methodsCalled
         expect(this.val === 10).toBeTruthy()
-        world.each('position', ({ position }) => {
+        this.world.each('position', ({ position }) => {
           position.x = 1
           ++methodsCalled
           expect(this.val === 10).toBeTruthy()
@@ -548,27 +553,30 @@ test('system: system edge cases', () => {
   world.system(
     class {
       run() {
-        world.each(['position', 'velocity'], ({ position, velocity }, ent) => {
-          ++count
-          if (count == 1) {
-            testEnt1.remove('position', 'velocity')
-            testEnt2.remove('position')
-            testEnt0.remove('velocity')
-            return
-          }
-          expect(position).toBeTruthy()
-          expect(velocity).toBeTruthy()
-          position.x += velocity.x
-          position.y += velocity.y
-          expect(ent).toBeTruthy()
-          expect(ent.has('position')).toBeTruthy()
-          expect(ent.has('velocity')).toBeTruthy()
+        this.world.each(
+          ['position', 'velocity'],
+          ({ position, velocity }, ent) => {
+            ++count
+            if (count == 1) {
+              testEnt1.remove('position', 'velocity')
+              testEnt2.remove('position')
+              testEnt0.remove('velocity')
+              return
+            }
+            expect(position).toBeTruthy()
+            expect(velocity).toBeTruthy()
+            position.x += velocity.x
+            position.y += velocity.y
+            expect(ent).toBeTruthy()
+            expect(ent.has('position')).toBeTruthy()
+            expect(ent.has('velocity')).toBeTruthy()
 
-          // Make sure the test entities do not show up here
-          expect(ent.id !== testEnt0.id).toBeTruthy()
-          expect(ent.id !== testEnt1.id).toBeTruthy()
-          expect(ent.id !== testEnt2.id).toBeTruthy()
-        })
+            // Make sure the test entities do not show up here
+            expect(ent.id !== testEnt0.id).toBeTruthy()
+            expect(ent.id !== testEnt1.id).toBeTruthy()
+            expect(ent.id !== testEnt2.id).toBeTruthy()
+          }
+        )
       }
     }
   )
@@ -953,7 +961,7 @@ test('system: test indexing with each()', () => {
   world.system(
     class {
       run() {
-        world.each(() => {
+        this.world.each(() => {
           ++count
         })
       }
