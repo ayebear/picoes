@@ -83,9 +83,6 @@ test('component: define a component', () => {
   expect(ent2.get('velocity').x === 1).toBeTruthy()
   expect(ent2.get('velocity').y === 2).toBeTruthy()
   expect(ent2.get('velocity').inc(5) === 6).toBeTruthy()
-
-  // Should throw when calling "components" setter
-  expect(() => (ent2.components = ['anything'])).toThrow()
 })
 
 test('component: README example', () => {

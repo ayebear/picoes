@@ -252,15 +252,6 @@ export class Entity {
   }
 
   /**
-   * Returns an array of component names this entity currently has.
-   *
-   * @return {Array<String>} Array of component names.
-   */
-  get components() {
-    return Object.keys(this.data)
-  }
-
-  /**
    * Returns true if this is a valid, existing, and usable entity, which is attached to a world.
    *
    * @example

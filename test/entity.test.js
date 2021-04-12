@@ -1,4 +1,5 @@
 import { World } from '../index.js'
+import { getSize } from './test_utils.js'
 
 test('entity: create an entity', () => {
   const world = new World()
@@ -74,28 +75,28 @@ test('entity: get and set components', () => {
   let ent = world.entity()
   ent.set('position', 5)
   expect(ent.has('position')).toBe(true)
-  expect(ent.components.length == 1).toBe(true)
+  expect(getSize(ent.data)).toBe(1)
   expect(ent.get('position').x === 5).toBe(true)
   expect(ent.get('position').y === 0).toBe(true)
 
   Object.assign(ent.access('position', {}), { y: 3 })
   expect(ent.has('position')).toBe(true)
-  expect(ent.components.length == 1).toBe(true)
+  expect(getSize(ent.data)).toBe(1)
   expect(ent.get('position').x === 5).toBe(true)
   expect(ent.get('position').y === 3).toBe(true)
 
   Object.assign(ent.access('object', {}), { val: 50 })
   expect(ent.has('object')).toBe(true)
-  expect(ent.components.length == 2).toBe(true)
+  expect(getSize(ent.data)).toBe(2)
   expect(ent.get('object').val === 50).toBe(true)
 
   Object.assign(ent.access('empty', {}), { testing: 100 })
   expect(ent.has('empty')).toBe(true)
-  expect(ent.components.length == 3).toBe(true)
+  expect(getSize(ent.data)).toBe(3)
   expect(ent.get('empty').testing === 100).toBe(true)
 
   ent.set('anonymous')
-  expect(ent.components.length == 4).toBe(true)
+  expect(getSize(ent.data)).toBe(4)
   expect(ent.has('anonymous')).toBe(true)
 
   // Access test
@@ -213,7 +214,7 @@ test('entity: replace', () => {
 test('entity: remove components', () => {
   const world = new World()
   let ent = world.entity().set('position').set('velocity')
-  expect(ent.components.length == 2).toBe(true)
+  expect(getSize(ent.data)).toBe(2)
   expect(ent.has('position')).toBe(true)
   expect(ent.has('velocity')).toBe(true)
 
@@ -221,28 +222,28 @@ test('entity: remove components', () => {
   ent.remove()
 
   ent.remove('position')
-  expect(ent.components.length == 1).toBe(true)
+  expect(getSize(ent.data)).toBe(1)
   expect(!ent.has('position')).toBe(true)
   expect(ent.has('velocity')).toBe(true)
 
   ent.remove('velocity')
-  expect(ent.components.length == 0).toBe(true)
+  expect(getSize(ent.data)).toBe(0)
   expect(!ent.has('position')).toBe(true)
   expect(!ent.has('velocity')).toBe(true)
 
   ent.set('position').set('velocity')
-  expect(ent.components.length == 2).toBe(true)
+  expect(getSize(ent.data)).toBe(2)
   expect(ent.has('position')).toBe(true)
   expect(ent.has('velocity')).toBe(true)
   ent.destroy()
   ent = world.entity()
-  expect(ent.components.length == 0).toBe(true)
+  expect(getSize(ent.data)).toBe(0)
   expect(!ent.has('position')).toBe(true)
   expect(!ent.has('velocity')).toBe(true)
 
   // Remove many components
   ent.set('position').set('velocity').set('testA').set('testB')
-  expect(ent.components.length == 4).toBe(true)
+  expect(getSize(ent.data)).toBe(4)
   expect(ent.has('position')).toBe(true)
   expect(ent.has('velocity')).toBe(true)
   expect(ent.has('testA')).toBe(true)
@@ -279,7 +280,7 @@ test('entity: remove components - onRemove', () => {
   expect(!obj.removed).toBe(true)
 
   ent.remove('test')
-  expect(ent.components.length == 0).toBe(true)
+  expect(getSize(ent.data)).toBe(0)
   expect(!ent.has('test')).toBe(true)
   expect(obj.created).toBe(true)
   expect(obj.removed).toBe(true)
@@ -328,11 +329,11 @@ test('entity: serialize registered components', () => {
 test('entity: deserialize unregistered components', () => {
   const world = new World()
   let ent = world.entity()
-  expect(ent.components.length == 0).toBe(true)
+  expect(getSize(ent.data)).toBe(0)
 
   ent.fromJSON('{"position": {"x": 4, "y": 6}}')
   expect(ent.has('position')).toBe(true)
-  expect(ent.components.length == 1).toBe(true)
+  expect(getSize(ent.data)).toBe(1)
   expect(ent.get('position')).toEqual({ x: 4, y: 6 })
   expect(ent.get('position').x === 4).toBe(true)
   expect(ent.get('position').y === 6).toBe(true)
@@ -361,10 +362,10 @@ test('entity: deserialize registered components', () => {
 
   // Old deserialization test
   let ent = world.entity()
-  expect(ent.components).toHaveLength(0)
+  expect(getSize(ent.data)).toBe(0)
   ent.fromJSON('{"position": {"result": 24}}')
   expect(ent.has('position')).toBe(true)
-  expect(ent.components).toHaveLength(1)
+  expect(getSize(ent.data)).toBe(1)
   expect(ent.get('position').x).toBe(12)
   expect(ent.get('position').y).toBe(2)
 
