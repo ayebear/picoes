@@ -110,11 +110,8 @@ export class World {
    * @example
    * const state = { app: new PIXI.Application() }
    * const world = new World()
-   * world.context(state) // systems can directly use this.app
+   * world.context(state) // new and existing systems can directly use this.app
    * world.system(...)
-   *
-   * @example
-   * world.context(state, 'state') // systems use this.state.app
    *
    * @return {Entity} The new entity created
    */
@@ -201,12 +198,14 @@ export class World {
    *
    * @example
    * // Use a callback to process entities one-by-one
+   * // This is the recommended way, as it is higher performance than allocating and
+   * // returning an array
    * world.each('comp', ({ comp }) => { comp.value = 0 })
    *
    * @example
-   * // Get an iterator for the entities
-   * const it = world.each('comp')
-   * for (let entity of it) {...}
+   * // Get an array of entities
+   * const entities = world.each('comp')
+   * for (const entity of entities) {...}
    *
    * @example
    * // Pass multiple components, arrays, use extra entity parameter,
@@ -227,8 +226,7 @@ export class World {
    * Entity data is an object of {[componentName]: [component]}, that can be destructured with syntax
    * shown in the examples.
    *
-   * @return {MapIterator} If no callback specified, then returns a one-time-use iterator to the entities.
-   * Otherwise, returns the last loop iteration status, returned by the callback.
+   * @return {Entity[]} If no callback is specified, then returns an array of the entity results.
    */
   each(...args) {
     return this.entities.each(...args)
