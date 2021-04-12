@@ -1,13 +1,6 @@
 import { Entity } from './entity.js'
 import { invoke } from './utilities.js'
 
-/**
- * @ignore
- * Returns index of smallest element
- */
-const minIndexReducer = (minIndex, value, index, values) =>
-  value < values[minIndex] ? index : minIndex
-
 /** @ignore */
 export class EntityStorage {
   constructor(world) {
@@ -128,12 +121,13 @@ export class EntityStorage {
       return
     }
 
-    // Get the index name with the least number of entities
-    const minCompIndex = componentNames
-      .map(name => this.accessIndex(name).size)
-      .reduce(minIndexReducer, 0)
-    const minComp = componentNames[minCompIndex]
-    const iter = this.index.get(minComp).values()
+    // Sort component names by number of components in each index
+    // This allows us to get the minimum component index as the first element
+    // This also helps short-circuit much faster during the full query loops with .every()
+    componentNames.sort(
+      (a, b) => this.accessIndex(a).size - this.accessIndex(b).size
+    )
+    const iter = this.accessIndex(componentNames[0]).values()
 
     // Return array of matched entities
     if (!callback) {
