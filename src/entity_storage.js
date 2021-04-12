@@ -26,11 +26,9 @@ export class EntityStorage {
 
   clear() {
     // Call onRemove on all components of all entities
-    for (const [, entity] of this.entities) {
-      for (let componentName in entity.data) {
-        // Get component, and call onRemove if it exists as a function
-        let component = entity.data[componentName]
-        invoke(component, 'onRemove')
+    for (const { data } of this.entities.values()) {
+      for (const componentName in data) {
+        invoke(data[componentName], 'onRemove')
       }
     }
 
