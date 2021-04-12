@@ -1,6 +1,8 @@
 # PicoES
 
 [![Build Status](https://travis-ci.org/ayebear/picoes.svg?branch=master)](https://travis-ci.org/ayebear/picoes)
+[![Coverage Status](https://coveralls.io/repos/github/ayebear/picoes/badge.svg?branch=master)](https://coveralls.io/github/ayebear/picoes?branch=master)
+[![Documentation Status](https://ayebear.com/picoes/badge.svg)](https://ayebear.com/picoes/source.html)
 
 ### Table Of Contents
 
