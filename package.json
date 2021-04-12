@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
+    "testCoveralls": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage && coveralls < coverage/lcov.info",
     "doc": "node --experimental-vm-modules ./node_modules/.bin/esdoc",
     "deploy": "gh-pages -d docs"
   },
@@ -30,6 +31,7 @@
   },
   "homepage": "https://github.com/ayebear/picoes#readme",
   "devDependencies": {
+    "coveralls": "^3.1.0",
     "esdoc": "^1.1.0",
     "esdoc-ecmascript-proposal-plugin": "^1.0.0",
     "esdoc-flow-type-plugin": "^1.1.0",
