@@ -28,3 +28,15 @@ export function shallowClone(val) {
   }
   return val
 }
+
+/**
+ * Tests if an object is empty in O(1)
+ *
+ * @ignore
+ */
+export function isEmpty(obj) {
+  for (const key in obj) {
+    return false
+  }
+  return true
+}

@@ -48,16 +48,18 @@ test('entity: remove an entity', () => {
 
   expect(world.entities.entities.size == 0).toBe(true)
   expect(Object.keys(world.entities.componentClasses).length == 1).toBe(true)
-  expect(!ent.valid()).toBe(true)
-  expect(!ent.has('position')).toBe(true)
+  expect(ent.valid()).toBe(false)
+  expect(ent.has('position')).toBe(false)
 
-  // Just for safe measure
-  ent.destroy()
+  // Cannot destroy invalid entity
+  expect(() => {
+    ent.destroy()
+  }).toThrow()
 
   expect(world.entities.entities.size == 0).toBe(true)
   expect(Object.keys(world.entities.componentClasses).length == 1).toBe(true)
-  expect(!ent.valid()).toBe(true)
-  expect(!ent.has('position')).toBe(true)
+  expect(ent.valid()).toBe(false)
+  expect(ent.has('position')).toBe(false)
 })
 
 test('entity: get and set components', () => {

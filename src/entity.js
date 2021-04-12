@@ -1,5 +1,5 @@
 /** @ignore */
-import { invoke, shallowClone } from './utilities.js'
+import { invoke, shallowClone, isEmpty } from './utilities.js'
 
 /**
  * Entity class used for storing components.
@@ -204,6 +204,7 @@ export class Entity {
    * Removes a component from the entity - has no effect when it doesn't exist.
    * Can specify an onRemove() method in your component which gets called before it is removed.
    * If nothing is specified, then nothing will be removed.
+   * Attempting to remove components that aren't set will be safely ignored.
    *
    * @example
    * entity.remove('position')
@@ -213,44 +214,41 @@ export class Entity {
    * @return {Object} The original entity that remove() was called on, so that operations can be chained.
    */
   remove(...components) {
-    for (let component of components) {
-      if (component in this.data) {
-        // Call custom onRemove
-        invoke(this.data[component], 'onRemove')
-
-        // Remove from index
-        if (this.valid()) {
-          this.world.entities.removeFromIndex(this, component)
-        }
-
-        // Remove from entity
-        delete this.data[component]
+    for (const compName of components) {
+      if (compName in this.data) {
+        this._removeComponent(compName)
       }
     }
     return this
   }
 
   /**
-   * Remove this entity and all of its components from the world. After an entity is destroyed, the object should be discarded,
-   * and it is recommended to avoid re-using it.
+   * Remove this entity and all of its components from the world. After an entity is destroyed,
+   * the object should be discarded, and it is recommended to avoid re-using it.
    *
    * @example
    * entity.destroy()
    */
   destroy() {
-    this.remove(...this.components)
+    if (!this.valid()) {
+      throw new Error('Cannot destroy invalid entity')
+    }
 
-    if (this.components.length > 0) {
+    // Remove all components
+    for (const compName in this.data) {
+      this._removeComponent(compName)
+    }
+
+    if (!isEmpty(this.data)) {
       throw new Error(
         'Failed to remove all components. Components must have been added inside onRemove().'
       )
     }
 
-    if (this.valid()) {
-      // Remove from world
-      this.world.entities.entities.delete(this._id)
-      this._id = undefined
-    }
+    // Remove entity from world
+    this.world.entities.entities.delete(this._id)
+    this.world = undefined
+    this._id = undefined
   }
 
   /**
@@ -271,14 +269,14 @@ export class Entity {
    * @return {boolean} true or false
    */
   valid() {
-    // Note: No need to actually look in the world for the ID, if entities are only ever copied by reference.
+    // No need to actually look in the world for the ID, if entities are only ever copied by reference.
     // If entities are ever deep/shallow copied, this function will need to check this to be more robust.
-    return this.world && this._id !== undefined
+    return this.world != null && this._id != null
   }
 
   /**
    * Serializes entire entity and components to JSON.
-   * Note: Defining toJSON methods in your components will override the built-in behavior.
+   * Defining toJSON methods in your components will override the built-in behavior.
    *
    * @example
    * let serializedEntity = entity.toJSON()
@@ -291,7 +289,7 @@ export class Entity {
 
   /**
    * Deserializes data from JSON, creating new components and overwriting existing components.
-   * Note: Defining fromJSON methods in your components will override the built-in behavior.
+   * Defining fromJSON methods in your components will override the built-in behavior.
    *
    * @example
    * entity.fromJSON(serializedEntity)
@@ -317,8 +315,8 @@ export class Entity {
 
   /**
    * Attaches a currently detached entity back to a world.
-   * Note: Do not use detached entities, get() may be safe, but avoid calling other methods
-   * Note: The ID will be reassigned, so do not rely on this
+   * Do not use detached entities, get() may be safe, but avoid calling other methods
+   * The ID will be reassigned, so do not rely on this
    *
    * @example
    * entity.attach(world)
@@ -338,8 +336,8 @@ export class Entity {
   /**
    * Removes this entity from the current world, without removing any components or data.
    * It can be re-attached to another world (or the same world), using the attach() method.
-   * Note: Do not use detached entities, get() may be safe, but avoid calling other methods
-   * Note: The ID will be reassigned, so do not rely on this
+   * Do not use detached entities, get() may be safe, but avoid calling other methods
+   * The ID will be reassigned, so do not rely on this
    *
    * @example
    * entity.detach()
@@ -463,5 +461,17 @@ export class Entity {
     invoke(targetEntity.data[name], 'onCreate', ...args)
 
     return this
+  }
+
+  /** @ignore */
+  _removeComponent(compName) {
+    // Call custom onRemove
+    invoke(this.data[compName], 'onRemove')
+
+    // Remove from index
+    this.world?.entities.removeFromIndex(this, compName)
+
+    // Remove from entity
+    delete this.data[compName]
   }
 }
