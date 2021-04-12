@@ -76,18 +76,14 @@ export class EntityStorage {
     )
   }
 
-  // Add certain components with an entity to the index
-  addToIndex(entity, ...componentNames) {
-    for (let component of componentNames) {
-      this.accessIndex(component).set(entity.id, entity)
-    }
+  // Add component with an entity to the index
+  addToIndex(entity, compName) {
+    this.accessIndex(compName).set(entity.id, entity)
   }
 
-  // Remove certain components from the index for an entity
-  removeFromIndex(entity, ...componentNames) {
-    for (let component of componentNames) {
-      this.accessIndex(component).delete(entity.id)
-    }
+  // Remove component from the index for an entity
+  removeFromIndex(entity, compName) {
+    this.accessIndex(compName).delete(entity.id)
   }
 
   queryArgs(...args) {

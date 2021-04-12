@@ -329,7 +329,9 @@ export class Entity {
       this.world = world
       this._id = this.world.entities.nextEntityId++
       this.world.entities.entities.set(this._id, this)
-      this.world.entities.addToIndex(this, ...this.components)
+      for (const compName in this.data) {
+        this.world.entities.addToIndex(this, compName)
+      }
     }
   }
 
@@ -345,7 +347,9 @@ export class Entity {
   detach() {
     if (this.valid()) {
       // Remove from current world
-      this.world.entities.removeFromIndex(this, ...this.components)
+      for (const compName in this.data) {
+        this.world.entities.removeFromIndex(this, compName)
+      }
       this.world.entities.entities.delete(this._id)
       this._id = undefined
       this.world = undefined
