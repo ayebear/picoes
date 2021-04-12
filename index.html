@@ -53,29 +53,26 @@
 </ul>
 <h2 id="about">About</h2><p>Pico Entity System for JavaScript (ES6+).</p>
 <p>Read up on what an ECS is here: <a href="https://en.wikipedia.org/wiki/Entity_component_system">https://en.wikipedia.org/wiki/Entity_component_system</a></p>
-<p>This entity system is designed to be as simple as possible, while still having useful features.</p>
 <h3 id="features">Features</h3><ul>
 <li><strong>Simple query syntax</strong><ul>
 <li><code>world.each(&apos;a&apos;, &apos;b&apos;, ({a, b}) =&gt; { a.foo = b.bar })</code></li>
 <li>See the examples below for more advanced usage, or the <a href="https://ayebear.com/picoes/class/src/world.js~World.html#instance-method-each">reference docs</a></li>
 </ul>
 </li>
-<li><strong>No formal declarations required</strong><ul>
-<li>Can create <strong>unlimited</strong> (within memory limits) components and entities in a world and query on them, without needing to define structured systems and components</li>
+<li><strong>Optional registration of systems and components</strong><ul>
+<li>Once a <code>World</code> instance is made, you can arbitrarily set components on entities and query them</li>
+<li>This is possible due to the use of strings as component keys</li>
 </ul>
 </li>
-<li><strong>Strings as component keys</strong><ul>
-<li>No need to manually define component keys, or manually include component classes to use them</li>
-</ul>
-</li>
-<li><strong>Automatic dependency injection for systems</strong><ul>
+<li><strong>Automatic dependency injection</strong><ul>
 <li>No need to pass state to each system, can have a single context that gets injected into all systems automatically</li>
+<li>Registered components also get their parent entity injected</li>
 </ul>
 </li>
 <li><strong>Balanced performance</strong><ul>
 <li>See <a href="https://github.com/noctjs/ecs-benchmark">ECS benchmark comparison</a></li>
-<li>Entity/Component adding/removing performance is decent with PicoES, which is important for many games.</li>
-<li>Active research and work is being done to significantly improve PicoES performance as much as possible without making it harder to use.</li>
+<li>Entity/Component adding/removing performance is good with PicoES, which is important for many games.</li>
+<li>Continued research is being done to find new ways to make PicoES faster. There are many things such as pools, bit arrays, better indexing structures, and more that could be done to achieve this.</li>
 </ul>
 </li>
 </ul>
@@ -85,7 +82,7 @@
 </ul>
 </li>
 <li><strong>Entity:</strong> Refers to a collection of components<ul>
-<li>Example: Position + Health could represent a player</li>
+<li>Example: Position and Health could represent a player</li>
 </ul>
 </li>
 <li><strong>System:</strong> Logic loop that processes entities<ul>
@@ -96,14 +93,14 @@
 </ul>
 <h3 id="license">License</h3><p>MIT</p>
 <h3 id="author">Author</h3><p>Eric Hebert</p>
-<h2 id="instructions">Instructions</h2><h3 id="setup">Setup</h3><p>You&apos;ll normally want to install PicoES as a dev dependency, and have it transpiled into the build of your application.</p>
+<h2 id="instructions">Instructions</h2><h3 id="setup">Setup</h3><p>You&apos;ll normally want to install PicoES as a dev dependency, and have it transpiled into the build of your application. PicoES uses features such as import/export syntax, so you may need updated tools to use it. It has been used successfully with node 14+ and parcel 2+.</p>
 <h4 id="yarn">Yarn</h4><pre><code class="lang-bash"><code class="source-code prettyprint">yarn add --dev picoes</code>
 </code></pre>
 <h4 id="npm">NPM</h4><pre><code class="lang-bash"><code class="source-code prettyprint">npm i -D picoes</code>
 </code></pre>
 <h3 id="documentation">Documentation</h3><p>The full reference documentation can be found here:</p>
 <p><a href="https://ayebear.com/picoes">PicoES Documentation</a></p>
-<h3 id="examples">Examples</h3><h4 id="shorthand-anonymous-components-and-systems">Shorthand anonymous components and systems</h4><pre><code class="lang-javascript"><code class="source-code prettyprint">import { World } from &apos;picoes&apos;
+<h3 id="examples">Examples</h3><h4 id="unregistered-components-and-queries">Unregistered components and queries</h4><pre><code class="lang-javascript"><code class="source-code prettyprint">import { World } from &apos;picoes&apos;
 
 // Create a world to store entities in
 const world = new World()
@@ -123,7 +120,43 @@ world.each(&apos;damages&apos;, ({ damages }) =&gt; {
 // Player now has reduced health
 console.assert(player.get(&apos;health&apos;).value === 60)</code>
 </code></pre>
-<p>More complete examples coming with final 1.0.0 release! For now, refer to the <a href="https://ayebear.com/picoes">full documentation</a>.</p>
+<h4 id="system-and-component-registration">System and component registration</h4><pre><code class="lang-javascript"><code class="source-code prettyprint">import { World } from &apos;picoes&apos;
+
+// Create a reusable vector component
+class Vec2 {
+  constructor(x = 0, y = 0) {
+    this.x = x
+    this.y = y
+  }
+}
+
+// Define a system for handling movement
+class Movement {
+  run(dt) {
+    this.world.each(&apos;position&apos;, &apos;velocity&apos;, ({ position, velocity }) =&gt; {
+      position.x += velocity.x * dt
+      position.y += velocity.y * dt
+    })
+  }
+}
+
+// Create a world, register components and systems
+const world = new World({
+  components: { position: Vec2, velocity: Vec2 },
+  systems: [Movement],
+})
+
+// Create an entity at (0,0) with a velocity
+const entity = world.entity().set(&apos;position&apos;).set(&apos;velocity&apos;, 10, 10)
+
+// Run the systems (typically would use a ticker and pass dt)
+world.run(16)
+
+// See that the entity has moved
+const { x, y } = entity.get(&apos;position&apos;)
+console.log(x, y) // 160 160</code>
+</code></pre>
+<p>For more information, refer to the <a href="https://ayebear.com/picoes">full documentation</a>.</p>
 </div>
 </div>
 
