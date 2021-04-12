@@ -39,13 +39,6 @@
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import { Entity } from &apos;./entity.js&apos;
 import { invoke } from &apos;./utilities.js&apos;
 
-/**
- * @ignore
- * Returns index of smallest element
- */
-const minIndexReducer = (minIndex, value, index, values) =&gt;
-  value &lt; values[minIndex] ? index : minIndex
-
 /** @ignore */
 export class EntityStorage {
   constructor(world) {
@@ -107,25 +100,20 @@ export class EntityStorage {
 
   // Returns an existing or new index
   accessIndex(component) {
-    // TODO: Compare with object based approach for performance
     return (
       this.index.get(component) ||
       this.index.set(component, new Map()).get(component)
     )
   }
 
-  // Add certain components with an entity to the index
-  addToIndex(entity, ...componentNames) {
-    for (let component of componentNames) {
-      this.accessIndex(component).set(entity.id, entity)
-    }
+  // Add component with an entity to the index
+  addToIndex(entity, compName) {
+    this.accessIndex(compName).set(entity.id, entity)
   }
 
-  // Remove certain components from the index for an entity
-  removeFromIndex(entity, ...componentNames) {
-    for (let component of componentNames) {
-      this.accessIndex(component).delete(entity.id)
-    }
+  // Remove component from the index for an entity
+  removeFromIndex(entity, compName) {
+    this.accessIndex(compName).delete(entity.id)
   }
 
   queryArgs(...args) {
@@ -171,12 +159,13 @@ export class EntityStorage {
       return
     }
 
-    // Get the index name with the least number of entities
-    const minCompIndex = componentNames
-      .map(name =&gt; this.accessIndex(name).size)
-      .reduce(minIndexReducer, 0)
-    const minComp = componentNames[minCompIndex]
-    const iter = this.index.get(minComp).values()
+    // Sort component names by number of components in each index
+    // This allows us to get the minimum component index as the first element
+    // This also helps short-circuit much faster during the full query loops with .every()
+    componentNames.sort(
+      (a, b) =&gt; this.accessIndex(a).size - this.accessIndex(b).size
+    )
+    const iter = this.accessIndex(componentNames[0]).values()
 
     // Return array of matched entities
     if (!callback) {

@@ -9,19 +9,19 @@
       "undocumentLines": []
     },
     "src/entity_storage.js": {
-      "expectCount": 17,
-      "actualCount": 7,
+      "expectCount": 16,
+      "actualCount": 6,
       "undocumentLines": [
-        13,
-        34,
-        49,
-        58,
-        66,
-        71,
-        80,
-        87,
-        93,
-        121
+        6,
+        27,
+        42,
+        51,
+        59,
+        64,
+        72,
+        77,
+        81,
+        109
       ]
     },
     "src/system_storage.js": {
@@ -38,8 +38,8 @@
       ]
     },
     "src/utilities.js": {
-      "expectCount": 2,
-      "actualCount": 2,
+      "expectCount": 3,
+      "actualCount": 3,
       "undocumentLines": []
     },
     "src/world.js": {

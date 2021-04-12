@@ -131,35 +131,6 @@
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/entity.js~Entity.html#instance-get-components">components</a></span></span><span class="code" data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>&gt;: <span>*</span></span>
-        </p>
-      </div>
-      <div>
-        
-        
-        <div data-ice="description"><p>Returns an array of component names this entity currently has.</p>
-</div>
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      <span class="kind" data-ice="kind">get</span>
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
-          
           <span class="code" data-ice="name"><span><a href="class/src/entity.js~Entity.html#instance-get-id">id</a></span></span><span class="code" data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>: <span>*</span></span>
         </p>
       </div>
@@ -473,7 +444,8 @@ if the component does not exist. The argument behavior is exactly the same as se
         
         <div data-ice="description"><p>Removes a component from the entity - has no effect when it doesn&apos;t exist.
 Can specify an onRemove() method in your component which gets called before it is removed.
-If nothing is specified, then nothing will be removed.</p>
+If nothing is specified, then nothing will be removed.
+Attempting to remove components that aren&apos;t set will be safely ignored.</p>
 </div>
       </div>
     </td>
@@ -680,63 +652,6 @@ Also, do not shallow/deep copy entity objects, only pass around references.</p>
 </div>
 <div data-ice="memberDetails"><h2 data-ice="title">Public Members</h2>
 
-<div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-get-components">
-    <span class="access" data-ice="access">public</span>
-    
-    <span class="kind" data-ice="kind">get</span>
-    
-    
-    
-    <span class="code" data-ice="name">components</span><span class="code" data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>&gt;: <span>*</span></span>
-    <span class="right-info">
-      
-      
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber261">source</a></span></span>
-    </span>
-  </h3>
-
-  
-  
-  
-  <div data-ice="description"><p>Returns an array of component names this entity currently has.</p>
-</div>
-
-  
-
-  <div data-ice="properties">
-</div>
-
-  <div class="return-params" data-ice="returnParams">
-    <h4>Return:</h4>
-    <table>
-      <tbody>
-        <tr>
-          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>&gt;</td>
-          <td class="return-desc" data-ice="returnDescription"><p>Array of component names.</p>
-</td>
-        </tr>
-      </tbody>
-    </table>
-    <div data-ice="returnProperties">
-</div>
-  </div>
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-  
-</div>
 <div class="detail" data-ice="detail">
   <h3 data-ice="anchor" id="instance-get-id">
     <span class="access" data-ice="access">public</span>
@@ -967,7 +882,7 @@ if the component does not exist. The argument behavior is exactly the same as se
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber328">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber317">source</a></span></span>
     </span>
   </h3>
 
@@ -975,8 +890,8 @@ if the component does not exist. The argument behavior is exactly the same as se
   
   
   <div data-ice="description"><p>Attaches a currently detached entity back to a world.
-Note: Do not use detached entities, get() may be safe, but avoid calling other methods
-Note: The ID will be reassigned, so do not rely on this</p>
+Do not use detached entities, get() may be safe, but avoid calling other methods
+The ID will be reassigned, so do not rely on this</p>
 </div>
 
   
@@ -1037,7 +952,7 @@ Note: The ID will be reassigned, so do not rely on this</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber384">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber377">source</a></span></span>
     </span>
   </h3>
 
@@ -1122,15 +1037,15 @@ world.component(&apos;foo&apos;, class {
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber240">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber232">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Remove this entity and all of its components from the world. After an entity is destroyed, the object should be discarded,
-and it is recommended to avoid re-using it.</p>
+  <div data-ice="description"><p>Remove this entity and all of its components from the world. After an entity is destroyed,
+the object should be discarded, and it is recommended to avoid re-using it.</p>
 </div>
 
   
@@ -1174,7 +1089,7 @@ and it is recommended to avoid re-using it.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber347">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber338">source</a></span></span>
     </span>
   </h3>
 
@@ -1183,8 +1098,8 @@ and it is recommended to avoid re-using it.</p>
   
   <div data-ice="description"><p>Removes this entity from the current world, without removing any components or data.
 It can be re-attached to another world (or the same world), using the attach() method.
-Note: Do not use detached entities, get() may be safe, but avoid calling other methods
-Note: The ID will be reassigned, so do not rely on this</p>
+Do not use detached entities, get() may be safe, but avoid calling other methods
+The ID will be reassigned, so do not rely on this</p>
 </div>
 
   
@@ -1228,7 +1143,7 @@ Note: The ID will be reassigned, so do not rely on this</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber303">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber292">source</a></span></span>
     </span>
   </h3>
 
@@ -1236,7 +1151,7 @@ Note: The ID will be reassigned, so do not rely on this</p>
   
   
   <div data-ice="description"><p>Deserializes data from JSON, creating new components and overwriting existing components.
-Note: Defining fromJSON methods in your components will override the built-in behavior.</p>
+Defining fromJSON methods in your components will override the built-in behavior.</p>
 </div>
 
   
@@ -1472,7 +1387,7 @@ Note: Defining fromJSON methods in your components will override the built-in be
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber215">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber216">source</a></span></span>
     </span>
   </h3>
 
@@ -1481,7 +1396,8 @@ Note: Defining fromJSON methods in your components will override the built-in be
   
   <div data-ice="description"><p>Removes a component from the entity - has no effect when it doesn&apos;t exist.
 Can specify an onRemove() method in your component which gets called before it is removed.
-If nothing is specified, then nothing will be removed.</p>
+If nothing is specified, then nothing will be removed.
+Attempting to remove components that aren&apos;t set will be safely ignored.</p>
 </div>
 
   
@@ -1768,7 +1684,7 @@ is not registered, then only the first additional argument will be used as the v
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber288">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber277">source</a></span></span>
     </span>
   </h3>
 
@@ -1776,7 +1692,7 @@ is not registered, then only the first additional argument will be used as the v
   
   
   <div data-ice="description"><p>Serializes entire entity and components to JSON.
-Note: Defining toJSON methods in your components will override the built-in behavior.</p>
+Defining toJSON methods in your components will override the built-in behavior.</p>
 </div>
 
   
@@ -1833,7 +1749,7 @@ Note: Defining toJSON methods in your components will override the built-in beha
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber273">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/entity.js.html#lineNumber262">source</a></span></span>
     </span>
   </h3>
 

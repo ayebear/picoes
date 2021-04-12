@@ -667,7 +667,7 @@ world.system(...)</code></pre>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber232">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber233">source</a></span></span>
     </span>
   </h3>
 
@@ -836,7 +836,7 @@ world.each(&apos;compA&apos;, [&apos;more&apos;, &apos;comps&apos;], &apos;compB
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber194">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber195">source</a></span></span>
     </span>
   </h3>
 
@@ -915,7 +915,7 @@ world.system(systemB)
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber171">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber173">source</a></span></span>
     </span>
   </h3>
 
@@ -949,7 +949,9 @@ constructor(), init(), run(), or any other custom methods/properties.</p>
       <td data-ice="type" class="code">...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
       <td data-ice="appendix"><ul><li>optional</li></ul></td>
       <td data-ice="description"><p>The arguments to forward to the system&apos;s constructor and init.
-Note that it is recommended to use init if using context, see world.context().</p>
+Note that it is recommended to use init if using context, see world.context().
+Passing args here is still useful, because it can be specific to each system, where
+the same context is passed to all systems.</p>
 </td>
     </tr>
 </tbody>

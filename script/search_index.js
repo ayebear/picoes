@@ -318,12 +318,6 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/entity.js~entity#components",
-    "class/src/entity.js~Entity.html#instance-get-components",
-    "src/entity.js~Entity#components",
-    "member"
-  ],
-  [
     "src/entity.js~entity#constructor",
     "class/src/entity.js~Entity.html#instance-constructor-constructor",
     "src/entity.js~Entity#constructor",
