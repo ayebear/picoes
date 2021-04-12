@@ -219,7 +219,7 @@
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-method-each">each</a></span></span><span class="code" data-ice="signature">(args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span>MapIterator</span></span>
+          <span class="code" data-ice="name"><span><a href="class/src/world.js~World.html#instance-method-each">each</a></span></span><span class="code" data-ice="signature">(args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><span><a href="class/src/entity.js~Entity.html">Entity</a></span><span>[]</span></span></span>
         </p>
       </div>
       <div>
@@ -575,7 +575,7 @@ world.entity().set(&apos;myComponent&apos;, 10, 500)</code></pre>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber121">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber118">source</a></span></span>
     </span>
   </h3>
 
@@ -641,12 +641,8 @@ All the keys inside the context object will be spread into the top-level of the 
       
       <pre class="prettyprint source-code"><code data-ice="exampleCode">const state = { app: new PIXI.Application() }
 const world = new World()
-world.context(state) // systems can directly use this.app
+world.context(state) // new and existing systems can directly use this.app
 world.system(...)</code></pre>
-    </div>
-<div class="example-doc" data-ice="exampleDoc">
-      
-      <pre class="prettyprint source-code"><code data-ice="exampleCode">world.context(state, &apos;state&apos;) // systems use this.state.app</code></pre>
     </div>
 </div>
 
@@ -663,11 +659,11 @@ world.system(...)</code></pre>
     
     
     
-    <span class="code" data-ice="name">each</span><span class="code" data-ice="signature">(args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span>MapIterator</span></span>
+    <span class="code" data-ice="name">each</span><span class="code" data-ice="signature">(args: ...<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><span><a href="class/src/entity.js~Entity.html">Entity</a></span><span>[]</span></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber233">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber231">source</a></span></span>
     </span>
   </h3>
 
@@ -710,9 +706,8 @@ shown in the examples.</p>
     <table>
       <tbody>
         <tr>
-          <td class="return-type code" data-ice="returnType"><span>MapIterator</span></td>
-          <td class="return-desc" data-ice="returnDescription"><p>If no callback specified, then returns a one-time-use iterator to the entities.
-Otherwise, returns the last loop iteration status, returned by the callback.</p>
+          <td class="return-type code" data-ice="returnType"><span><span><a href="class/src/entity.js~Entity.html">Entity</a></span><span>[]</span></span></td>
+          <td class="return-desc" data-ice="returnDescription"><p>If no callback is specified, then returns an array of the entity results.</p>
 </td>
         </tr>
       </tbody>
@@ -735,13 +730,15 @@ Otherwise, returns the last loop iteration status, returned by the callback.</p>
   <div class="example-doc" data-ice="exampleDoc">
       
       <pre class="prettyprint source-code"><code data-ice="exampleCode">// Use a callback to process entities one-by-one
+// This is the recommended way, as it is higher performance than allocating and
+// returning an array
 world.each(&apos;comp&apos;, ({ comp }) =&gt; { comp.value = 0 })</code></pre>
     </div>
 <div class="example-doc" data-ice="exampleDoc">
       
-      <pre class="prettyprint source-code"><code data-ice="exampleCode">// Get an iterator for the entities
-const it = world.each(&apos;comp&apos;)
-for (let entity of it) {...}</code></pre>
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">// Get an array of entities
+const entities = world.each(&apos;comp&apos;)
+for (const entity of entities) {...}</code></pre>
     </div>
 <div class="example-doc" data-ice="exampleDoc">
       
@@ -836,7 +833,7 @@ world.each(&apos;compA&apos;, [&apos;more&apos;, &apos;comps&apos;], &apos;compB
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber195">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber192">source</a></span></span>
     </span>
   </h3>
 
@@ -915,7 +912,7 @@ world.system(systemB)
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber173">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/world.js.html#lineNumber170">source</a></span></span>
     </span>
   </h3>
 

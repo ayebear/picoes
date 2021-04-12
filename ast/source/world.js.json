@@ -1,28 +1,28 @@
 {
   "type": "File",
   "start": 0,
-  "end": 7875,
+  "end": 7835,
   "loc": {
     "start": {
       "line": 1,
       "column": 0
     },
     "end": {
-      "line": 237,
+      "line": 235,
       "column": 0
     }
   },
   "program": {
     "type": "Program",
     "start": 0,
-    "end": 7875,
+    "end": 7835,
     "loc": {
       "start": {
         "line": 1,
         "column": 0
       },
       "end": {
-        "line": 237,
+        "line": 235,
         "column": 0
       }
     },
@@ -309,14 +309,14 @@
       {
         "type": "ExportNamedDeclaration",
         "start": 196,
-        "end": 7874,
+        "end": 7834,
         "loc": {
           "start": {
             "line": 10,
             "column": 0
           },
           "end": {
-            "line": 236,
+            "line": 234,
             "column": 1
           }
         },
@@ -325,14 +325,14 @@
         "declaration": {
           "type": "ClassDeclaration",
           "start": 203,
-          "end": 7874,
+          "end": 7834,
           "loc": {
             "start": {
               "line": 10,
               "column": 7
             },
             "end": {
-              "line": 236,
+              "line": 234,
               "column": 1
             }
           },
@@ -358,14 +358,14 @@
           "body": {
             "type": "ClassBody",
             "start": 215,
-            "end": 7874,
+            "end": 7834,
             "loc": {
               "start": {
                 "line": 10,
                 "column": 19
               },
               "end": {
-                "line": 236,
+                "line": 234,
                 "column": 1
               }
             },
@@ -2497,16 +2497,16 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n   * Sets a context object that is automatically injected into all existing and new systems.\n   * Calling this multiple times will overwrite any previous contexts passed. One caveat is that\n   * you can only start to use the injected context in systems starting with init(). It is not\n   * available in the constructor.\n   *\n   * @param {Object} data - The object to use as context to pass to systems.\n   * All the keys inside the context object will be spread into the top-level of the system.\n   *\n   * @example\n   * const state = { app: new PIXI.Application() }\n   * const world = new World()\n   * world.context(state) // systems can directly use this.app\n   * world.system(...)\n   *\n   * @example\n   * world.context(state, 'state') // systems use this.state.app\n   *\n   * @return {Entity} The new entity created\n   ",
+                    "value": "*\n   * Sets a context object that is automatically injected into all existing and new systems.\n   * Calling this multiple times will overwrite any previous contexts passed. One caveat is that\n   * you can only start to use the injected context in systems starting with init(). It is not\n   * available in the constructor.\n   *\n   * @param {Object} data - The object to use as context to pass to systems.\n   * All the keys inside the context object will be spread into the top-level of the system.\n   *\n   * @example\n   * const state = { app: new PIXI.Application() }\n   * const world = new World()\n   * world.context(state) // new and existing systems can directly use this.app\n   * world.system(...)\n   *\n   * @return {Entity} The new entity created\n   ",
                     "start": 2985,
-                    "end": 3810,
+                    "end": 3743,
                     "loc": {
                       "start": {
                         "line": 101,
                         "column": 2
                       },
                       "end": {
-                        "line": 120,
+                        "line": 117,
                         "column": 5
                       }
                     }
@@ -2515,15 +2515,15 @@
               },
               {
                 "type": "ClassMethod",
-                "start": 3813,
-                "end": 3866,
+                "start": 3746,
+                "end": 3799,
                 "loc": {
                   "start": {
-                    "line": 121,
+                    "line": 118,
                     "column": 2
                   },
                   "end": {
-                    "line": 123,
+                    "line": 120,
                     "column": 3
                   }
                 },
@@ -2531,15 +2531,15 @@
                 "computed": false,
                 "key": {
                   "type": "Identifier",
-                  "start": 3813,
-                  "end": 3820,
+                  "start": 3746,
+                  "end": 3753,
                   "loc": {
                     "start": {
-                      "line": 121,
+                      "line": 118,
                       "column": 2
                     },
                     "end": {
-                      "line": 121,
+                      "line": 118,
                       "column": 9
                     },
                     "identifierName": "context"
@@ -2555,15 +2555,15 @@
                 "params": [
                   {
                     "type": "Identifier",
-                    "start": 3821,
-                    "end": 3825,
+                    "start": 3754,
+                    "end": 3758,
                     "loc": {
                       "start": {
-                        "line": 121,
+                        "line": 118,
                         "column": 10
                       },
                       "end": {
-                        "line": 121,
+                        "line": 118,
                         "column": 14
                       },
                       "identifierName": "data"
@@ -2573,101 +2573,101 @@
                 ],
                 "body": {
                   "type": "BlockStatement",
-                  "start": 3827,
-                  "end": 3866,
+                  "start": 3760,
+                  "end": 3799,
                   "loc": {
                     "start": {
-                      "line": 121,
+                      "line": 118,
                       "column": 16
                     },
                     "end": {
-                      "line": 123,
+                      "line": 120,
                       "column": 3
                     }
                   },
                   "body": [
                     {
                       "type": "ExpressionStatement",
-                      "start": 3833,
-                      "end": 3862,
+                      "start": 3766,
+                      "end": 3795,
                       "loc": {
                         "start": {
-                          "line": 122,
+                          "line": 119,
                           "column": 4
                         },
                         "end": {
-                          "line": 122,
+                          "line": 119,
                           "column": 33
                         }
                       },
                       "expression": {
                         "type": "CallExpression",
-                        "start": 3833,
-                        "end": 3862,
+                        "start": 3766,
+                        "end": 3795,
                         "loc": {
                           "start": {
-                            "line": 122,
+                            "line": 119,
                             "column": 4
                           },
                           "end": {
-                            "line": 122,
+                            "line": 119,
                             "column": 33
                           }
                         },
                         "callee": {
                           "type": "MemberExpression",
-                          "start": 3833,
-                          "end": 3856,
+                          "start": 3766,
+                          "end": 3789,
                           "loc": {
                             "start": {
-                              "line": 122,
+                              "line": 119,
                               "column": 4
                             },
                             "end": {
-                              "line": 122,
+                              "line": 119,
                               "column": 27
                             }
                           },
                           "object": {
                             "type": "MemberExpression",
-                            "start": 3833,
-                            "end": 3845,
+                            "start": 3766,
+                            "end": 3778,
                             "loc": {
                               "start": {
-                                "line": 122,
+                                "line": 119,
                                 "column": 4
                               },
                               "end": {
-                                "line": 122,
+                                "line": 119,
                                 "column": 16
                               }
                             },
                             "object": {
                               "type": "ThisExpression",
-                              "start": 3833,
-                              "end": 3837,
+                              "start": 3766,
+                              "end": 3770,
                               "loc": {
                                 "start": {
-                                  "line": 122,
+                                  "line": 119,
                                   "column": 4
                                 },
                                 "end": {
-                                  "line": 122,
+                                  "line": 119,
                                   "column": 8
                                 }
                               }
                             },
                             "property": {
                               "type": "Identifier",
-                              "start": 3838,
-                              "end": 3845,
+                              "start": 3771,
+                              "end": 3778,
                               "loc": {
                                 "start": {
-                                  "line": 122,
+                                  "line": 119,
                                   "column": 9
                                 },
                                 "end": {
-                                  "line": 122,
+                                  "line": 119,
                                   "column": 16
                                 },
                                 "identifierName": "systems"
@@ -2678,15 +2678,15 @@
                           },
                           "property": {
                             "type": "Identifier",
-                            "start": 3846,
-                            "end": 3856,
+                            "start": 3779,
+                            "end": 3789,
                             "loc": {
                               "start": {
-                                "line": 122,
+                                "line": 119,
                                 "column": 17
                               },
                               "end": {
-                                "line": 122,
+                                "line": 119,
                                 "column": 27
                               },
                               "identifierName": "setContext"
@@ -2698,15 +2698,15 @@
                         "arguments": [
                           {
                             "type": "Identifier",
-                            "start": 3857,
-                            "end": 3861,
+                            "start": 3790,
+                            "end": 3794,
                             "loc": {
                               "start": {
-                                "line": 122,
+                                "line": 119,
                                 "column": 28
                               },
                               "end": {
-                                "line": 122,
+                                "line": 119,
                                 "column": 32
                               },
                               "identifierName": "data"
@@ -2723,16 +2723,16 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n   * Sets a context object that is automatically injected into all existing and new systems.\n   * Calling this multiple times will overwrite any previous contexts passed. One caveat is that\n   * you can only start to use the injected context in systems starting with init(). It is not\n   * available in the constructor.\n   *\n   * @param {Object} data - The object to use as context to pass to systems.\n   * All the keys inside the context object will be spread into the top-level of the system.\n   *\n   * @example\n   * const state = { app: new PIXI.Application() }\n   * const world = new World()\n   * world.context(state) // systems can directly use this.app\n   * world.system(...)\n   *\n   * @example\n   * world.context(state, 'state') // systems use this.state.app\n   *\n   * @return {Entity} The new entity created\n   ",
+                    "value": "*\n   * Sets a context object that is automatically injected into all existing and new systems.\n   * Calling this multiple times will overwrite any previous contexts passed. One caveat is that\n   * you can only start to use the injected context in systems starting with init(). It is not\n   * available in the constructor.\n   *\n   * @param {Object} data - The object to use as context to pass to systems.\n   * All the keys inside the context object will be spread into the top-level of the system.\n   *\n   * @example\n   * const state = { app: new PIXI.Application() }\n   * const world = new World()\n   * world.context(state) // new and existing systems can directly use this.app\n   * world.system(...)\n   *\n   * @return {Entity} The new entity created\n   ",
                     "start": 2985,
-                    "end": 3810,
+                    "end": 3743,
                     "loc": {
                       "start": {
                         "line": 101,
                         "column": 2
                       },
                       "end": {
-                        "line": 120,
+                        "line": 117,
                         "column": 5
                       }
                     }
@@ -2742,15 +2742,15 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n   * Registers a system to the world.\n   * The order the systems get registered, is the order then run in.\n   *\n   * @example\n   * // Movement system (basic example)\n   * class MovementSystem {\n   *   run(dt) {\n   *     world.each('position', 'velocity', ({ position, velocity }) => {\n   *       position.x += velocity.x * dt\n   *       position.y += velocity.y * dt\n   *     })\n   *   }\n   * }\n   * // Input system (advanced example)\n   * class InputSystem {\n   *   init(key) {\n   *     // Have access to this.keyboard here, but not in constructor\n   *     this.key = key\n   *   }\n   *   run(dt) {\n   *     if (this.keyboard.isPressed(this.key)) {\n   *       world.each('controlled', 'velocity', ({ velocity }, entity) => {\n   *         // Start moving all controlled entities to the right\n   *         velocity.x = 1\n   *         velocity.y = 0\n   *         // Can also use the full entity here, in this case to add a new component\n   *         entity.set('useFuel')\n   *       })\n   *     }\n   *   }\n   * }\n   * // Inject context (see world.context())\n   * world.context({ keyboard: new Keyboard() })\n   * // Register systems in order (this method)\n   * world.system(InputSystem, 'w') // pass arguments to init/constructor\n   * world.system(MovementSystem)\n   * // Run systems (can get dt or frame time)\n   * world.run(1000.0 / 60.0)\n   *\n   * @param {Function} systemClass - The system class to instantiate. Can contain a\n   * constructor(), init(), run(), or any other custom methods/properties.\n   *\n   * @param {...Object} [args] - The arguments to forward to the system's constructor and init.\n   * Note that it is recommended to use init if using context, see world.context().\n   * Passing args here is still useful, because it can be specific to each system, where\n   * the same context is passed to all systems.\n   ",
-                    "start": 3870,
-                    "end": 5702,
+                    "start": 3803,
+                    "end": 5635,
                     "loc": {
                       "start": {
-                        "line": 125,
+                        "line": 122,
                         "column": 2
                       },
                       "end": {
-                        "line": 172,
+                        "line": 169,
                         "column": 5
                       }
                     }
@@ -2759,15 +2759,15 @@
               },
               {
                 "type": "ClassMethod",
-                "start": 5705,
-                "end": 5787,
+                "start": 5638,
+                "end": 5720,
                 "loc": {
                   "start": {
-                    "line": 173,
+                    "line": 170,
                     "column": 2
                   },
                   "end": {
-                    "line": 175,
+                    "line": 172,
                     "column": 3
                   }
                 },
@@ -2775,15 +2775,15 @@
                 "computed": false,
                 "key": {
                   "type": "Identifier",
-                  "start": 5705,
-                  "end": 5711,
+                  "start": 5638,
+                  "end": 5644,
                   "loc": {
                     "start": {
-                      "line": 173,
+                      "line": 170,
                       "column": 2
                     },
                     "end": {
-                      "line": 173,
+                      "line": 170,
                       "column": 8
                     },
                     "identifierName": "system"
@@ -2799,15 +2799,15 @@
                 "params": [
                   {
                     "type": "Identifier",
-                    "start": 5712,
-                    "end": 5723,
+                    "start": 5645,
+                    "end": 5656,
                     "loc": {
                       "start": {
-                        "line": 173,
+                        "line": 170,
                         "column": 9
                       },
                       "end": {
-                        "line": 173,
+                        "line": 170,
                         "column": 20
                       },
                       "identifierName": "systemClass"
@@ -2816,29 +2816,29 @@
                   },
                   {
                     "type": "RestElement",
-                    "start": 5725,
-                    "end": 5732,
+                    "start": 5658,
+                    "end": 5665,
                     "loc": {
                       "start": {
-                        "line": 173,
+                        "line": 170,
                         "column": 22
                       },
                       "end": {
-                        "line": 173,
+                        "line": 170,
                         "column": 29
                       }
                     },
                     "argument": {
                       "type": "Identifier",
-                      "start": 5728,
-                      "end": 5732,
+                      "start": 5661,
+                      "end": 5665,
                       "loc": {
                         "start": {
-                          "line": 173,
+                          "line": 170,
                           "column": 25
                         },
                         "end": {
-                          "line": 173,
+                          "line": 170,
                           "column": 29
                         },
                         "identifierName": "args"
@@ -2849,101 +2849,101 @@
                 ],
                 "body": {
                   "type": "BlockStatement",
-                  "start": 5734,
-                  "end": 5787,
+                  "start": 5667,
+                  "end": 5720,
                   "loc": {
                     "start": {
-                      "line": 173,
+                      "line": 170,
                       "column": 31
                     },
                     "end": {
-                      "line": 175,
+                      "line": 172,
                       "column": 3
                     }
                   },
                   "body": [
                     {
                       "type": "ExpressionStatement",
-                      "start": 5740,
-                      "end": 5783,
+                      "start": 5673,
+                      "end": 5716,
                       "loc": {
                         "start": {
-                          "line": 174,
+                          "line": 171,
                           "column": 4
                         },
                         "end": {
-                          "line": 174,
+                          "line": 171,
                           "column": 47
                         }
                       },
                       "expression": {
                         "type": "CallExpression",
-                        "start": 5740,
-                        "end": 5783,
+                        "start": 5673,
+                        "end": 5716,
                         "loc": {
                           "start": {
-                            "line": 174,
+                            "line": 171,
                             "column": 4
                           },
                           "end": {
-                            "line": 174,
+                            "line": 171,
                             "column": 47
                           }
                         },
                         "callee": {
                           "type": "MemberExpression",
-                          "start": 5740,
-                          "end": 5761,
+                          "start": 5673,
+                          "end": 5694,
                           "loc": {
                             "start": {
-                              "line": 174,
+                              "line": 171,
                               "column": 4
                             },
                             "end": {
-                              "line": 174,
+                              "line": 171,
                               "column": 25
                             }
                           },
                           "object": {
                             "type": "MemberExpression",
-                            "start": 5740,
-                            "end": 5752,
+                            "start": 5673,
+                            "end": 5685,
                             "loc": {
                               "start": {
-                                "line": 174,
+                                "line": 171,
                                 "column": 4
                               },
                               "end": {
-                                "line": 174,
+                                "line": 171,
                                 "column": 16
                               }
                             },
                             "object": {
                               "type": "ThisExpression",
-                              "start": 5740,
-                              "end": 5744,
+                              "start": 5673,
+                              "end": 5677,
                               "loc": {
                                 "start": {
-                                  "line": 174,
+                                  "line": 171,
                                   "column": 4
                                 },
                                 "end": {
-                                  "line": 174,
+                                  "line": 171,
                                   "column": 8
                                 }
                               }
                             },
                             "property": {
                               "type": "Identifier",
-                              "start": 5745,
-                              "end": 5752,
+                              "start": 5678,
+                              "end": 5685,
                               "loc": {
                                 "start": {
-                                  "line": 174,
+                                  "line": 171,
                                   "column": 9
                                 },
                                 "end": {
-                                  "line": 174,
+                                  "line": 171,
                                   "column": 16
                                 },
                                 "identifierName": "systems"
@@ -2954,15 +2954,15 @@
                           },
                           "property": {
                             "type": "Identifier",
-                            "start": 5753,
-                            "end": 5761,
+                            "start": 5686,
+                            "end": 5694,
                             "loc": {
                               "start": {
-                                "line": 174,
+                                "line": 171,
                                 "column": 17
                               },
                               "end": {
-                                "line": 174,
+                                "line": 171,
                                 "column": 25
                               },
                               "identifierName": "register"
@@ -2974,15 +2974,15 @@
                         "arguments": [
                           {
                             "type": "Identifier",
-                            "start": 5762,
-                            "end": 5773,
+                            "start": 5695,
+                            "end": 5706,
                             "loc": {
                               "start": {
-                                "line": 174,
+                                "line": 171,
                                 "column": 26
                               },
                               "end": {
-                                "line": 174,
+                                "line": 171,
                                 "column": 37
                               },
                               "identifierName": "systemClass"
@@ -2991,29 +2991,29 @@
                           },
                           {
                             "type": "SpreadElement",
-                            "start": 5775,
-                            "end": 5782,
+                            "start": 5708,
+                            "end": 5715,
                             "loc": {
                               "start": {
-                                "line": 174,
+                                "line": 171,
                                 "column": 39
                               },
                               "end": {
-                                "line": 174,
+                                "line": 171,
                                 "column": 46
                               }
                             },
                             "argument": {
                               "type": "Identifier",
-                              "start": 5778,
-                              "end": 5782,
+                              "start": 5711,
+                              "end": 5715,
                               "loc": {
                                 "start": {
-                                  "line": 174,
+                                  "line": 171,
                                   "column": 42
                                 },
                                 "end": {
-                                  "line": 174,
+                                  "line": 171,
                                   "column": 46
                                 },
                                 "identifierName": "args"
@@ -3032,15 +3032,15 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n   * Registers a system to the world.\n   * The order the systems get registered, is the order then run in.\n   *\n   * @example\n   * // Movement system (basic example)\n   * class MovementSystem {\n   *   run(dt) {\n   *     world.each('position', 'velocity', ({ position, velocity }) => {\n   *       position.x += velocity.x * dt\n   *       position.y += velocity.y * dt\n   *     })\n   *   }\n   * }\n   * // Input system (advanced example)\n   * class InputSystem {\n   *   init(key) {\n   *     // Have access to this.keyboard here, but not in constructor\n   *     this.key = key\n   *   }\n   *   run(dt) {\n   *     if (this.keyboard.isPressed(this.key)) {\n   *       world.each('controlled', 'velocity', ({ velocity }, entity) => {\n   *         // Start moving all controlled entities to the right\n   *         velocity.x = 1\n   *         velocity.y = 0\n   *         // Can also use the full entity here, in this case to add a new component\n   *         entity.set('useFuel')\n   *       })\n   *     }\n   *   }\n   * }\n   * // Inject context (see world.context())\n   * world.context({ keyboard: new Keyboard() })\n   * // Register systems in order (this method)\n   * world.system(InputSystem, 'w') // pass arguments to init/constructor\n   * world.system(MovementSystem)\n   * // Run systems (can get dt or frame time)\n   * world.run(1000.0 / 60.0)\n   *\n   * @param {Function} systemClass - The system class to instantiate. Can contain a\n   * constructor(), init(), run(), or any other custom methods/properties.\n   *\n   * @param {...Object} [args] - The arguments to forward to the system's constructor and init.\n   * Note that it is recommended to use init if using context, see world.context().\n   * Passing args here is still useful, because it can be specific to each system, where\n   * the same context is passed to all systems.\n   ",
-                    "start": 3870,
-                    "end": 5702,
+                    "start": 3803,
+                    "end": 5635,
                     "loc": {
                       "start": {
-                        "line": 125,
+                        "line": 122,
                         "column": 2
                       },
                       "end": {
-                        "line": 172,
+                        "line": 169,
                         "column": 5
                       }
                     }
@@ -3050,15 +3050,15 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n   * Calls run() on all systems. These methods can return true to cause an additional rerun of all systems.\n   * Reruns will not receive the args passed into run(), as a way to identify reruns.\n   *\n   * @example\n   * world.run(deltaTime)\n   *\n   * @example\n   * // Example flow of method call order:\n   * // Setup systems:\n   * world.system(systemA)\n   * world.system(systemB)\n   * // During world.run():\n   * // systemA.run()\n   * // systemB.run()\n   *\n   * @param {...Object} [args] - The arguments to forward to the systems' methods\n   ",
-                    "start": 5791,
-                    "end": 6337,
+                    "start": 5724,
+                    "end": 6270,
                     "loc": {
                       "start": {
-                        "line": 177,
+                        "line": 174,
                         "column": 2
                       },
                       "end": {
-                        "line": 194,
+                        "line": 191,
                         "column": 5
                       }
                     }
@@ -3067,15 +3067,15 @@
               },
               {
                 "type": "ClassMethod",
-                "start": 6340,
-                "end": 6388,
+                "start": 6273,
+                "end": 6321,
                 "loc": {
                   "start": {
-                    "line": 195,
+                    "line": 192,
                     "column": 2
                   },
                   "end": {
-                    "line": 197,
+                    "line": 194,
                     "column": 3
                   }
                 },
@@ -3083,15 +3083,15 @@
                 "computed": false,
                 "key": {
                   "type": "Identifier",
-                  "start": 6340,
-                  "end": 6343,
+                  "start": 6273,
+                  "end": 6276,
                   "loc": {
                     "start": {
-                      "line": 195,
+                      "line": 192,
                       "column": 2
                     },
                     "end": {
-                      "line": 195,
+                      "line": 192,
                       "column": 5
                     },
                     "identifierName": "run"
@@ -3107,29 +3107,29 @@
                 "params": [
                   {
                     "type": "RestElement",
-                    "start": 6344,
-                    "end": 6351,
+                    "start": 6277,
+                    "end": 6284,
                     "loc": {
                       "start": {
-                        "line": 195,
+                        "line": 192,
                         "column": 6
                       },
                       "end": {
-                        "line": 195,
+                        "line": 192,
                         "column": 13
                       }
                     },
                     "argument": {
                       "type": "Identifier",
-                      "start": 6347,
-                      "end": 6351,
+                      "start": 6280,
+                      "end": 6284,
                       "loc": {
                         "start": {
-                          "line": 195,
+                          "line": 192,
                           "column": 9
                         },
                         "end": {
-                          "line": 195,
+                          "line": 192,
                           "column": 13
                         },
                         "identifierName": "args"
@@ -3140,101 +3140,101 @@
                 ],
                 "body": {
                   "type": "BlockStatement",
-                  "start": 6353,
-                  "end": 6388,
+                  "start": 6286,
+                  "end": 6321,
                   "loc": {
                     "start": {
-                      "line": 195,
+                      "line": 192,
                       "column": 15
                     },
                     "end": {
-                      "line": 197,
+                      "line": 194,
                       "column": 3
                     }
                   },
                   "body": [
                     {
                       "type": "ExpressionStatement",
-                      "start": 6359,
-                      "end": 6384,
+                      "start": 6292,
+                      "end": 6317,
                       "loc": {
                         "start": {
-                          "line": 196,
+                          "line": 193,
                           "column": 4
                         },
                         "end": {
-                          "line": 196,
+                          "line": 193,
                           "column": 29
                         }
                       },
                       "expression": {
                         "type": "CallExpression",
-                        "start": 6359,
-                        "end": 6384,
+                        "start": 6292,
+                        "end": 6317,
                         "loc": {
                           "start": {
-                            "line": 196,
+                            "line": 193,
                             "column": 4
                           },
                           "end": {
-                            "line": 196,
+                            "line": 193,
                             "column": 29
                           }
                         },
                         "callee": {
                           "type": "MemberExpression",
-                          "start": 6359,
-                          "end": 6375,
+                          "start": 6292,
+                          "end": 6308,
                           "loc": {
                             "start": {
-                              "line": 196,
+                              "line": 193,
                               "column": 4
                             },
                             "end": {
-                              "line": 196,
+                              "line": 193,
                               "column": 20
                             }
                           },
                           "object": {
                             "type": "MemberExpression",
-                            "start": 6359,
-                            "end": 6371,
+                            "start": 6292,
+                            "end": 6304,
                             "loc": {
                               "start": {
-                                "line": 196,
+                                "line": 193,
                                 "column": 4
                               },
                               "end": {
-                                "line": 196,
+                                "line": 193,
                                 "column": 16
                               }
                             },
                             "object": {
                               "type": "ThisExpression",
-                              "start": 6359,
-                              "end": 6363,
+                              "start": 6292,
+                              "end": 6296,
                               "loc": {
                                 "start": {
-                                  "line": 196,
+                                  "line": 193,
                                   "column": 4
                                 },
                                 "end": {
-                                  "line": 196,
+                                  "line": 193,
                                   "column": 8
                                 }
                               }
                             },
                             "property": {
                               "type": "Identifier",
-                              "start": 6364,
-                              "end": 6371,
+                              "start": 6297,
+                              "end": 6304,
                               "loc": {
                                 "start": {
-                                  "line": 196,
+                                  "line": 193,
                                   "column": 9
                                 },
                                 "end": {
-                                  "line": 196,
+                                  "line": 193,
                                   "column": 16
                                 },
                                 "identifierName": "systems"
@@ -3245,15 +3245,15 @@
                           },
                           "property": {
                             "type": "Identifier",
-                            "start": 6372,
-                            "end": 6375,
+                            "start": 6305,
+                            "end": 6308,
                             "loc": {
                               "start": {
-                                "line": 196,
+                                "line": 193,
                                 "column": 17
                               },
                               "end": {
-                                "line": 196,
+                                "line": 193,
                                 "column": 20
                               },
                               "identifierName": "run"
@@ -3265,29 +3265,29 @@
                         "arguments": [
                           {
                             "type": "SpreadElement",
-                            "start": 6376,
-                            "end": 6383,
+                            "start": 6309,
+                            "end": 6316,
                             "loc": {
                               "start": {
-                                "line": 196,
+                                "line": 193,
                                 "column": 21
                               },
                               "end": {
-                                "line": 196,
+                                "line": 193,
                                 "column": 28
                               }
                             },
                             "argument": {
                               "type": "Identifier",
-                              "start": 6379,
-                              "end": 6383,
+                              "start": 6312,
+                              "end": 6316,
                               "loc": {
                                 "start": {
-                                  "line": 196,
+                                  "line": 193,
                                   "column": 24
                                 },
                                 "end": {
-                                  "line": 196,
+                                  "line": 193,
                                   "column": 28
                                 },
                                 "identifierName": "args"
@@ -3306,15 +3306,15 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n   * Calls run() on all systems. These methods can return true to cause an additional rerun of all systems.\n   * Reruns will not receive the args passed into run(), as a way to identify reruns.\n   *\n   * @example\n   * world.run(deltaTime)\n   *\n   * @example\n   * // Example flow of method call order:\n   * // Setup systems:\n   * world.system(systemA)\n   * world.system(systemB)\n   * // During world.run():\n   * // systemA.run()\n   * // systemB.run()\n   *\n   * @param {...Object} [args] - The arguments to forward to the systems' methods\n   ",
-                    "start": 5791,
-                    "end": 6337,
+                    "start": 5724,
+                    "end": 6270,
                     "loc": {
                       "start": {
-                        "line": 177,
+                        "line": 174,
                         "column": 2
                       },
                       "end": {
-                        "line": 194,
+                        "line": 191,
                         "column": 5
                       }
                     }
@@ -3323,16 +3323,16 @@
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n   * Iterate through components and entities with all of the specified component names\n   *\n   * @example\n   * // Use a callback to process entities one-by-one\n   * world.each('comp', ({ comp }) => { comp.value = 0 })\n   *\n   * @example\n   * // Get an iterator for the entities\n   * const it = world.each('comp')\n   * for (let entity of it) {...}\n   *\n   * @example\n   * // Pass multiple components, arrays, use extra entity parameter,\n   * // and destructure components outside the query\n   * world.each('compA', ['more', 'comps'], 'compB', ({ compA, compC }, entity) => {\n   *   if (compC) compC.foo(compC.bar)\n   *   compA.foo = 'bar'\n   *   entity.remove('compB')\n   * })\n   *\n   * @param {...Object} args - Can pass component names, arrays of component names, and a callback,\n   * in any order.\n   *\n   * **{...string}**: The component names to match entities with. This checks if the entity\n   * has ALL of the specified components, but does not check for additional components.\n   *\n   * **{Function}**: The callback to call for each matched entity. Takes (entity.data, entity).\n   * Entity data is an object of {[componentName]: [component]}, that can be destructured with syntax\n   * shown in the examples.\n   *\n   * @return {MapIterator} If no callback specified, then returns a one-time-use iterator to the entities.\n   * Otherwise, returns the last loop iteration status, returned by the callback.\n   ",
-                    "start": 6392,
-                    "end": 7811,
+                    "value": "*\n   * Iterate through components and entities with all of the specified component names\n   *\n   * @example\n   * // Use a callback to process entities one-by-one\n   * // This is the recommended way, as it is higher performance than allocating and\n   * // returning an array\n   * world.each('comp', ({ comp }) => { comp.value = 0 })\n   *\n   * @example\n   * // Get an array of entities\n   * const entities = world.each('comp')\n   * for (const entity of entities) {...}\n   *\n   * @example\n   * // Pass multiple components, arrays, use extra entity parameter,\n   * // and destructure components outside the query\n   * world.each('compA', ['more', 'comps'], 'compB', ({ compA, compC }, entity) => {\n   *   if (compC) compC.foo(compC.bar)\n   *   compA.foo = 'bar'\n   *   entity.remove('compB')\n   * })\n   *\n   * @param {...Object} args - Can pass component names, arrays of component names, and a callback,\n   * in any order.\n   *\n   * **{...string}**: The component names to match entities with. This checks if the entity\n   * has ALL of the specified components, but does not check for additional components.\n   *\n   * **{Function}**: The callback to call for each matched entity. Takes (entity.data, entity).\n   * Entity data is an object of {[componentName]: [component]}, that can be destructured with syntax\n   * shown in the examples.\n   *\n   * @return {Entity[]} If no callback is specified, then returns an array of the entity results.\n   ",
+                    "start": 6325,
+                    "end": 7771,
                     "loc": {
                       "start": {
-                        "line": 199,
+                        "line": 196,
                         "column": 2
                       },
                       "end": {
-                        "line": 232,
+                        "line": 230,
                         "column": 5
                       }
                     }
@@ -3341,15 +3341,15 @@
               },
               {
                 "type": "ClassMethod",
-                "start": 7814,
-                "end": 7872,
+                "start": 7774,
+                "end": 7832,
                 "loc": {
                   "start": {
-                    "line": 233,
+                    "line": 231,
                     "column": 2
                   },
                   "end": {
-                    "line": 235,
+                    "line": 233,
                     "column": 3
                   }
                 },
@@ -3357,15 +3357,15 @@
                 "computed": false,
                 "key": {
                   "type": "Identifier",
-                  "start": 7814,
-                  "end": 7818,
+                  "start": 7774,
+                  "end": 7778,
                   "loc": {
                     "start": {
-                      "line": 233,
+                      "line": 231,
                       "column": 2
                     },
                     "end": {
-                      "line": 233,
+                      "line": 231,
                       "column": 6
                     },
                     "identifierName": "each"
@@ -3381,29 +3381,29 @@
                 "params": [
                   {
                     "type": "RestElement",
-                    "start": 7819,
-                    "end": 7826,
+                    "start": 7779,
+                    "end": 7786,
                     "loc": {
                       "start": {
-                        "line": 233,
+                        "line": 231,
                         "column": 7
                       },
                       "end": {
-                        "line": 233,
+                        "line": 231,
                         "column": 14
                       }
                     },
                     "argument": {
                       "type": "Identifier",
-                      "start": 7822,
-                      "end": 7826,
+                      "start": 7782,
+                      "end": 7786,
                       "loc": {
                         "start": {
-                          "line": 233,
+                          "line": 231,
                           "column": 10
                         },
                         "end": {
-                          "line": 233,
+                          "line": 231,
                           "column": 14
                         },
                         "identifierName": "args"
@@ -3414,101 +3414,101 @@
                 ],
                 "body": {
                   "type": "BlockStatement",
-                  "start": 7828,
-                  "end": 7872,
+                  "start": 7788,
+                  "end": 7832,
                   "loc": {
                     "start": {
-                      "line": 233,
+                      "line": 231,
                       "column": 16
                     },
                     "end": {
-                      "line": 235,
+                      "line": 233,
                       "column": 3
                     }
                   },
                   "body": [
                     {
                       "type": "ReturnStatement",
-                      "start": 7834,
-                      "end": 7868,
+                      "start": 7794,
+                      "end": 7828,
                       "loc": {
                         "start": {
-                          "line": 234,
+                          "line": 232,
                           "column": 4
                         },
                         "end": {
-                          "line": 234,
+                          "line": 232,
                           "column": 38
                         }
                       },
                       "argument": {
                         "type": "CallExpression",
-                        "start": 7841,
-                        "end": 7868,
+                        "start": 7801,
+                        "end": 7828,
                         "loc": {
                           "start": {
-                            "line": 234,
+                            "line": 232,
                             "column": 11
                           },
                           "end": {
-                            "line": 234,
+                            "line": 232,
                             "column": 38
                           }
                         },
                         "callee": {
                           "type": "MemberExpression",
-                          "start": 7841,
-                          "end": 7859,
+                          "start": 7801,
+                          "end": 7819,
                           "loc": {
                             "start": {
-                              "line": 234,
+                              "line": 232,
                               "column": 11
                             },
                             "end": {
-                              "line": 234,
+                              "line": 232,
                               "column": 29
                             }
                           },
                           "object": {
                             "type": "MemberExpression",
-                            "start": 7841,
-                            "end": 7854,
+                            "start": 7801,
+                            "end": 7814,
                             "loc": {
                               "start": {
-                                "line": 234,
+                                "line": 232,
                                 "column": 11
                               },
                               "end": {
-                                "line": 234,
+                                "line": 232,
                                 "column": 24
                               }
                             },
                             "object": {
                               "type": "ThisExpression",
-                              "start": 7841,
-                              "end": 7845,
+                              "start": 7801,
+                              "end": 7805,
                               "loc": {
                                 "start": {
-                                  "line": 234,
+                                  "line": 232,
                                   "column": 11
                                 },
                                 "end": {
-                                  "line": 234,
+                                  "line": 232,
                                   "column": 15
                                 }
                               }
                             },
                             "property": {
                               "type": "Identifier",
-                              "start": 7846,
-                              "end": 7854,
+                              "start": 7806,
+                              "end": 7814,
                               "loc": {
                                 "start": {
-                                  "line": 234,
+                                  "line": 232,
                                   "column": 16
                                 },
                                 "end": {
-                                  "line": 234,
+                                  "line": 232,
                                   "column": 24
                                 },
                                 "identifierName": "entities"
@@ -3519,15 +3519,15 @@
                           },
                           "property": {
                             "type": "Identifier",
-                            "start": 7855,
-                            "end": 7859,
+                            "start": 7815,
+                            "end": 7819,
                             "loc": {
                               "start": {
-                                "line": 234,
+                                "line": 232,
                                 "column": 25
                               },
                               "end": {
-                                "line": 234,
+                                "line": 232,
                                 "column": 29
                               },
                               "identifierName": "each"
@@ -3539,29 +3539,29 @@
                         "arguments": [
                           {
                             "type": "SpreadElement",
-                            "start": 7860,
-                            "end": 7867,
+                            "start": 7820,
+                            "end": 7827,
                             "loc": {
                               "start": {
-                                "line": 234,
+                                "line": 232,
                                 "column": 30
                               },
                               "end": {
-                                "line": 234,
+                                "line": 232,
                                 "column": 37
                               }
                             },
                             "argument": {
                               "type": "Identifier",
-                              "start": 7863,
-                              "end": 7867,
+                              "start": 7823,
+                              "end": 7827,
                               "loc": {
                                 "start": {
-                                  "line": 234,
+                                  "line": 232,
                                   "column": 33
                                 },
                                 "end": {
-                                  "line": 234,
+                                  "line": 232,
                                   "column": 37
                                 },
                                 "identifierName": "args"
@@ -3578,16 +3578,16 @@
                 "leadingComments": [
                   {
                     "type": "CommentBlock",
-                    "value": "*\n   * Iterate through components and entities with all of the specified component names\n   *\n   * @example\n   * // Use a callback to process entities one-by-one\n   * world.each('comp', ({ comp }) => { comp.value = 0 })\n   *\n   * @example\n   * // Get an iterator for the entities\n   * const it = world.each('comp')\n   * for (let entity of it) {...}\n   *\n   * @example\n   * // Pass multiple components, arrays, use extra entity parameter,\n   * // and destructure components outside the query\n   * world.each('compA', ['more', 'comps'], 'compB', ({ compA, compC }, entity) => {\n   *   if (compC) compC.foo(compC.bar)\n   *   compA.foo = 'bar'\n   *   entity.remove('compB')\n   * })\n   *\n   * @param {...Object} args - Can pass component names, arrays of component names, and a callback,\n   * in any order.\n   *\n   * **{...string}**: The component names to match entities with. This checks if the entity\n   * has ALL of the specified components, but does not check for additional components.\n   *\n   * **{Function}**: The callback to call for each matched entity. Takes (entity.data, entity).\n   * Entity data is an object of {[componentName]: [component]}, that can be destructured with syntax\n   * shown in the examples.\n   *\n   * @return {MapIterator} If no callback specified, then returns a one-time-use iterator to the entities.\n   * Otherwise, returns the last loop iteration status, returned by the callback.\n   ",
-                    "start": 6392,
-                    "end": 7811,
+                    "value": "*\n   * Iterate through components and entities with all of the specified component names\n   *\n   * @example\n   * // Use a callback to process entities one-by-one\n   * // This is the recommended way, as it is higher performance than allocating and\n   * // returning an array\n   * world.each('comp', ({ comp }) => { comp.value = 0 })\n   *\n   * @example\n   * // Get an array of entities\n   * const entities = world.each('comp')\n   * for (const entity of entities) {...}\n   *\n   * @example\n   * // Pass multiple components, arrays, use extra entity parameter,\n   * // and destructure components outside the query\n   * world.each('compA', ['more', 'comps'], 'compB', ({ compA, compC }, entity) => {\n   *   if (compC) compC.foo(compC.bar)\n   *   compA.foo = 'bar'\n   *   entity.remove('compB')\n   * })\n   *\n   * @param {...Object} args - Can pass component names, arrays of component names, and a callback,\n   * in any order.\n   *\n   * **{...string}**: The component names to match entities with. This checks if the entity\n   * has ALL of the specified components, but does not check for additional components.\n   *\n   * **{Function}**: The callback to call for each matched entity. Takes (entity.data, entity).\n   * Entity data is an object of {[componentName]: [component]}, that can be destructured with syntax\n   * shown in the examples.\n   *\n   * @return {Entity[]} If no callback is specified, then returns an array of the entity results.\n   ",
+                    "start": 6325,
+                    "end": 7771,
                     "loc": {
                       "start": {
-                        "line": 199,
+                        "line": 196,
                         "column": 2
                       },
                       "end": {
-                        "line": 232,
+                        "line": 230,
                         "column": 5
                       }
                     }
@@ -3769,16 +3769,16 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n   * Sets a context object that is automatically injected into all existing and new systems.\n   * Calling this multiple times will overwrite any previous contexts passed. One caveat is that\n   * you can only start to use the injected context in systems starting with init(). It is not\n   * available in the constructor.\n   *\n   * @param {Object} data - The object to use as context to pass to systems.\n   * All the keys inside the context object will be spread into the top-level of the system.\n   *\n   * @example\n   * const state = { app: new PIXI.Application() }\n   * const world = new World()\n   * world.context(state) // systems can directly use this.app\n   * world.system(...)\n   *\n   * @example\n   * world.context(state, 'state') // systems use this.state.app\n   *\n   * @return {Entity} The new entity created\n   ",
+      "value": "*\n   * Sets a context object that is automatically injected into all existing and new systems.\n   * Calling this multiple times will overwrite any previous contexts passed. One caveat is that\n   * you can only start to use the injected context in systems starting with init(). It is not\n   * available in the constructor.\n   *\n   * @param {Object} data - The object to use as context to pass to systems.\n   * All the keys inside the context object will be spread into the top-level of the system.\n   *\n   * @example\n   * const state = { app: new PIXI.Application() }\n   * const world = new World()\n   * world.context(state) // new and existing systems can directly use this.app\n   * world.system(...)\n   *\n   * @return {Entity} The new entity created\n   ",
       "start": 2985,
-      "end": 3810,
+      "end": 3743,
       "loc": {
         "start": {
           "line": 101,
           "column": 2
         },
         "end": {
-          "line": 120,
+          "line": 117,
           "column": 5
         }
       }
@@ -3786,15 +3786,15 @@
     {
       "type": "CommentBlock",
       "value": "*\n   * Registers a system to the world.\n   * The order the systems get registered, is the order then run in.\n   *\n   * @example\n   * // Movement system (basic example)\n   * class MovementSystem {\n   *   run(dt) {\n   *     world.each('position', 'velocity', ({ position, velocity }) => {\n   *       position.x += velocity.x * dt\n   *       position.y += velocity.y * dt\n   *     })\n   *   }\n   * }\n   * // Input system (advanced example)\n   * class InputSystem {\n   *   init(key) {\n   *     // Have access to this.keyboard here, but not in constructor\n   *     this.key = key\n   *   }\n   *   run(dt) {\n   *     if (this.keyboard.isPressed(this.key)) {\n   *       world.each('controlled', 'velocity', ({ velocity }, entity) => {\n   *         // Start moving all controlled entities to the right\n   *         velocity.x = 1\n   *         velocity.y = 0\n   *         // Can also use the full entity here, in this case to add a new component\n   *         entity.set('useFuel')\n   *       })\n   *     }\n   *   }\n   * }\n   * // Inject context (see world.context())\n   * world.context({ keyboard: new Keyboard() })\n   * // Register systems in order (this method)\n   * world.system(InputSystem, 'w') // pass arguments to init/constructor\n   * world.system(MovementSystem)\n   * // Run systems (can get dt or frame time)\n   * world.run(1000.0 / 60.0)\n   *\n   * @param {Function} systemClass - The system class to instantiate. Can contain a\n   * constructor(), init(), run(), or any other custom methods/properties.\n   *\n   * @param {...Object} [args] - The arguments to forward to the system's constructor and init.\n   * Note that it is recommended to use init if using context, see world.context().\n   * Passing args here is still useful, because it can be specific to each system, where\n   * the same context is passed to all systems.\n   ",
-      "start": 3870,
-      "end": 5702,
+      "start": 3803,
+      "end": 5635,
       "loc": {
         "start": {
-          "line": 125,
+          "line": 122,
           "column": 2
         },
         "end": {
-          "line": 172,
+          "line": 169,
           "column": 5
         }
       }
@@ -3802,31 +3802,31 @@
     {
       "type": "CommentBlock",
       "value": "*\n   * Calls run() on all systems. These methods can return true to cause an additional rerun of all systems.\n   * Reruns will not receive the args passed into run(), as a way to identify reruns.\n   *\n   * @example\n   * world.run(deltaTime)\n   *\n   * @example\n   * // Example flow of method call order:\n   * // Setup systems:\n   * world.system(systemA)\n   * world.system(systemB)\n   * // During world.run():\n   * // systemA.run()\n   * // systemB.run()\n   *\n   * @param {...Object} [args] - The arguments to forward to the systems' methods\n   ",
-      "start": 5791,
-      "end": 6337,
+      "start": 5724,
+      "end": 6270,
       "loc": {
         "start": {
-          "line": 177,
+          "line": 174,
           "column": 2
         },
         "end": {
-          "line": 194,
+          "line": 191,
           "column": 5
         }
       }
     },
     {
       "type": "CommentBlock",
-      "value": "*\n   * Iterate through components and entities with all of the specified component names\n   *\n   * @example\n   * // Use a callback to process entities one-by-one\n   * world.each('comp', ({ comp }) => { comp.value = 0 })\n   *\n   * @example\n   * // Get an iterator for the entities\n   * const it = world.each('comp')\n   * for (let entity of it) {...}\n   *\n   * @example\n   * // Pass multiple components, arrays, use extra entity parameter,\n   * // and destructure components outside the query\n   * world.each('compA', ['more', 'comps'], 'compB', ({ compA, compC }, entity) => {\n   *   if (compC) compC.foo(compC.bar)\n   *   compA.foo = 'bar'\n   *   entity.remove('compB')\n   * })\n   *\n   * @param {...Object} args - Can pass component names, arrays of component names, and a callback,\n   * in any order.\n   *\n   * **{...string}**: The component names to match entities with. This checks if the entity\n   * has ALL of the specified components, but does not check for additional components.\n   *\n   * **{Function}**: The callback to call for each matched entity. Takes (entity.data, entity).\n   * Entity data is an object of {[componentName]: [component]}, that can be destructured with syntax\n   * shown in the examples.\n   *\n   * @return {MapIterator} If no callback specified, then returns a one-time-use iterator to the entities.\n   * Otherwise, returns the last loop iteration status, returned by the callback.\n   ",
-      "start": 6392,
-      "end": 7811,
+      "value": "*\n   * Iterate through components and entities with all of the specified component names\n   *\n   * @example\n   * // Use a callback to process entities one-by-one\n   * // This is the recommended way, as it is higher performance than allocating and\n   * // returning an array\n   * world.each('comp', ({ comp }) => { comp.value = 0 })\n   *\n   * @example\n   * // Get an array of entities\n   * const entities = world.each('comp')\n   * for (const entity of entities) {...}\n   *\n   * @example\n   * // Pass multiple components, arrays, use extra entity parameter,\n   * // and destructure components outside the query\n   * world.each('compA', ['more', 'comps'], 'compB', ({ compA, compC }, entity) => {\n   *   if (compC) compC.foo(compC.bar)\n   *   compA.foo = 'bar'\n   *   entity.remove('compB')\n   * })\n   *\n   * @param {...Object} args - Can pass component names, arrays of component names, and a callback,\n   * in any order.\n   *\n   * **{...string}**: The component names to match entities with. This checks if the entity\n   * has ALL of the specified components, but does not check for additional components.\n   *\n   * **{Function}**: The callback to call for each matched entity. Takes (entity.data, entity).\n   * Entity data is an object of {[componentName]: [component]}, that can be destructured with syntax\n   * shown in the examples.\n   *\n   * @return {Entity[]} If no callback is specified, then returns an array of the entity results.\n   ",
+      "start": 6325,
+      "end": 7771,
       "loc": {
         "start": {
-          "line": 199,
+          "line": 196,
           "column": 2
         },
         "end": {
-          "line": 232,
+          "line": 230,
           "column": 5
         }
       }
@@ -8327,16 +8327,16 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n   * Sets a context object that is automatically injected into all existing and new systems.\n   * Calling this multiple times will overwrite any previous contexts passed. One caveat is that\n   * you can only start to use the injected context in systems starting with init(). It is not\n   * available in the constructor.\n   *\n   * @param {Object} data - The object to use as context to pass to systems.\n   * All the keys inside the context object will be spread into the top-level of the system.\n   *\n   * @example\n   * const state = { app: new PIXI.Application() }\n   * const world = new World()\n   * world.context(state) // systems can directly use this.app\n   * world.system(...)\n   *\n   * @example\n   * world.context(state, 'state') // systems use this.state.app\n   *\n   * @return {Entity} The new entity created\n   ",
+      "value": "*\n   * Sets a context object that is automatically injected into all existing and new systems.\n   * Calling this multiple times will overwrite any previous contexts passed. One caveat is that\n   * you can only start to use the injected context in systems starting with init(). It is not\n   * available in the constructor.\n   *\n   * @param {Object} data - The object to use as context to pass to systems.\n   * All the keys inside the context object will be spread into the top-level of the system.\n   *\n   * @example\n   * const state = { app: new PIXI.Application() }\n   * const world = new World()\n   * world.context(state) // new and existing systems can directly use this.app\n   * world.system(...)\n   *\n   * @return {Entity} The new entity created\n   ",
       "start": 2985,
-      "end": 3810,
+      "end": 3743,
       "loc": {
         "start": {
           "line": 101,
           "column": 2
         },
         "end": {
-          "line": 120,
+          "line": 117,
           "column": 5
         }
       }
@@ -8354,15 +8354,15 @@
         "binop": null
       },
       "value": "context",
-      "start": 3813,
-      "end": 3820,
+      "start": 3746,
+      "end": 3753,
       "loc": {
         "start": {
-          "line": 121,
+          "line": 118,
           "column": 2
         },
         "end": {
-          "line": 121,
+          "line": 118,
           "column": 9
         }
       }
@@ -8379,15 +8379,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3820,
-      "end": 3821,
+      "start": 3753,
+      "end": 3754,
       "loc": {
         "start": {
-          "line": 121,
+          "line": 118,
           "column": 9
         },
         "end": {
-          "line": 121,
+          "line": 118,
           "column": 10
         }
       }
@@ -8405,15 +8405,15 @@
         "binop": null
       },
       "value": "data",
-      "start": 3821,
-      "end": 3825,
+      "start": 3754,
+      "end": 3758,
       "loc": {
         "start": {
-          "line": 121,
+          "line": 118,
           "column": 10
         },
         "end": {
-          "line": 121,
+          "line": 118,
           "column": 14
         }
       }
@@ -8430,15 +8430,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3825,
-      "end": 3826,
+      "start": 3758,
+      "end": 3759,
       "loc": {
         "start": {
-          "line": 121,
+          "line": 118,
           "column": 14
         },
         "end": {
-          "line": 121,
+          "line": 118,
           "column": 15
         }
       }
@@ -8455,15 +8455,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3827,
-      "end": 3828,
+      "start": 3760,
+      "end": 3761,
       "loc": {
         "start": {
-          "line": 121,
+          "line": 118,
           "column": 16
         },
         "end": {
-          "line": 121,
+          "line": 118,
           "column": 17
         }
       }
@@ -8483,15 +8483,15 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 3833,
-      "end": 3837,
+      "start": 3766,
+      "end": 3770,
       "loc": {
         "start": {
-          "line": 122,
+          "line": 119,
           "column": 4
         },
         "end": {
-          "line": 122,
+          "line": 119,
           "column": 8
         }
       }
@@ -8509,15 +8509,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3837,
-      "end": 3838,
+      "start": 3770,
+      "end": 3771,
       "loc": {
         "start": {
-          "line": 122,
+          "line": 119,
           "column": 8
         },
         "end": {
-          "line": 122,
+          "line": 119,
           "column": 9
         }
       }
@@ -8535,15 +8535,15 @@
         "binop": null
       },
       "value": "systems",
-      "start": 3838,
-      "end": 3845,
+      "start": 3771,
+      "end": 3778,
       "loc": {
         "start": {
-          "line": 122,
+          "line": 119,
           "column": 9
         },
         "end": {
-          "line": 122,
+          "line": 119,
           "column": 16
         }
       }
@@ -8561,15 +8561,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3845,
-      "end": 3846,
+      "start": 3778,
+      "end": 3779,
       "loc": {
         "start": {
-          "line": 122,
+          "line": 119,
           "column": 16
         },
         "end": {
-          "line": 122,
+          "line": 119,
           "column": 17
         }
       }
@@ -8587,15 +8587,15 @@
         "binop": null
       },
       "value": "setContext",
-      "start": 3846,
-      "end": 3856,
+      "start": 3779,
+      "end": 3789,
       "loc": {
         "start": {
-          "line": 122,
+          "line": 119,
           "column": 17
         },
         "end": {
-          "line": 122,
+          "line": 119,
           "column": 27
         }
       }
@@ -8612,15 +8612,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3856,
-      "end": 3857,
+      "start": 3789,
+      "end": 3790,
       "loc": {
         "start": {
-          "line": 122,
+          "line": 119,
           "column": 27
         },
         "end": {
-          "line": 122,
+          "line": 119,
           "column": 28
         }
       }
@@ -8638,15 +8638,15 @@
         "binop": null
       },
       "value": "data",
-      "start": 3857,
-      "end": 3861,
+      "start": 3790,
+      "end": 3794,
       "loc": {
         "start": {
-          "line": 122,
+          "line": 119,
           "column": 28
         },
         "end": {
-          "line": 122,
+          "line": 119,
           "column": 32
         }
       }
@@ -8663,15 +8663,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3861,
-      "end": 3862,
+      "start": 3794,
+      "end": 3795,
       "loc": {
         "start": {
-          "line": 122,
+          "line": 119,
           "column": 32
         },
         "end": {
-          "line": 122,
+          "line": 119,
           "column": 33
         }
       }
@@ -8688,15 +8688,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3865,
-      "end": 3866,
+      "start": 3798,
+      "end": 3799,
       "loc": {
         "start": {
-          "line": 123,
+          "line": 120,
           "column": 2
         },
         "end": {
-          "line": 123,
+          "line": 120,
           "column": 3
         }
       }
@@ -8704,15 +8704,15 @@
     {
       "type": "CommentBlock",
       "value": "*\n   * Registers a system to the world.\n   * The order the systems get registered, is the order then run in.\n   *\n   * @example\n   * // Movement system (basic example)\n   * class MovementSystem {\n   *   run(dt) {\n   *     world.each('position', 'velocity', ({ position, velocity }) => {\n   *       position.x += velocity.x * dt\n   *       position.y += velocity.y * dt\n   *     })\n   *   }\n   * }\n   * // Input system (advanced example)\n   * class InputSystem {\n   *   init(key) {\n   *     // Have access to this.keyboard here, but not in constructor\n   *     this.key = key\n   *   }\n   *   run(dt) {\n   *     if (this.keyboard.isPressed(this.key)) {\n   *       world.each('controlled', 'velocity', ({ velocity }, entity) => {\n   *         // Start moving all controlled entities to the right\n   *         velocity.x = 1\n   *         velocity.y = 0\n   *         // Can also use the full entity here, in this case to add a new component\n   *         entity.set('useFuel')\n   *       })\n   *     }\n   *   }\n   * }\n   * // Inject context (see world.context())\n   * world.context({ keyboard: new Keyboard() })\n   * // Register systems in order (this method)\n   * world.system(InputSystem, 'w') // pass arguments to init/constructor\n   * world.system(MovementSystem)\n   * // Run systems (can get dt or frame time)\n   * world.run(1000.0 / 60.0)\n   *\n   * @param {Function} systemClass - The system class to instantiate. Can contain a\n   * constructor(), init(), run(), or any other custom methods/properties.\n   *\n   * @param {...Object} [args] - The arguments to forward to the system's constructor and init.\n   * Note that it is recommended to use init if using context, see world.context().\n   * Passing args here is still useful, because it can be specific to each system, where\n   * the same context is passed to all systems.\n   ",
-      "start": 3870,
-      "end": 5702,
+      "start": 3803,
+      "end": 5635,
       "loc": {
         "start": {
-          "line": 125,
+          "line": 122,
           "column": 2
         },
         "end": {
-          "line": 172,
+          "line": 169,
           "column": 5
         }
       }
@@ -8730,15 +8730,15 @@
         "binop": null
       },
       "value": "system",
-      "start": 5705,
-      "end": 5711,
+      "start": 5638,
+      "end": 5644,
       "loc": {
         "start": {
-          "line": 173,
+          "line": 170,
           "column": 2
         },
         "end": {
-          "line": 173,
+          "line": 170,
           "column": 8
         }
       }
@@ -8755,15 +8755,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 5711,
-      "end": 5712,
+      "start": 5644,
+      "end": 5645,
       "loc": {
         "start": {
-          "line": 173,
+          "line": 170,
           "column": 8
         },
         "end": {
-          "line": 173,
+          "line": 170,
           "column": 9
         }
       }
@@ -8781,15 +8781,15 @@
         "binop": null
       },
       "value": "systemClass",
-      "start": 5712,
-      "end": 5723,
+      "start": 5645,
+      "end": 5656,
       "loc": {
         "start": {
-          "line": 173,
+          "line": 170,
           "column": 9
         },
         "end": {
-          "line": 173,
+          "line": 170,
           "column": 20
         }
       }
@@ -8807,15 +8807,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 5723,
-      "end": 5724,
+      "start": 5656,
+      "end": 5657,
       "loc": {
         "start": {
-          "line": 173,
+          "line": 170,
           "column": 20
         },
         "end": {
-          "line": 173,
+          "line": 170,
           "column": 21
         }
       }
@@ -8833,15 +8833,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 5725,
-      "end": 5728,
+      "start": 5658,
+      "end": 5661,
       "loc": {
         "start": {
-          "line": 173,
+          "line": 170,
           "column": 22
         },
         "end": {
-          "line": 173,
+          "line": 170,
           "column": 25
         }
       }
@@ -8859,15 +8859,15 @@
         "binop": null
       },
       "value": "args",
-      "start": 5728,
-      "end": 5732,
+      "start": 5661,
+      "end": 5665,
       "loc": {
         "start": {
-          "line": 173,
+          "line": 170,
           "column": 25
         },
         "end": {
-          "line": 173,
+          "line": 170,
           "column": 29
         }
       }
@@ -8884,15 +8884,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 5732,
-      "end": 5733,
+      "start": 5665,
+      "end": 5666,
       "loc": {
         "start": {
-          "line": 173,
+          "line": 170,
           "column": 29
         },
         "end": {
-          "line": 173,
+          "line": 170,
           "column": 30
         }
       }
@@ -8909,15 +8909,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 5734,
-      "end": 5735,
+      "start": 5667,
+      "end": 5668,
       "loc": {
         "start": {
-          "line": 173,
+          "line": 170,
           "column": 31
         },
         "end": {
-          "line": 173,
+          "line": 170,
           "column": 32
         }
       }
@@ -8937,15 +8937,15 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 5740,
-      "end": 5744,
+      "start": 5673,
+      "end": 5677,
       "loc": {
         "start": {
-          "line": 174,
+          "line": 171,
           "column": 4
         },
         "end": {
-          "line": 174,
+          "line": 171,
           "column": 8
         }
       }
@@ -8963,15 +8963,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 5744,
-      "end": 5745,
+      "start": 5677,
+      "end": 5678,
       "loc": {
         "start": {
-          "line": 174,
+          "line": 171,
           "column": 8
         },
         "end": {
-          "line": 174,
+          "line": 171,
           "column": 9
         }
       }
@@ -8989,15 +8989,15 @@
         "binop": null
       },
       "value": "systems",
-      "start": 5745,
-      "end": 5752,
+      "start": 5678,
+      "end": 5685,
       "loc": {
         "start": {
-          "line": 174,
+          "line": 171,
           "column": 9
         },
         "end": {
-          "line": 174,
+          "line": 171,
           "column": 16
         }
       }
@@ -9015,15 +9015,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 5752,
-      "end": 5753,
+      "start": 5685,
+      "end": 5686,
       "loc": {
         "start": {
-          "line": 174,
+          "line": 171,
           "column": 16
         },
         "end": {
-          "line": 174,
+          "line": 171,
           "column": 17
         }
       }
@@ -9041,15 +9041,15 @@
         "binop": null
       },
       "value": "register",
-      "start": 5753,
-      "end": 5761,
+      "start": 5686,
+      "end": 5694,
       "loc": {
         "start": {
-          "line": 174,
+          "line": 171,
           "column": 17
         },
         "end": {
-          "line": 174,
+          "line": 171,
           "column": 25
         }
       }
@@ -9066,15 +9066,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 5761,
-      "end": 5762,
+      "start": 5694,
+      "end": 5695,
       "loc": {
         "start": {
-          "line": 174,
+          "line": 171,
           "column": 25
         },
         "end": {
-          "line": 174,
+          "line": 171,
           "column": 26
         }
       }
@@ -9092,15 +9092,15 @@
         "binop": null
       },
       "value": "systemClass",
-      "start": 5762,
-      "end": 5773,
+      "start": 5695,
+      "end": 5706,
       "loc": {
         "start": {
-          "line": 174,
+          "line": 171,
           "column": 26
         },
         "end": {
-          "line": 174,
+          "line": 171,
           "column": 37
         }
       }
@@ -9118,15 +9118,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 5773,
-      "end": 5774,
+      "start": 5706,
+      "end": 5707,
       "loc": {
         "start": {
-          "line": 174,
+          "line": 171,
           "column": 37
         },
         "end": {
-          "line": 174,
+          "line": 171,
           "column": 38
         }
       }
@@ -9144,15 +9144,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 5775,
-      "end": 5778,
+      "start": 5708,
+      "end": 5711,
       "loc": {
         "start": {
-          "line": 174,
+          "line": 171,
           "column": 39
         },
         "end": {
-          "line": 174,
+          "line": 171,
           "column": 42
         }
       }
@@ -9170,15 +9170,15 @@
         "binop": null
       },
       "value": "args",
-      "start": 5778,
-      "end": 5782,
+      "start": 5711,
+      "end": 5715,
       "loc": {
         "start": {
-          "line": 174,
+          "line": 171,
           "column": 42
         },
         "end": {
-          "line": 174,
+          "line": 171,
           "column": 46
         }
       }
@@ -9195,15 +9195,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 5782,
-      "end": 5783,
+      "start": 5715,
+      "end": 5716,
       "loc": {
         "start": {
-          "line": 174,
+          "line": 171,
           "column": 46
         },
         "end": {
-          "line": 174,
+          "line": 171,
           "column": 47
         }
       }
@@ -9220,15 +9220,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 5786,
-      "end": 5787,
+      "start": 5719,
+      "end": 5720,
       "loc": {
         "start": {
-          "line": 175,
+          "line": 172,
           "column": 2
         },
         "end": {
-          "line": 175,
+          "line": 172,
           "column": 3
         }
       }
@@ -9236,15 +9236,15 @@
     {
       "type": "CommentBlock",
       "value": "*\n   * Calls run() on all systems. These methods can return true to cause an additional rerun of all systems.\n   * Reruns will not receive the args passed into run(), as a way to identify reruns.\n   *\n   * @example\n   * world.run(deltaTime)\n   *\n   * @example\n   * // Example flow of method call order:\n   * // Setup systems:\n   * world.system(systemA)\n   * world.system(systemB)\n   * // During world.run():\n   * // systemA.run()\n   * // systemB.run()\n   *\n   * @param {...Object} [args] - The arguments to forward to the systems' methods\n   ",
-      "start": 5791,
-      "end": 6337,
+      "start": 5724,
+      "end": 6270,
       "loc": {
         "start": {
-          "line": 177,
+          "line": 174,
           "column": 2
         },
         "end": {
-          "line": 194,
+          "line": 191,
           "column": 5
         }
       }
@@ -9262,15 +9262,15 @@
         "binop": null
       },
       "value": "run",
-      "start": 6340,
-      "end": 6343,
+      "start": 6273,
+      "end": 6276,
       "loc": {
         "start": {
-          "line": 195,
+          "line": 192,
           "column": 2
         },
         "end": {
-          "line": 195,
+          "line": 192,
           "column": 5
         }
       }
@@ -9287,15 +9287,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 6343,
-      "end": 6344,
+      "start": 6276,
+      "end": 6277,
       "loc": {
         "start": {
-          "line": 195,
+          "line": 192,
           "column": 5
         },
         "end": {
-          "line": 195,
+          "line": 192,
           "column": 6
         }
       }
@@ -9313,15 +9313,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 6344,
-      "end": 6347,
+      "start": 6277,
+      "end": 6280,
       "loc": {
         "start": {
-          "line": 195,
+          "line": 192,
           "column": 6
         },
         "end": {
-          "line": 195,
+          "line": 192,
           "column": 9
         }
       }
@@ -9339,15 +9339,15 @@
         "binop": null
       },
       "value": "args",
-      "start": 6347,
-      "end": 6351,
+      "start": 6280,
+      "end": 6284,
       "loc": {
         "start": {
-          "line": 195,
+          "line": 192,
           "column": 9
         },
         "end": {
-          "line": 195,
+          "line": 192,
           "column": 13
         }
       }
@@ -9364,15 +9364,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 6351,
-      "end": 6352,
+      "start": 6284,
+      "end": 6285,
       "loc": {
         "start": {
-          "line": 195,
+          "line": 192,
           "column": 13
         },
         "end": {
-          "line": 195,
+          "line": 192,
           "column": 14
         }
       }
@@ -9389,15 +9389,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 6353,
-      "end": 6354,
+      "start": 6286,
+      "end": 6287,
       "loc": {
         "start": {
-          "line": 195,
+          "line": 192,
           "column": 15
         },
         "end": {
-          "line": 195,
+          "line": 192,
           "column": 16
         }
       }
@@ -9417,15 +9417,15 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 6359,
-      "end": 6363,
+      "start": 6292,
+      "end": 6296,
       "loc": {
         "start": {
-          "line": 196,
+          "line": 193,
           "column": 4
         },
         "end": {
-          "line": 196,
+          "line": 193,
           "column": 8
         }
       }
@@ -9443,15 +9443,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 6363,
-      "end": 6364,
+      "start": 6296,
+      "end": 6297,
       "loc": {
         "start": {
-          "line": 196,
+          "line": 193,
           "column": 8
         },
         "end": {
-          "line": 196,
+          "line": 193,
           "column": 9
         }
       }
@@ -9469,15 +9469,15 @@
         "binop": null
       },
       "value": "systems",
-      "start": 6364,
-      "end": 6371,
+      "start": 6297,
+      "end": 6304,
       "loc": {
         "start": {
-          "line": 196,
+          "line": 193,
           "column": 9
         },
         "end": {
-          "line": 196,
+          "line": 193,
           "column": 16
         }
       }
@@ -9495,15 +9495,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 6371,
-      "end": 6372,
+      "start": 6304,
+      "end": 6305,
       "loc": {
         "start": {
-          "line": 196,
+          "line": 193,
           "column": 16
         },
         "end": {
-          "line": 196,
+          "line": 193,
           "column": 17
         }
       }
@@ -9521,15 +9521,15 @@
         "binop": null
       },
       "value": "run",
-      "start": 6372,
-      "end": 6375,
+      "start": 6305,
+      "end": 6308,
       "loc": {
         "start": {
-          "line": 196,
+          "line": 193,
           "column": 17
         },
         "end": {
-          "line": 196,
+          "line": 193,
           "column": 20
         }
       }
@@ -9546,15 +9546,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 6375,
-      "end": 6376,
+      "start": 6308,
+      "end": 6309,
       "loc": {
         "start": {
-          "line": 196,
+          "line": 193,
           "column": 20
         },
         "end": {
-          "line": 196,
+          "line": 193,
           "column": 21
         }
       }
@@ -9572,15 +9572,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 6376,
-      "end": 6379,
+      "start": 6309,
+      "end": 6312,
       "loc": {
         "start": {
-          "line": 196,
+          "line": 193,
           "column": 21
         },
         "end": {
-          "line": 196,
+          "line": 193,
           "column": 24
         }
       }
@@ -9598,15 +9598,15 @@
         "binop": null
       },
       "value": "args",
-      "start": 6379,
-      "end": 6383,
+      "start": 6312,
+      "end": 6316,
       "loc": {
         "start": {
-          "line": 196,
+          "line": 193,
           "column": 24
         },
         "end": {
-          "line": 196,
+          "line": 193,
           "column": 28
         }
       }
@@ -9623,15 +9623,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 6383,
-      "end": 6384,
+      "start": 6316,
+      "end": 6317,
       "loc": {
         "start": {
-          "line": 196,
+          "line": 193,
           "column": 28
         },
         "end": {
-          "line": 196,
+          "line": 193,
           "column": 29
         }
       }
@@ -9648,31 +9648,31 @@
         "postfix": false,
         "binop": null
       },
-      "start": 6387,
-      "end": 6388,
+      "start": 6320,
+      "end": 6321,
       "loc": {
         "start": {
-          "line": 197,
+          "line": 194,
           "column": 2
         },
         "end": {
-          "line": 197,
+          "line": 194,
           "column": 3
         }
       }
     },
     {
       "type": "CommentBlock",
-      "value": "*\n   * Iterate through components and entities with all of the specified component names\n   *\n   * @example\n   * // Use a callback to process entities one-by-one\n   * world.each('comp', ({ comp }) => { comp.value = 0 })\n   *\n   * @example\n   * // Get an iterator for the entities\n   * const it = world.each('comp')\n   * for (let entity of it) {...}\n   *\n   * @example\n   * // Pass multiple components, arrays, use extra entity parameter,\n   * // and destructure components outside the query\n   * world.each('compA', ['more', 'comps'], 'compB', ({ compA, compC }, entity) => {\n   *   if (compC) compC.foo(compC.bar)\n   *   compA.foo = 'bar'\n   *   entity.remove('compB')\n   * })\n   *\n   * @param {...Object} args - Can pass component names, arrays of component names, and a callback,\n   * in any order.\n   *\n   * **{...string}**: The component names to match entities with. This checks if the entity\n   * has ALL of the specified components, but does not check for additional components.\n   *\n   * **{Function}**: The callback to call for each matched entity. Takes (entity.data, entity).\n   * Entity data is an object of {[componentName]: [component]}, that can be destructured with syntax\n   * shown in the examples.\n   *\n   * @return {MapIterator} If no callback specified, then returns a one-time-use iterator to the entities.\n   * Otherwise, returns the last loop iteration status, returned by the callback.\n   ",
-      "start": 6392,
-      "end": 7811,
+      "value": "*\n   * Iterate through components and entities with all of the specified component names\n   *\n   * @example\n   * // Use a callback to process entities one-by-one\n   * // This is the recommended way, as it is higher performance than allocating and\n   * // returning an array\n   * world.each('comp', ({ comp }) => { comp.value = 0 })\n   *\n   * @example\n   * // Get an array of entities\n   * const entities = world.each('comp')\n   * for (const entity of entities) {...}\n   *\n   * @example\n   * // Pass multiple components, arrays, use extra entity parameter,\n   * // and destructure components outside the query\n   * world.each('compA', ['more', 'comps'], 'compB', ({ compA, compC }, entity) => {\n   *   if (compC) compC.foo(compC.bar)\n   *   compA.foo = 'bar'\n   *   entity.remove('compB')\n   * })\n   *\n   * @param {...Object} args - Can pass component names, arrays of component names, and a callback,\n   * in any order.\n   *\n   * **{...string}**: The component names to match entities with. This checks if the entity\n   * has ALL of the specified components, but does not check for additional components.\n   *\n   * **{Function}**: The callback to call for each matched entity. Takes (entity.data, entity).\n   * Entity data is an object of {[componentName]: [component]}, that can be destructured with syntax\n   * shown in the examples.\n   *\n   * @return {Entity[]} If no callback is specified, then returns an array of the entity results.\n   ",
+      "start": 6325,
+      "end": 7771,
       "loc": {
         "start": {
-          "line": 199,
+          "line": 196,
           "column": 2
         },
         "end": {
-          "line": 232,
+          "line": 230,
           "column": 5
         }
       }
@@ -9690,15 +9690,15 @@
         "binop": null
       },
       "value": "each",
-      "start": 7814,
-      "end": 7818,
+      "start": 7774,
+      "end": 7778,
       "loc": {
         "start": {
-          "line": 233,
+          "line": 231,
           "column": 2
         },
         "end": {
-          "line": 233,
+          "line": 231,
           "column": 6
         }
       }
@@ -9715,15 +9715,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 7818,
-      "end": 7819,
+      "start": 7778,
+      "end": 7779,
       "loc": {
         "start": {
-          "line": 233,
+          "line": 231,
           "column": 6
         },
         "end": {
-          "line": 233,
+          "line": 231,
           "column": 7
         }
       }
@@ -9741,15 +9741,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 7819,
-      "end": 7822,
+      "start": 7779,
+      "end": 7782,
       "loc": {
         "start": {
-          "line": 233,
+          "line": 231,
           "column": 7
         },
         "end": {
-          "line": 233,
+          "line": 231,
           "column": 10
         }
       }
@@ -9767,15 +9767,15 @@
         "binop": null
       },
       "value": "args",
-      "start": 7822,
-      "end": 7826,
+      "start": 7782,
+      "end": 7786,
       "loc": {
         "start": {
-          "line": 233,
+          "line": 231,
           "column": 10
         },
         "end": {
-          "line": 233,
+          "line": 231,
           "column": 14
         }
       }
@@ -9792,15 +9792,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 7826,
-      "end": 7827,
+      "start": 7786,
+      "end": 7787,
       "loc": {
         "start": {
-          "line": 233,
+          "line": 231,
           "column": 14
         },
         "end": {
-          "line": 233,
+          "line": 231,
           "column": 15
         }
       }
@@ -9817,15 +9817,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 7828,
-      "end": 7829,
+      "start": 7788,
+      "end": 7789,
       "loc": {
         "start": {
-          "line": 233,
+          "line": 231,
           "column": 16
         },
         "end": {
-          "line": 233,
+          "line": 231,
           "column": 17
         }
       }
@@ -9845,15 +9845,15 @@
         "updateContext": null
       },
       "value": "return",
-      "start": 7834,
-      "end": 7840,
+      "start": 7794,
+      "end": 7800,
       "loc": {
         "start": {
-          "line": 234,
+          "line": 232,
           "column": 4
         },
         "end": {
-          "line": 234,
+          "line": 232,
           "column": 10
         }
       }
@@ -9873,15 +9873,15 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 7841,
-      "end": 7845,
+      "start": 7801,
+      "end": 7805,
       "loc": {
         "start": {
-          "line": 234,
+          "line": 232,
           "column": 11
         },
         "end": {
-          "line": 234,
+          "line": 232,
           "column": 15
         }
       }
@@ -9899,15 +9899,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 7845,
-      "end": 7846,
+      "start": 7805,
+      "end": 7806,
       "loc": {
         "start": {
-          "line": 234,
+          "line": 232,
           "column": 15
         },
         "end": {
-          "line": 234,
+          "line": 232,
           "column": 16
         }
       }
@@ -9925,15 +9925,15 @@
         "binop": null
       },
       "value": "entities",
-      "start": 7846,
-      "end": 7854,
+      "start": 7806,
+      "end": 7814,
       "loc": {
         "start": {
-          "line": 234,
+          "line": 232,
           "column": 16
         },
         "end": {
-          "line": 234,
+          "line": 232,
           "column": 24
         }
       }
@@ -9951,15 +9951,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 7854,
-      "end": 7855,
+      "start": 7814,
+      "end": 7815,
       "loc": {
         "start": {
-          "line": 234,
+          "line": 232,
           "column": 24
         },
         "end": {
-          "line": 234,
+          "line": 232,
           "column": 25
         }
       }
@@ -9977,15 +9977,15 @@
         "binop": null
       },
       "value": "each",
-      "start": 7855,
-      "end": 7859,
+      "start": 7815,
+      "end": 7819,
       "loc": {
         "start": {
-          "line": 234,
+          "line": 232,
           "column": 25
         },
         "end": {
-          "line": 234,
+          "line": 232,
           "column": 29
         }
       }
@@ -10002,15 +10002,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 7859,
-      "end": 7860,
+      "start": 7819,
+      "end": 7820,
       "loc": {
         "start": {
-          "line": 234,
+          "line": 232,
           "column": 29
         },
         "end": {
-          "line": 234,
+          "line": 232,
           "column": 30
         }
       }
@@ -10028,15 +10028,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 7860,
-      "end": 7863,
+      "start": 7820,
+      "end": 7823,
       "loc": {
         "start": {
-          "line": 234,
+          "line": 232,
           "column": 30
         },
         "end": {
-          "line": 234,
+          "line": 232,
           "column": 33
         }
       }
@@ -10054,15 +10054,15 @@
         "binop": null
       },
       "value": "args",
-      "start": 7863,
-      "end": 7867,
+      "start": 7823,
+      "end": 7827,
       "loc": {
         "start": {
-          "line": 234,
+          "line": 232,
           "column": 33
         },
         "end": {
-          "line": 234,
+          "line": 232,
           "column": 37
         }
       }
@@ -10079,15 +10079,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 7867,
-      "end": 7868,
+      "start": 7827,
+      "end": 7828,
       "loc": {
         "start": {
-          "line": 234,
+          "line": 232,
           "column": 37
         },
         "end": {
-          "line": 234,
+          "line": 232,
           "column": 38
         }
       }
@@ -10104,15 +10104,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 7871,
-      "end": 7872,
+      "start": 7831,
+      "end": 7832,
       "loc": {
         "start": {
-          "line": 235,
+          "line": 233,
           "column": 2
         },
         "end": {
-          "line": 235,
+          "line": 233,
           "column": 3
         }
       }
@@ -10129,15 +10129,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 7873,
-      "end": 7874,
+      "start": 7833,
+      "end": 7834,
       "loc": {
         "start": {
-          "line": 236,
+          "line": 234,
           "column": 0
         },
         "end": {
-          "line": 236,
+          "line": 234,
           "column": 1
         }
       }
@@ -10155,15 +10155,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 7875,
-      "end": 7875,
+      "start": 7835,
+      "end": 7835,
       "loc": {
         "start": {
-          "line": 237,
+          "line": 235,
           "column": 0
         },
         "end": {
-          "line": 237,
+          "line": 235,
           "column": 0
         }
       }

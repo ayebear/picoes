@@ -103,7 +103,7 @@ export class Entity {
    * Returns a component by name, or undefined if it doesn&apos;t exist
    *
    * @example
-   * let position = entity.get(&apos;position&apos;)
+   * const position = entity.get(&apos;position&apos;)
    *
    * @param {string} component - The component name to get
    *
@@ -308,7 +308,7 @@ export class Entity {
    * Defining toJSON methods in your components will override the built-in behavior.
    *
    * @example
-   * let serializedEntity = entity.toJSON()
+   * const serializedEntity = entity.toJSON()
    *
    * @return {string} JSON encoded string
    */
