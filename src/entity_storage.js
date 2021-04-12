@@ -69,7 +69,6 @@ export class EntityStorage {
 
   // Returns an existing or new index
   accessIndex(component) {
-    // TODO: Compare with object based approach for performance
     return (
       this.index.get(component) ||
       this.index.set(component, new Map()).get(component)
