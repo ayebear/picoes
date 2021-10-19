@@ -23,24 +23,20 @@ export class World {
    */
   constructor(options) {
     /** @ignore */
-    this.systems = new SystemStorage(this)
+    this._systems = new SystemStorage(this)
     /** @ignore */
     this.entities = new EntityStorage(this)
 
     // Register components, context, and systems
     if (options) {
       if (options.components) {
-        for (const name in options.components) {
-          this.component(name, options.components[name])
-        }
+        this.components = options.components
       }
       if (options.context) {
-        this.context(options.context)
+        this.context = options.context
       }
       if (options.systems) {
-        for (const systemClass of options.systems) {
-          this.system(systemClass)
-        }
+        this.systems = options.systems
       }
     }
   }
@@ -87,6 +83,28 @@ export class World {
   }
 
   /**
+   * Registers all components in an object. Merges with existing registered components.
+   *
+   * @example
+   * world.components = { position: Position }
+   */
+  set components(comps) {
+    for (let key in comps) {
+      this.entities.registerComponent(key, comps[key])
+    }
+  }
+
+  /**
+   * Returns currently registered components.
+   *
+   * @example
+   * const { position: Position } = world.components
+   */
+  get components() {
+    return this.entities.componentClasses
+  }
+
+  /**
    * Creates a new entity in the world
    *
    * @example
@@ -110,13 +128,21 @@ export class World {
    * @example
    * const state = { app: new PIXI.Application() }
    * const world = new World()
-   * world.context(state) // new and existing systems can directly use this.app
+   * world.context = state // new and existing systems can directly use this.app
    * world.system(...)
-   *
-   * @return {Entity} The new entity created
    */
-  context(data) {
-    this.systems.setContext(data)
+  set context(data) {
+    this._systems.setContext(data)
+  }
+
+  /**
+   * Returns currently set context object.
+   *
+   * @example
+   * const { app } = world.context
+   */
+  get context() {
+    return this._systems.context
   }
 
   /**
@@ -151,8 +177,8 @@ export class World {
    *     }
    *   }
    * }
-   * // Inject context (see world.context())
-   * world.context({ keyboard: new Keyboard() })
+   * // Inject context (see world.context)
+   * world.context = { keyboard: new Keyboard() }
    * // Register systems in order (this method)
    * world.system(InputSystem, 'w') // pass arguments to init/constructor
    * world.system(MovementSystem)
@@ -163,12 +189,34 @@ export class World {
    * constructor(), init(), run(), or any other custom methods/properties.
    *
    * @param {...Object} [args] - The arguments to forward to the system's constructor and init.
-   * Note that it is recommended to use init if using context, see world.context().
+   * Note that it is recommended to use init if using context, see world.context.
    * Passing args here is still useful, because it can be specific to each system, where
    * the same context is passed to all systems.
    */
   system(systemClass, ...args) {
-    this.systems.register(systemClass, ...args)
+    this._systems.register(systemClass, ...args)
+  }
+
+  /**
+   * Registers additional systems, in the order specified. See world.system().
+   *
+   * @example
+   * world.systems = [inputSystem, movementSystem]
+   */
+  set systems(values) {
+    for (const sys of values) {
+      this._systems.register(sys)
+    }
+  }
+
+  /**
+   * Returns currently added systems, in the order added.
+   *
+   * @example
+   * const [inputSystem, movementSystem] = world.systems
+   */
+  get systems() {
+    return this._systems.systems
   }
 
   /**
@@ -190,7 +238,7 @@ export class World {
    * @param {...Object} [args] - The arguments to forward to the systems' methods
    */
   run(...args) {
-    this.systems.run(...args)
+    this._systems.run(...args)
   }
 
   /**

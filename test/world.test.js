@@ -21,28 +21,28 @@ test('world: create a world with options', () => {
   // Make worlds
   const world1 = new World({})
   expect(world1).toBeInstanceOf(World)
-  expect(world1.systems.systems).toHaveLength(0)
-  expect(getSize(world1.entities.componentClasses)).toBe(0)
-  expect(getSize(world1.systems.context)).toBe(1)
+  expect(world1.systems).toHaveLength(0)
+  expect(getSize(world1.components)).toBe(0)
+  expect(getSize(world1.context)).toBe(1)
   const world2 = new World({
     components: {},
     systems: [],
     context: {},
   })
   expect(world2).toBeInstanceOf(World)
-  expect(world2.systems.systems).toHaveLength(0)
-  expect(getSize(world2.entities.componentClasses)).toBe(0)
-  expect(getSize(world2.systems.context)).toBe(1)
+  expect(world2.systems).toHaveLength(0)
+  expect(getSize(world2.components)).toBe(0)
+  expect(getSize(world2.context)).toBe(1)
   const world3 = new World({
     components: { position, velocity },
     systems: [input, physics, render],
     context: { state },
   })
   expect(world3).toBeInstanceOf(World)
-  expect(world3.systems.systems).toHaveLength(3)
-  expect(getSize(world3.entities.componentClasses)).toBe(2)
-  expect(getSize(world3.systems.context)).toBe(2)
-  expect(Object.keys(world3.systems.context)).toEqual(['state', 'world'])
+  expect(world3.systems).toHaveLength(3)
+  expect(getSize(world3.components)).toBe(2)
+  expect(getSize(world3.context)).toBe(2)
+  expect(Object.keys(world3.context)).toEqual(['state', 'world'])
 })
 
 test('component: define a component', () => {
@@ -56,8 +56,8 @@ test('component: define a component', () => {
     }
   })
   let ent = world.entity().set('position', 1, 2)
-  expect('position' in world.entities.componentClasses).toBeTruthy()
-  expect(Object.keys(world.entities.componentClasses).length == 1).toBeTruthy()
+  expect('position' in world.components).toBeTruthy()
+  expect(Object.keys(world.components).length == 1).toBeTruthy()
   expect(ent.has('position')).toBeTruthy()
   expect(ent.get('position').x === 1).toBeTruthy()
   expect(ent.get('position').y === 2).toBeTruthy()
@@ -78,8 +78,8 @@ test('component: define a component', () => {
     }
   )
   let ent2 = world.entity().set('velocity', 1, 2)
-  expect('velocity' in world.entities.componentClasses).toBeTruthy()
-  expect(Object.keys(world.entities.componentClasses).length == 2).toBeTruthy()
+  expect('velocity' in world.components).toBeTruthy()
+  expect(Object.keys(world.components).length == 2).toBeTruthy()
   expect(ent2.has('velocity')).toBeTruthy()
   expect(ent2.get('velocity').x === 1).toBeTruthy()
   expect(ent2.get('velocity').y === 2).toBeTruthy()
@@ -118,7 +118,7 @@ test('component: define invalid components', () => {
   expect(() => {
     world.component('invalid', 555)
   }).toThrow()
-  expect(Object.keys(world.entities.componentClasses).length === 0).toBeTruthy()
+  expect(Object.keys(world.components).length === 0).toBeTruthy()
 })
 
 test('component: use an empty component', () => {
@@ -348,7 +348,7 @@ test('component: test detached entities', () => {
 test('system: define a system', () => {
   const world = new World()
   world.system(class {})
-  expect(world.systems.systems.length == 1).toBeTruthy()
+  expect(world.systems.length == 1).toBeTruthy()
 })
 
 test('system: define a system with arguments', () => {
@@ -361,9 +361,9 @@ test('system: define a system with arguments', () => {
     }
   }
   world.system(velocitySystem, 3500, 'someCanvas', ['textures.png'])
-  expect(world.systems.systems[0].maxVelocity === 3500).toBeTruthy()
-  expect(world.systems.systems[0].canvas === 'someCanvas').toBeTruthy()
-  expect(world.systems.systems[0].textures[0] === 'textures.png').toBeTruthy()
+  expect(world.systems[0].maxVelocity === 3500).toBeTruthy()
+  expect(world.systems[0].canvas === 'someCanvas').toBeTruthy()
+  expect(world.systems[0].textures[0] === 'textures.png').toBeTruthy()
 })
 
 test('system: define a system with context (no key)', () => {
@@ -392,9 +392,9 @@ test('system: define a system with context (no key)', () => {
     }
   }
   world.system(velocitySystem, true) // Existing system
-  world.context(state) // Set keyless context
+  world.context = state // Set keyless context
   world.system(velocitySystem, false) // New system
-  expect(world.systems.systems.length).toEqual(2)
+  expect(world.systems.length).toEqual(2)
   world.run()
   expect(ran).toEqual([false, true, false])
 })
@@ -425,9 +425,9 @@ test('system: define a system with context (specific key)', () => {
     }
   }
   world.system(velocitySystem, true) // Existing system
-  world.context({ state }) // Set keyed context
+  world.context = { state } // Set keyed context
   world.system(velocitySystem, false) // New system
-  expect(world.systems.systems.length).toEqual(2)
+  expect(world.systems.length).toEqual(2)
   world.run()
   expect(ran).toEqual([false, true, false])
 })
