@@ -1,7 +1,7 @@
 {
-  "coverage": "70.49%",
-  "expectCount": 61,
-  "actualCount": 43,
+  "coverage": "72.72%",
+  "expectCount": 66,
+  "actualCount": 48,
   "files": {
     "src/entity.js": {
       "expectCount": 22,
@@ -44,8 +44,8 @@
       "undocumentLines": []
     },
     "src/world.js": {
-      "expectCount": 11,
-      "actualCount": 11,
+      "expectCount": 16,
+      "actualCount": 16,
       "undocumentLines": []
     }
   }

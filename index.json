@@ -1923,7 +1923,7 @@
     "__docId__": 109,
     "kind": "file",
     "name": "src/world.js",
-    "content": "import { Entity } from './entity.js'\nimport { SystemStorage } from './system_storage.js'\nimport { EntityStorage } from './entity_storage.js'\n\n/**\n * Class for world.\n *\n * @class World (name)\n */\nexport class World {\n  /**\n   * Constructs an instance of the world.\n   *\n   * @param {object} [options] - The initial systems, components, and context to setup in the world.\n   * Each one is optional. See below for registering these after world construction.\n   *\n   * @example\n   * const world = new World({\n   *   components: { position, velocity },\n   *   systems: [Input, Physics, Render],\n   *   context: { state },\n   * })\n   */\n  constructor(options) {\n    /** @ignore */\n    this.systems = new SystemStorage(this)\n    /** @ignore */\n    this.entities = new EntityStorage(this)\n\n    // Register components, context, and systems\n    if (options) {\n      if (options.components) {\n        for (const name in options.components) {\n          this.component(name, options.components[name])\n        }\n      }\n      if (options.context) {\n        this.context(options.context)\n      }\n      if (options.systems) {\n        for (const systemClass of options.systems) {\n          this.system(systemClass)\n        }\n      }\n    }\n  }\n\n  /**\n   * Removes all entities from the world.\n   * Does not affect any registered systems or components.\n   *\n   * @example\n   * world.clear()\n   */\n  clear() {\n    this.entities.clear()\n  }\n\n  /**\n   * Registers a component type to the world. Components must be constructable. If the component has\n   * an onCreate(), it is passed all of the arguments from methods like entity.set(). Also, components\n   * can have an onRemove() method, which gets called when removing that component from an entity.\n   *\n   * @param {string}   name           - The name\n   * @param {function} componentClass - The component class, must be a constructable class or function\n   *\n   * @example\n   * world.component('myComponent', class {\n   *     // It is highly recommended to use onCreate() over constructor(), because the component\n   *     // will have already been added to the entity. In the constructor(), it is not safe to use\n   *     // \"entity\" because it does not contain the current component while still in the constructor.\n   *     onCreate(some, args) {\n   *         this.some = some\n   *         this.args = args\n   *         this.entity.set('whatever') // this.entity is auto-injected, and this is safe to do here\n   *     }\n   * })\n   * // entity === the new entity object\n   * // some === 10\n   * // args === 500\n   * world.entity().set('myComponent', 10, 500)\n   *\n   * @return {string} Registered component name on success, undefined on failure\n   */\n  component(name, componentClass) {\n    this.entities.registerComponent(name, componentClass)\n  }\n\n  /**\n   * Creates a new entity in the world\n   *\n   * @example\n   * world.entity()\n   *\n   * @return {Entity} The new entity created\n   */\n  entity() {\n    return this.entities.createEntity()\n  }\n\n  /**\n   * Sets a context object that is automatically injected into all existing and new systems.\n   * Calling this multiple times will overwrite any previous contexts passed. One caveat is that\n   * you can only start to use the injected context in systems starting with init(). It is not\n   * available in the constructor.\n   *\n   * @param {Object} data - The object to use as context to pass to systems.\n   * All the keys inside the context object will be spread into the top-level of the system.\n   *\n   * @example\n   * const state = { app: new PIXI.Application() }\n   * const world = new World()\n   * world.context(state) // new and existing systems can directly use this.app\n   * world.system(...)\n   *\n   * @return {Entity} The new entity created\n   */\n  context(data) {\n    this.systems.setContext(data)\n  }\n\n  /**\n   * Registers a system to the world.\n   * The order the systems get registered, is the order then run in.\n   *\n   * @example\n   * // Movement system (basic example)\n   * class MovementSystem {\n   *   run(dt) {\n   *     world.each('position', 'velocity', ({ position, velocity }) => {\n   *       position.x += velocity.x * dt\n   *       position.y += velocity.y * dt\n   *     })\n   *   }\n   * }\n   * // Input system (advanced example)\n   * class InputSystem {\n   *   init(key) {\n   *     // Have access to this.keyboard here, but not in constructor\n   *     this.key = key\n   *   }\n   *   run(dt) {\n   *     if (this.keyboard.isPressed(this.key)) {\n   *       world.each('controlled', 'velocity', ({ velocity }, entity) => {\n   *         // Start moving all controlled entities to the right\n   *         velocity.x = 1\n   *         velocity.y = 0\n   *         // Can also use the full entity here, in this case to add a new component\n   *         entity.set('useFuel')\n   *       })\n   *     }\n   *   }\n   * }\n   * // Inject context (see world.context())\n   * world.context({ keyboard: new Keyboard() })\n   * // Register systems in order (this method)\n   * world.system(InputSystem, 'w') // pass arguments to init/constructor\n   * world.system(MovementSystem)\n   * // Run systems (can get dt or frame time)\n   * world.run(1000.0 / 60.0)\n   *\n   * @param {Function} systemClass - The system class to instantiate. Can contain a\n   * constructor(), init(), run(), or any other custom methods/properties.\n   *\n   * @param {...Object} [args] - The arguments to forward to the system's constructor and init.\n   * Note that it is recommended to use init if using context, see world.context().\n   * Passing args here is still useful, because it can be specific to each system, where\n   * the same context is passed to all systems.\n   */\n  system(systemClass, ...args) {\n    this.systems.register(systemClass, ...args)\n  }\n\n  /**\n   * Calls run() on all systems. These methods can return true to cause an additional rerun of all systems.\n   * Reruns will not receive the args passed into run(), as a way to identify reruns.\n   *\n   * @example\n   * world.run(deltaTime)\n   *\n   * @example\n   * // Example flow of method call order:\n   * // Setup systems:\n   * world.system(systemA)\n   * world.system(systemB)\n   * // During world.run():\n   * // systemA.run()\n   * // systemB.run()\n   *\n   * @param {...Object} [args] - The arguments to forward to the systems' methods\n   */\n  run(...args) {\n    this.systems.run(...args)\n  }\n\n  /**\n   * Iterate through components and entities with all of the specified component names\n   *\n   * @example\n   * // Use a callback to process entities one-by-one\n   * // This is the recommended way, as it is higher performance than allocating and\n   * // returning an array\n   * world.each('comp', ({ comp }) => { comp.value = 0 })\n   *\n   * @example\n   * // Get an array of entities\n   * const entities = world.each('comp')\n   * for (const entity of entities) {...}\n   *\n   * @example\n   * // Pass multiple components, arrays, use extra entity parameter,\n   * // and destructure components outside the query\n   * world.each('compA', ['more', 'comps'], 'compB', ({ compA, compC }, entity) => {\n   *   if (compC) compC.foo(compC.bar)\n   *   compA.foo = 'bar'\n   *   entity.remove('compB')\n   * })\n   *\n   * @param {...Object} args - Can pass component names, arrays of component names, and a callback,\n   * in any order.\n   *\n   * **{...string}**: The component names to match entities with. This checks if the entity\n   * has ALL of the specified components, but does not check for additional components.\n   *\n   * **{Function}**: The callback to call for each matched entity. Takes (entity.data, entity).\n   * Entity data is an object of {[componentName]: [component]}, that can be destructured with syntax\n   * shown in the examples.\n   *\n   * @return {Entity[]} If no callback is specified, then returns an array of the entity results.\n   */\n  each(...args) {\n    return this.entities.each(...args)\n  }\n}\n",
+    "content": "import { Entity } from './entity.js'\nimport { SystemStorage } from './system_storage.js'\nimport { EntityStorage } from './entity_storage.js'\n\n/**\n * Class for world.\n *\n * @class World (name)\n */\nexport class World {\n  /**\n   * Constructs an instance of the world.\n   *\n   * @param {object} [options] - The initial systems, components, and context to setup in the world.\n   * Each one is optional. See below for registering these after world construction.\n   *\n   * @example\n   * const world = new World({\n   *   components: { position, velocity },\n   *   systems: [Input, Physics, Render],\n   *   context: { state },\n   * })\n   */\n  constructor(options) {\n    /** @ignore */\n    this._systems = new SystemStorage(this)\n    /** @ignore */\n    this.entities = new EntityStorage(this)\n\n    // Register components, context, and systems\n    if (options) {\n      if (options.components) {\n        this.components = options.components\n      }\n      if (options.context) {\n        this.context = options.context\n      }\n      if (options.systems) {\n        this.systems = options.systems\n      }\n    }\n  }\n\n  /**\n   * Removes all entities from the world.\n   * Does not affect any registered systems or components.\n   *\n   * @example\n   * world.clear()\n   */\n  clear() {\n    this.entities.clear()\n  }\n\n  /**\n   * Registers a component type to the world. Components must be constructable. If the component has\n   * an onCreate(), it is passed all of the arguments from methods like entity.set(). Also, components\n   * can have an onRemove() method, which gets called when removing that component from an entity.\n   *\n   * @param {string}   name           - The name\n   * @param {function} componentClass - The component class, must be a constructable class or function\n   *\n   * @example\n   * world.component('myComponent', class {\n   *     // It is highly recommended to use onCreate() over constructor(), because the component\n   *     // will have already been added to the entity. In the constructor(), it is not safe to use\n   *     // \"entity\" because it does not contain the current component while still in the constructor.\n   *     onCreate(some, args) {\n   *         this.some = some\n   *         this.args = args\n   *         this.entity.set('whatever') // this.entity is auto-injected, and this is safe to do here\n   *     }\n   * })\n   * // entity === the new entity object\n   * // some === 10\n   * // args === 500\n   * world.entity().set('myComponent', 10, 500)\n   *\n   * @return {string} Registered component name on success, undefined on failure\n   */\n  component(name, componentClass) {\n    this.entities.registerComponent(name, componentClass)\n  }\n\n  /**\n   * Registers all components in an object. Merges with existing registered components.\n   *\n   * @example\n   * world.components = { position: Position }\n   */\n  set components(comps) {\n    for (let key in comps) {\n      this.entities.registerComponent(key, comps[key])\n    }\n  }\n\n  /**\n   * Returns currently registered components.\n   *\n   * @example\n   * const { position: Position } = world.components\n   */\n  get components() {\n    return this.entities.componentClasses\n  }\n\n  /**\n   * Creates a new entity in the world\n   *\n   * @example\n   * world.entity()\n   *\n   * @return {Entity} The new entity created\n   */\n  entity() {\n    return this.entities.createEntity()\n  }\n\n  /**\n   * Sets a context object that is automatically injected into all existing and new systems.\n   * Calling this multiple times will overwrite any previous contexts passed. One caveat is that\n   * you can only start to use the injected context in systems starting with init(). It is not\n   * available in the constructor.\n   *\n   * @param {Object} data - The object to use as context to pass to systems.\n   * All the keys inside the context object will be spread into the top-level of the system.\n   *\n   * @example\n   * const state = { app: new PIXI.Application() }\n   * const world = new World()\n   * world.context = state // new and existing systems can directly use this.app\n   * world.system(...)\n   */\n  set context(data) {\n    this._systems.setContext(data)\n  }\n\n  /**\n   * Returns currently set context object.\n   *\n   * @example\n   * const { app } = world.context\n   */\n  get context() {\n    return this._systems.context\n  }\n\n  /**\n   * Registers a system to the world.\n   * The order the systems get registered, is the order then run in.\n   *\n   * @example\n   * // Movement system (basic example)\n   * class MovementSystem {\n   *   run(dt) {\n   *     world.each('position', 'velocity', ({ position, velocity }) => {\n   *       position.x += velocity.x * dt\n   *       position.y += velocity.y * dt\n   *     })\n   *   }\n   * }\n   * // Input system (advanced example)\n   * class InputSystem {\n   *   init(key) {\n   *     // Have access to this.keyboard here, but not in constructor\n   *     this.key = key\n   *   }\n   *   run(dt) {\n   *     if (this.keyboard.isPressed(this.key)) {\n   *       world.each('controlled', 'velocity', ({ velocity }, entity) => {\n   *         // Start moving all controlled entities to the right\n   *         velocity.x = 1\n   *         velocity.y = 0\n   *         // Can also use the full entity here, in this case to add a new component\n   *         entity.set('useFuel')\n   *       })\n   *     }\n   *   }\n   * }\n   * // Inject context (see world.context)\n   * world.context = { keyboard: new Keyboard() }\n   * // Register systems in order (this method)\n   * world.system(InputSystem, 'w') // pass arguments to init/constructor\n   * world.system(MovementSystem)\n   * // Run systems (can get dt or frame time)\n   * world.run(1000.0 / 60.0)\n   *\n   * @param {Function} systemClass - The system class to instantiate. Can contain a\n   * constructor(), init(), run(), or any other custom methods/properties.\n   *\n   * @param {...Object} [args] - The arguments to forward to the system's constructor and init.\n   * Note that it is recommended to use init if using context, see world.context.\n   * Passing args here is still useful, because it can be specific to each system, where\n   * the same context is passed to all systems.\n   */\n  system(systemClass, ...args) {\n    this._systems.register(systemClass, ...args)\n  }\n\n  /**\n   * Registers additional systems, in the order specified. See world.system().\n   *\n   * @example\n   * world.systems = [inputSystem, movementSystem]\n   */\n  set systems(values) {\n    for (const sys of values) {\n      this._systems.register(sys)\n    }\n  }\n\n  /**\n   * Returns currently added systems, in the order added.\n   *\n   * @example\n   * const [inputSystem, movementSystem] = world.systems\n   */\n  get systems() {\n    return this._systems.systems\n  }\n\n  /**\n   * Calls run() on all systems. These methods can return true to cause an additional rerun of all systems.\n   * Reruns will not receive the args passed into run(), as a way to identify reruns.\n   *\n   * @example\n   * world.run(deltaTime)\n   *\n   * @example\n   * // Example flow of method call order:\n   * // Setup systems:\n   * world.system(systemA)\n   * world.system(systemB)\n   * // During world.run():\n   * // systemA.run()\n   * // systemB.run()\n   *\n   * @param {...Object} [args] - The arguments to forward to the systems' methods\n   */\n  run(...args) {\n    this._systems.run(...args)\n  }\n\n  /**\n   * Iterate through components and entities with all of the specified component names\n   *\n   * @example\n   * // Use a callback to process entities one-by-one\n   * // This is the recommended way, as it is higher performance than allocating and\n   * // returning an array\n   * world.each('comp', ({ comp }) => { comp.value = 0 })\n   *\n   * @example\n   * // Get an array of entities\n   * const entities = world.each('comp')\n   * for (const entity of entities) {...}\n   *\n   * @example\n   * // Pass multiple components, arrays, use extra entity parameter,\n   * // and destructure components outside the query\n   * world.each('compA', ['more', 'comps'], 'compB', ({ compA, compC }, entity) => {\n   *   if (compC) compC.foo(compC.bar)\n   *   compA.foo = 'bar'\n   *   entity.remove('compB')\n   * })\n   *\n   * @param {...Object} args - Can pass component names, arrays of component names, and a callback,\n   * in any order.\n   *\n   * **{...string}**: The component names to match entities with. This checks if the entity\n   * has ALL of the specified components, but does not check for additional components.\n   *\n   * **{Function}**: The callback to call for each matched entity. Takes (entity.data, entity).\n   * Entity data is an object of {[componentName]: [component]}, that can be destructured with syntax\n   * shown in the examples.\n   *\n   * @return {Entity[]} If no callback is specified, then returns an array of the entity results.\n   */\n  each(...args) {\n    return this.entities.each(...args)\n  }\n}\n",
     "static": true,
     "longname": "/home/eric/dev/picoes/src/world.js",
     "access": "public",
@@ -1982,11 +1982,11 @@
   {
     "__docId__": 112,
     "kind": "member",
-    "name": "systems",
+    "name": "_systems",
     "memberof": "src/world.js~World",
     "static": false,
-    "longname": "src/world.js~World#systems",
-    "access": "public",
+    "longname": "src/world.js~World#_systems",
+    "access": "private",
     "description": null,
     "lineNumber": 26,
     "ignore": true,
@@ -2014,7 +2014,7 @@
     }
   },
   {
-    "__docId__": 114,
+    "__docId__": 117,
     "kind": "method",
     "name": "clear",
     "memberof": "src/world.js~World",
@@ -2027,12 +2027,12 @@
     "examples": [
       "world.clear()"
     ],
-    "lineNumber": 55,
+    "lineNumber": 51,
     "params": [],
     "return": null
   },
   {
-    "__docId__": 115,
+    "__docId__": 118,
     "kind": "method",
     "name": "component",
     "memberof": "src/world.js~World",
@@ -2045,7 +2045,7 @@
     "examples": [
       "world.component('myComponent', class {\n    // It is highly recommended to use onCreate() over constructor(), because the component\n    // will have already been added to the entity. In the constructor(), it is not safe to use\n    // \"entity\" because it does not contain the current component while still in the constructor.\n    onCreate(some, args) {\n        this.some = some\n        this.args = args\n        this.entity.set('whatever') // this.entity is auto-injected, and this is safe to do here\n    }\n})\n// entity === the new entity object\n// some === 10\n// args === 500\nworld.entity().set('myComponent', 10, 500)"
     ],
-    "lineNumber": 85,
+    "lineNumber": 81,
     "params": [
       {
         "nullable": null,
@@ -2078,7 +2078,44 @@
     }
   },
   {
-    "__docId__": 116,
+    "__docId__": 119,
+    "kind": "set",
+    "name": "components",
+    "memberof": "src/world.js~World",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/world.js~World#components",
+    "access": "public",
+    "description": "Registers all components in an object. Merges with existing registered components.",
+    "examples": [
+      "world.components = { position: Position }"
+    ],
+    "lineNumber": 91
+  },
+  {
+    "__docId__": 120,
+    "kind": "get",
+    "name": "components",
+    "memberof": "src/world.js~World",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/world.js~World#components",
+    "access": "public",
+    "description": "Returns currently registered components.",
+    "examples": [
+      "const { position: Position } = world.components"
+    ],
+    "lineNumber": 103,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 121,
     "kind": "method",
     "name": "entity",
     "memberof": "src/world.js~World",
@@ -2091,7 +2128,7 @@
     "examples": [
       "world.entity()"
     ],
-    "lineNumber": 97,
+    "lineNumber": 115,
     "return": {
       "nullable": null,
       "types": [
@@ -2103,8 +2140,8 @@
     "params": []
   },
   {
-    "__docId__": 117,
-    "kind": "method",
+    "__docId__": 122,
+    "kind": "set",
     "name": "context",
     "memberof": "src/world.js~World",
     "generator": false,
@@ -2114,9 +2151,9 @@
     "access": "public",
     "description": "Sets a context object that is automatically injected into all existing and new systems.\nCalling this multiple times will overwrite any previous contexts passed. One caveat is that\nyou can only start to use the injected context in systems starting with init(). It is not\navailable in the constructor.",
     "examples": [
-      "const state = { app: new PIXI.Application() }\nconst world = new World()\nworld.context(state) // new and existing systems can directly use this.app\nworld.system(...)"
+      "const state = { app: new PIXI.Application() }\nconst world = new World()\nworld.context = state // new and existing systems can directly use this.app\nworld.system(...)"
     ],
-    "lineNumber": 118,
+    "lineNumber": 134,
     "params": [
       {
         "nullable": null,
@@ -2128,18 +2165,31 @@
         "name": "data",
         "description": "The object to use as context to pass to systems.\nAll the keys inside the context object will be spread into the top-level of the system."
       }
+    ]
+  },
+  {
+    "__docId__": 123,
+    "kind": "get",
+    "name": "context",
+    "memberof": "src/world.js~World",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/world.js~World#context",
+    "access": "public",
+    "description": "Returns currently set context object.",
+    "examples": [
+      "const { app } = world.context"
     ],
-    "return": {
-      "nullable": null,
+    "lineNumber": 144,
+    "type": {
       "types": [
-        "Entity"
-      ],
-      "spread": false,
-      "description": "The new entity created"
+        "*"
+      ]
     }
   },
   {
-    "__docId__": 118,
+    "__docId__": 124,
     "kind": "method",
     "name": "system",
     "memberof": "src/world.js~World",
@@ -2150,9 +2200,9 @@
     "access": "public",
     "description": "Registers a system to the world.\nThe order the systems get registered, is the order then run in.",
     "examples": [
-      "// Movement system (basic example)\nclass MovementSystem {\n  run(dt) {\n    world.each('position', 'velocity', ({ position, velocity }) => {\n      position.x += velocity.x * dt\n      position.y += velocity.y * dt\n    })\n  }\n}\n// Input system (advanced example)\nclass InputSystem {\n  init(key) {\n    // Have access to this.keyboard here, but not in constructor\n    this.key = key\n  }\n  run(dt) {\n    if (this.keyboard.isPressed(this.key)) {\n      world.each('controlled', 'velocity', ({ velocity }, entity) => {\n        // Start moving all controlled entities to the right\n        velocity.x = 1\n        velocity.y = 0\n        // Can also use the full entity here, in this case to add a new component\n        entity.set('useFuel')\n      })\n    }\n  }\n}\n// Inject context (see world.context())\nworld.context({ keyboard: new Keyboard() })\n// Register systems in order (this method)\nworld.system(InputSystem, 'w') // pass arguments to init/constructor\nworld.system(MovementSystem)\n// Run systems (can get dt or frame time)\nworld.run(1000.0 / 60.0)"
+      "// Movement system (basic example)\nclass MovementSystem {\n  run(dt) {\n    world.each('position', 'velocity', ({ position, velocity }) => {\n      position.x += velocity.x * dt\n      position.y += velocity.y * dt\n    })\n  }\n}\n// Input system (advanced example)\nclass InputSystem {\n  init(key) {\n    // Have access to this.keyboard here, but not in constructor\n    this.key = key\n  }\n  run(dt) {\n    if (this.keyboard.isPressed(this.key)) {\n      world.each('controlled', 'velocity', ({ velocity }, entity) => {\n        // Start moving all controlled entities to the right\n        velocity.x = 1\n        velocity.y = 0\n        // Can also use the full entity here, in this case to add a new component\n        entity.set('useFuel')\n      })\n    }\n  }\n}\n// Inject context (see world.context)\nworld.context = { keyboard: new Keyboard() }\n// Register systems in order (this method)\nworld.system(InputSystem, 'w') // pass arguments to init/constructor\nworld.system(MovementSystem)\n// Run systems (can get dt or frame time)\nworld.run(1000.0 / 60.0)"
     ],
-    "lineNumber": 170,
+    "lineNumber": 196,
     "params": [
       {
         "nullable": null,
@@ -2172,13 +2222,50 @@
         "spread": true,
         "optional": true,
         "name": "args",
-        "description": "The arguments to forward to the system's constructor and init.\nNote that it is recommended to use init if using context, see world.context().\nPassing args here is still useful, because it can be specific to each system, where\nthe same context is passed to all systems."
+        "description": "The arguments to forward to the system's constructor and init.\nNote that it is recommended to use init if using context, see world.context.\nPassing args here is still useful, because it can be specific to each system, where\nthe same context is passed to all systems."
       }
     ],
     "return": null
   },
   {
-    "__docId__": 119,
+    "__docId__": 125,
+    "kind": "set",
+    "name": "systems",
+    "memberof": "src/world.js~World",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/world.js~World#systems",
+    "access": "public",
+    "description": "Registers additional systems, in the order specified. See world.system().",
+    "examples": [
+      "world.systems = [inputSystem, movementSystem]"
+    ],
+    "lineNumber": 206
+  },
+  {
+    "__docId__": 126,
+    "kind": "get",
+    "name": "systems",
+    "memberof": "src/world.js~World",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/world.js~World#systems",
+    "access": "public",
+    "description": "Returns currently added systems, in the order added.",
+    "examples": [
+      "const [inputSystem, movementSystem] = world.systems"
+    ],
+    "lineNumber": 218,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 127,
     "kind": "method",
     "name": "run",
     "memberof": "src/world.js~World",
@@ -2192,7 +2279,7 @@
       "world.run(deltaTime)",
       "// Example flow of method call order:\n// Setup systems:\nworld.system(systemA)\nworld.system(systemB)\n// During world.run():\n// systemA.run()\n// systemB.run()"
     ],
-    "lineNumber": 192,
+    "lineNumber": 240,
     "params": [
       {
         "nullable": null,
@@ -2208,7 +2295,7 @@
     "return": null
   },
   {
-    "__docId__": 120,
+    "__docId__": 128,
     "kind": "method",
     "name": "each",
     "memberof": "src/world.js~World",
@@ -2223,7 +2310,7 @@
       "// Get an array of entities\nconst entities = world.each('comp')\nfor (const entity of entities) {...}",
       "// Pass multiple components, arrays, use extra entity parameter,\n// and destructure components outside the query\nworld.each('compA', ['more', 'comps'], 'compB', ({ compA, compC }, entity) => {\n  if (compC) compC.foo(compC.bar)\n  compA.foo = 'bar'\n  entity.remove('compB')\n})"
     ],
-    "lineNumber": 231,
+    "lineNumber": 279,
     "params": [
       {
         "nullable": null,
@@ -2255,7 +2342,7 @@
   },
   {
     "kind": "packageJSON",
-    "content": "{\n  \"name\": \"picoes\",\n  \"version\": \"1.0.0\",\n  \"description\": \"Pico Entity System for JavaScript\",\n  \"main\": \"index.js\",\n  \"files\": [\n    \"src\",\n    \"index.js\"\n  ],\n  \"scripts\": {\n    \"test\": \"node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage\",\n    \"testCoveralls\": \"node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage && coveralls < coverage/lcov.info\",\n    \"doc\": \"node --experimental-vm-modules ./node_modules/.bin/esdoc\",\n    \"deploy\": \"gh-pages -d docs\"\n  },\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"git+https://github.com/ayebear/picoes.git\"\n  },\n  \"keywords\": [\n    \"entity\",\n    \"component\",\n    \"system\",\n    \"ecs\",\n    \"picoes\"\n  ],\n  \"author\": \"Eric Hebert\",\n  \"license\": \"MIT\",\n  \"bugs\": {\n    \"url\": \"https://github.com/ayebear/picoes/issues\"\n  },\n  \"homepage\": \"https://github.com/ayebear/picoes#readme\",\n  \"devDependencies\": {\n    \"coveralls\": \"^3.1.1\",\n    \"esdoc\": \"^1.1.0\",\n    \"esdoc-ecmascript-proposal-plugin\": \"^1.0.0\",\n    \"esdoc-flow-type-plugin\": \"^1.1.0\",\n    \"esdoc-standard-plugin\": \"^1.0.0\",\n    \"esdoc-undocumented-identifier-plugin\": \"^1.0.0\",\n    \"esdoc-unexported-identifier-plugin\": \"^1.0.0\",\n    \"gh-pages\": \"^3.2.3\",\n    \"husky\": \"^7.0.2\",\n    \"jest\": \"^27.1.1\",\n    \"prettier\": \"^2.3.2\",\n    \"pretty-quick\": \"^3.1.1\"\n  },\n  \"dependencies\": {},\n  \"type\": \"module\",\n  \"husky\": {\n    \"hooks\": {\n      \"pre-commit\": \"pretty-quick --staged\"\n    }\n  }\n}\n",
+    "content": "{\n  \"name\": \"picoes\",\n  \"version\": \"1.1.0-rc0\",\n  \"description\": \"Pico Entity System for JavaScript\",\n  \"main\": \"index.js\",\n  \"files\": [\n    \"src\",\n    \"index.js\"\n  ],\n  \"scripts\": {\n    \"test\": \"node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage\",\n    \"testCoveralls\": \"node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage && coveralls < coverage/lcov.info\",\n    \"doc\": \"node --experimental-vm-modules ./node_modules/.bin/esdoc\",\n    \"deploy\": \"gh-pages -d docs\"\n  },\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"git+https://github.com/ayebear/picoes.git\"\n  },\n  \"keywords\": [\n    \"entity\",\n    \"component\",\n    \"system\",\n    \"ecs\",\n    \"picoes\"\n  ],\n  \"author\": \"Eric Hebert\",\n  \"license\": \"MIT\",\n  \"bugs\": {\n    \"url\": \"https://github.com/ayebear/picoes/issues\"\n  },\n  \"homepage\": \"https://github.com/ayebear/picoes#readme\",\n  \"devDependencies\": {\n    \"coveralls\": \"^3.1.1\",\n    \"esdoc\": \"^1.1.0\",\n    \"esdoc-ecmascript-proposal-plugin\": \"^1.0.0\",\n    \"esdoc-flow-type-plugin\": \"^1.1.0\",\n    \"esdoc-standard-plugin\": \"^1.0.0\",\n    \"esdoc-undocumented-identifier-plugin\": \"^1.0.0\",\n    \"esdoc-unexported-identifier-plugin\": \"^1.0.0\",\n    \"gh-pages\": \"^3.2.3\",\n    \"husky\": \"^7.0.2\",\n    \"jest\": \"^27.3.0\",\n    \"prettier\": \"^2.4.1\",\n    \"pretty-quick\": \"^3.1.1\"\n  },\n  \"dependencies\": {},\n  \"type\": \"module\",\n  \"husky\": {\n    \"hooks\": {\n      \"pre-commit\": \"pretty-quick --staged\"\n    }\n  }\n}\n",
     "longname": "/home/eric/dev/picoes/package.json",
     "name": "package.json",
     "static": true,

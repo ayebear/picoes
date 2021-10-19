@@ -432,6 +432,18 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/world.js~world#components",
+    "class/src/world.js~World.html#instance-set-components",
+    "src/world.js~World#components",
+    "member"
+  ],
+  [
+    "src/world.js~world#components",
+    "class/src/world.js~World.html#instance-get-components",
+    "src/world.js~World#components",
+    "member"
+  ],
+  [
     "src/world.js~world#constructor",
     "class/src/world.js~World.html#instance-constructor-constructor",
     "src/world.js~World#constructor",
@@ -439,9 +451,15 @@ window.esdocSearchIndex = [
   ],
   [
     "src/world.js~world#context",
-    "class/src/world.js~World.html#instance-method-context",
+    "class/src/world.js~World.html#instance-set-context",
     "src/world.js~World#context",
-    "method"
+    "member"
+  ],
+  [
+    "src/world.js~world#context",
+    "class/src/world.js~World.html#instance-get-context",
+    "src/world.js~World#context",
+    "member"
   ],
   [
     "src/world.js~world#each",
@@ -466,5 +484,17 @@ window.esdocSearchIndex = [
     "class/src/world.js~World.html#instance-method-system",
     "src/world.js~World#system",
     "method"
+  ],
+  [
+    "src/world.js~world#systems",
+    "class/src/world.js~World.html#instance-set-systems",
+    "src/world.js~World#systems",
+    "member"
+  ],
+  [
+    "src/world.js~world#systems",
+    "class/src/world.js~World.html#instance-get-systems",
+    "src/world.js~World#systems",
+    "member"
   ]
 ]
