@@ -9,7 +9,6 @@
   ],
   "scripts": {
     "test": "jest --coverage",
-    "testCoveralls": "jest --coverage && coveralls < coverage/lcov.info",
     "doc": "node --experimental-vm-modules ./node_modules/.bin/esdoc",
     "deploy": "gh-pages -d docs",
     "prepare": "husky install"
