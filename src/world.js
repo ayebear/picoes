@@ -2,11 +2,7 @@ import { Entity } from './entity.js'
 import { SystemStorage } from './system_storage.js'
 import { EntityStorage } from './entity_storage.js'
 
-/**
- * Class for world.
- *
- * @class World (name)
- */
+/** Class for world. */
 export class World {
   /**
    * Constructs an instance of the world.
