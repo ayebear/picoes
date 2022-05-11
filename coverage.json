@@ -1,7 +1,7 @@
 {
-  "coverage": "72.72%",
+  "coverage": "100%",
   "expectCount": 66,
-  "actualCount": 48,
+  "actualCount": 66,
   "files": {
     "src/entity.js": {
       "expectCount": 22,
@@ -10,33 +10,13 @@
     },
     "src/entity_storage.js": {
       "expectCount": 16,
-      "actualCount": 6,
-      "undocumentLines": [
-        6,
-        27,
-        40,
-        49,
-        57,
-        62,
-        70,
-        75,
-        79,
-        107
-      ]
+      "actualCount": 16,
+      "undocumentLines": []
     },
     "src/system_storage.js": {
       "expectCount": 9,
-      "actualCount": 1,
-      "undocumentLines": [
-        5,
-        6,
-        7,
-        8,
-        11,
-        23,
-        39,
-        47
-      ]
+      "actualCount": 9,
+      "undocumentLines": []
     },
     "src/utilities.js": {
       "expectCount": 3,

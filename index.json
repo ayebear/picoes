@@ -1239,7 +1239,7 @@
     "__docId__": 77,
     "kind": "file",
     "name": "src/entity_storage.js",
-    "content": "import { Entity } from './entity.js'\nimport { invoke } from './utilities.js'\n\n/** @ignore */\nexport class EntityStorage {\n  constructor(world) {\n    /** @ignore */\n    this.world = world\n    /** @ignore */\n    this.componentClasses = {}\n    /** @ignore */\n    this.nextEntityId = 1\n\n    /**\n     * Maps entity IDs to entities\n     * @ignore\n     */\n    this.entities = new Map()\n\n    /**\n     * Maps component keys to entities\n     * @ignore\n     */\n    this.index = new Map()\n  }\n\n  clear() {\n    // Call onRemove on all components of all entities\n    for (const { data } of this.entities.values()) {\n      for (const componentName in data) {\n        invoke(data[componentName], 'onRemove')\n      }\n    }\n\n    // Clear entities\n    this.entities.clear()\n    this.index.clear()\n  }\n\n  registerComponent(name, componentClass) {\n    // Only allow functions and classes to be components\n    if (typeof componentClass !== 'function') {\n      throw new Error('Component is not a valid function or class.')\n    }\n    this.componentClasses[name] = componentClass\n  }\n\n  // Creates a new entity attached to the world\n  createEntity() {\n    const entityId = this.nextEntityId++\n    const entity = new Entity(this.world, entityId)\n    this.entities.set(entityId, entity)\n    return entity\n  }\n\n  // Forwards query args from world\n  each(...args) {\n    return this.queryIndex(this.queryArgs(...args))\n  }\n\n  // Returns an existing or new index\n  accessIndex(component) {\n    return (\n      this.index.get(component) ||\n      this.index.set(component, new Map()).get(component)\n    )\n  }\n\n  // Add component with an entity to the index\n  addToIndex(entity, compName) {\n    this.accessIndex(compName).set(entity.id, entity)\n  }\n\n  // Remove component from the index for an entity\n  removeFromIndex(entity, compName) {\n    this.accessIndex(compName).delete(entity.id)\n  }\n\n  queryArgs(...args) {\n    // Gather component names and a callback (if any) from args\n    const result = {\n      componentNames: [],\n      callback: null,\n    }\n    for (const arg of args) {\n      if (typeof arg === 'string') {\n        result.componentNames.push(arg)\n      } else if (typeof arg === 'function') {\n        result.callback = arg\n      } else if (Array.isArray(arg)) {\n        // Add 1-level deep arrays of strings as separate component names\n        for (const name of arg) {\n          result.componentNames.push(name)\n        }\n      } else {\n        throw new Error(\n          `Unknown argument ${arg} with type ${typeof arg} passed to world.each().`\n        )\n      }\n    }\n    return result\n  }\n\n  // Uses an existing index or builds a new index, to get entities with the specified components\n  // If callback is defined, it will be called for each entity with component data, and returns undefined\n  // If callback is not defined, an array of entities will be returned\n  queryIndex({ componentNames, callback }) {\n    // Return all entities (array if no callback)\n    if (componentNames.length === 0) {\n      const iter = this.entities.values()\n      if (!callback) {\n        return [...iter]\n      }\n      for (const entity of iter) {\n        if (callback(entity.data, entity) === false) {\n          break\n        }\n      }\n      return\n    }\n\n    // Sort component names by number of components in each index\n    // This allows us to get the minimum component index as the first element\n    // This also helps short-circuit much faster during the full query loops with .every()\n    componentNames.sort(\n      (a, b) => this.accessIndex(a).size - this.accessIndex(b).size\n    )\n    const iter = this.accessIndex(componentNames[0]).values()\n\n    // Return array of matched entities\n    if (!callback) {\n      const results = []\n      for (const entity of iter) {\n        const { data } = entity\n        if (componentNames.every(name => name in data)) {\n          results.push(entity)\n        }\n      }\n      return results\n    }\n\n    // Invoke callback for each matched entity\n    for (const entity of iter) {\n      const { data } = entity\n      if (\n        componentNames.every(name => name in data) &&\n        callback(data, entity) === false\n      ) {\n        return\n      }\n    }\n  }\n}\n",
+    "content": "import { Entity } from './entity.js'\nimport { invoke } from './utilities.js'\n\n/** @ignore */\nexport class EntityStorage {\n  /** EntityStorage constructor, needs reference back to world */\n  constructor(world) {\n    /** World instance */\n    this.world = world\n    /** Component keys to component classes */\n    this.componentClasses = {}\n    /** Used for generating entity IDs */\n    this.nextEntityId = 1\n    /** Maps entity IDs to entities */\n    this.entities = new Map()\n    /** Maps component keys to entities */\n    this.index = new Map()\n  }\n\n  /**\n   * Removes all entities along with their components.\n   * This is more efficient than calling entity.destroy() on each, since\n   * this will only call onRemove on each and then clear the index.\n   */\n  clear() {\n    // Call onRemove on all components of all entities\n    for (const { data } of this.entities.values()) {\n      for (const componentName in data) {\n        invoke(data[componentName], 'onRemove')\n      }\n    }\n\n    // Clear entities\n    this.entities.clear()\n    this.index.clear()\n  }\n\n  /** Registers a function/class with a name as a component */\n  registerComponent(name, componentClass) {\n    if (typeof componentClass !== 'function') {\n      throw new Error('Component is not a valid function or class.')\n    }\n    this.componentClasses[name] = componentClass\n  }\n\n  /** Creates a new entity attached to the world */\n  createEntity() {\n    const entityId = this.nextEntityId++\n    const entity = new Entity(this.world, entityId)\n    this.entities.set(entityId, entity)\n    return entity\n  }\n\n  /** Forwards query args from world */\n  each(...args) {\n    return this.queryIndex(this.queryArgs(...args))\n  }\n\n  /** Returns an existing or new index */\n  accessIndex(component) {\n    return (\n      this.index.get(component) ||\n      this.index.set(component, new Map()).get(component)\n    )\n  }\n\n  /** Add component with an entity to the index */\n  addToIndex(entity, compName) {\n    this.accessIndex(compName).set(entity.id, entity)\n  }\n\n  /** Remove component from the index for an entity */\n  removeFromIndex(entity, compName) {\n    this.accessIndex(compName).delete(entity.id)\n  }\n\n  /** Get component names and optional callback from query args */\n  queryArgs(...args) {\n    const result = {\n      componentNames: [],\n      callback: null,\n    }\n    for (const arg of args) {\n      if (typeof arg === 'string') {\n        result.componentNames.push(arg)\n      } else if (typeof arg === 'function') {\n        result.callback = arg\n      } else if (Array.isArray(arg)) {\n        // Add 1-level deep arrays of strings as separate component names\n        for (const name of arg) {\n          result.componentNames.push(name)\n        }\n      } else {\n        throw new Error(\n          `Unknown argument ${arg} with type ${typeof arg} passed to world.each().`\n        )\n      }\n    }\n    return result\n  }\n\n  /**\n   * Uses an existing index or builds a new index, to get entities with the specified components\n   * If callback is defined, it will be called for each entity with component data, and returns undefined\n   * If callback is not defined, an array of entities will be returned\n   */\n  queryIndex({ componentNames, callback }) {\n    // Return all entities (array if no callback)\n    if (componentNames.length === 0) {\n      const iter = this.entities.values()\n      if (!callback) {\n        return [...iter]\n      }\n      for (const entity of iter) {\n        if (callback(entity.data, entity) === false) {\n          break\n        }\n      }\n      return\n    }\n\n    // Sort component names by number of components in each index\n    // This allows us to get the minimum component index as the first element\n    // This also helps short-circuit much faster during the full query loops with .every()\n    componentNames.sort(\n      (a, b) => this.accessIndex(a).size - this.accessIndex(b).size\n    )\n    const iter = this.accessIndex(componentNames.shift()).values()\n\n    // Return array of matched entities\n    if (!callback) {\n      const results = []\n      for (const entity of iter) {\n        const { data } = entity\n        if (componentNames.every(name => name in data)) {\n          results.push(entity)\n        }\n      }\n      return results\n    }\n\n    // Invoke callback for each matched entity\n    for (const entity of iter) {\n      const { data } = entity\n      if (\n        componentNames.every(name => name in data) &&\n        callback(data, entity) === false\n      ) {\n        return\n      }\n    }\n  }\n}\n",
     "static": true,
     "longname": "/home/eric/dev/picoes/src/entity_storage.js",
     "access": "public",
@@ -1272,9 +1272,8 @@
     "static": false,
     "longname": "src/entity_storage.js~EntityStorage#constructor",
     "access": "public",
-    "description": null,
-    "lineNumber": 6,
-    "undocument": true
+    "description": "EntityStorage constructor, needs reference back to world",
+    "lineNumber": 7
   },
   {
     "__docId__": 80,
@@ -1284,9 +1283,8 @@
     "static": false,
     "longname": "src/entity_storage.js~EntityStorage#world",
     "access": "public",
-    "description": null,
-    "lineNumber": 8,
-    "ignore": true,
+    "description": "World instance",
+    "lineNumber": 9,
     "type": {
       "types": [
         "*"
@@ -1301,9 +1299,8 @@
     "static": false,
     "longname": "src/entity_storage.js~EntityStorage#componentClasses",
     "access": "public",
-    "description": null,
-    "lineNumber": 10,
-    "ignore": true,
+    "description": "Component keys to component classes",
+    "lineNumber": 11,
     "type": {
       "types": [
         "{}"
@@ -1318,9 +1315,8 @@
     "static": false,
     "longname": "src/entity_storage.js~EntityStorage#nextEntityId",
     "access": "public",
-    "description": null,
-    "lineNumber": 12,
-    "ignore": true,
+    "description": "Used for generating entity IDs",
+    "lineNumber": 13,
     "type": {
       "types": [
         "number"
@@ -1336,8 +1332,7 @@
     "longname": "src/entity_storage.js~EntityStorage#entities",
     "access": "public",
     "description": "Maps entity IDs to entities",
-    "lineNumber": 18,
-    "ignore": true,
+    "lineNumber": 15,
     "type": {
       "types": [
         "*"
@@ -1353,8 +1348,7 @@
     "longname": "src/entity_storage.js~EntityStorage#index",
     "access": "public",
     "description": "Maps component keys to entities",
-    "lineNumber": 24,
-    "ignore": true,
+    "lineNumber": 17,
     "type": {
       "types": [
         "*"
@@ -1371,9 +1365,8 @@
     "static": false,
     "longname": "src/entity_storage.js~EntityStorage#clear",
     "access": "public",
-    "description": null,
-    "lineNumber": 27,
-    "undocument": true,
+    "description": "Removes all entities along with their components.\nThis is more efficient than calling entity.destroy() on each, since\nthis will only call onRemove on each and then clear the index.",
+    "lineNumber": 25,
     "params": [],
     "return": null
   },
@@ -1387,9 +1380,8 @@
     "static": false,
     "longname": "src/entity_storage.js~EntityStorage#registerComponent",
     "access": "public",
-    "description": null,
-    "lineNumber": 40,
-    "undocument": true,
+    "description": "Registers a function/class with a name as a component",
+    "lineNumber": 39,
     "params": [
       {
         "name": "name",
@@ -1416,9 +1408,8 @@
     "static": false,
     "longname": "src/entity_storage.js~EntityStorage#createEntity",
     "access": "public",
-    "description": null,
-    "lineNumber": 49,
-    "undocument": true,
+    "description": "Creates a new entity attached to the world",
+    "lineNumber": 47,
     "params": [],
     "return": {
       "types": [
@@ -1436,9 +1427,8 @@
     "static": false,
     "longname": "src/entity_storage.js~EntityStorage#each",
     "access": "public",
-    "description": null,
-    "lineNumber": 57,
-    "undocument": true,
+    "description": "Forwards query args from world",
+    "lineNumber": 55,
     "params": [
       {
         "name": "args",
@@ -1464,9 +1454,8 @@
     "static": false,
     "longname": "src/entity_storage.js~EntityStorage#accessIndex",
     "access": "public",
-    "description": null,
-    "lineNumber": 62,
-    "undocument": true,
+    "description": "Returns an existing or new index",
+    "lineNumber": 60,
     "params": [
       {
         "name": "component",
@@ -1491,9 +1480,8 @@
     "static": false,
     "longname": "src/entity_storage.js~EntityStorage#addToIndex",
     "access": "public",
-    "description": null,
-    "lineNumber": 70,
-    "undocument": true,
+    "description": "Add component with an entity to the index",
+    "lineNumber": 68,
     "params": [
       {
         "name": "entity",
@@ -1520,9 +1508,8 @@
     "static": false,
     "longname": "src/entity_storage.js~EntityStorage#removeFromIndex",
     "access": "public",
-    "description": null,
-    "lineNumber": 75,
-    "undocument": true,
+    "description": "Remove component from the index for an entity",
+    "lineNumber": 73,
     "params": [
       {
         "name": "entity",
@@ -1549,9 +1536,8 @@
     "static": false,
     "longname": "src/entity_storage.js~EntityStorage#queryArgs",
     "access": "public",
-    "description": null,
-    "lineNumber": 79,
-    "undocument": true,
+    "description": "Get component names and optional callback from query args",
+    "lineNumber": 78,
     "params": [
       {
         "name": "args",
@@ -1577,9 +1563,8 @@
     "static": false,
     "longname": "src/entity_storage.js~EntityStorage#queryIndex",
     "access": "public",
-    "description": null,
+    "description": "Uses an existing index or builds a new index, to get entities with the specified components\nIf callback is defined, it will be called for each entity with component data, and returns undefined\nIf callback is not defined, an array of entities will be returned",
     "lineNumber": 107,
-    "undocument": true,
     "params": [
       {
         "name": "objectPattern",
@@ -1603,7 +1588,7 @@
     "__docId__": 94,
     "kind": "file",
     "name": "src/system_storage.js",
-    "content": "import { invoke } from './utilities.js'\n\n/** @ignore */\nexport class SystemStorage {\n  constructor(world) {\n    this.world = world\n    this.systems = []\n    this.context = { world }\n  }\n\n  register(systemClass, ...args) {\n    // Make sure the system is valid\n    if (typeof systemClass !== 'function') {\n      throw new Error('System is not a valid function or class.')\n    }\n    // Create and add the system with context\n    const newSystem = new systemClass(...args)\n    this._injectContext(newSystem)\n    invoke(newSystem, 'init', ...args)\n    this.systems.push(newSystem)\n  }\n\n  run(...args) {\n    let status = true\n    // Continue rerunning while any systems return true\n    while (status) {\n      status = undefined\n      for (const system of this.systems) {\n        // Try to call the \"run\" method\n        const result = invoke(system, 'run', ...args)\n        status = status || result\n      }\n      // Clear args after first run, so re-runs can be identified\n      args.length = 0\n    }\n  }\n\n  // Update existing systems' context\n  setContext(data) {\n    this.context = { ...data, world: this.world }\n    for (const system of this.systems) {\n      this._injectContext(system)\n    }\n  }\n\n  // Injects context into a system based on current context state\n  _injectContext(system) {\n    for (const key in this.context) {\n      system[key] = this.context[key]\n    }\n  }\n}\n",
+    "content": "import { invoke } from './utilities.js'\n\n/** @ignore */\nexport class SystemStorage {\n  /** SystemStorage constructor, needs reference back to world */\n  constructor(world) {\n    /** World instance */\n    this.world = world\n    /** List of systems, stored in run-order */\n    this.systems = []\n    /** Context passed to all systems */\n    this.context = { world }\n  }\n\n  /** Pushes a system to the list with optional init/constructor args */\n  register(systemClass, ...args) {\n    // Make sure the system is valid\n    if (typeof systemClass !== 'function') {\n      throw new Error('System is not a valid function or class.')\n    }\n    // Create and add the system with context\n    const newSystem = new systemClass(...args)\n    this._injectContext(newSystem)\n    invoke(newSystem, 'init', ...args)\n    this.systems.push(newSystem)\n  }\n\n  /** Runs a system with optional args */\n  run(...args) {\n    let status = true\n    // Continue rerunning while any systems return true\n    while (status) {\n      status = undefined\n      for (const system of this.systems) {\n        // Try to call the \"run\" method\n        const result = invoke(system, 'run', ...args)\n        status = status || result\n      }\n      // Clear args after first run, so re-runs can be identified\n      args.length = 0\n    }\n  }\n\n  /** Update existing systems' context */\n  setContext(data) {\n    this.context = { ...data, world: this.world }\n    for (const system of this.systems) {\n      this._injectContext(system)\n    }\n  }\n\n  /** Injects context into a system based on current context state */\n  _injectContext(system) {\n    for (const key in this.context) {\n      system[key] = this.context[key]\n    }\n  }\n}\n",
     "static": true,
     "longname": "/home/eric/dev/picoes/src/system_storage.js",
     "access": "public",
@@ -1636,9 +1621,8 @@
     "static": false,
     "longname": "src/system_storage.js~SystemStorage#constructor",
     "access": "public",
-    "description": null,
-    "lineNumber": 5,
-    "undocument": true
+    "description": "SystemStorage constructor, needs reference back to world",
+    "lineNumber": 6
   },
   {
     "__docId__": 97,
@@ -1648,9 +1632,8 @@
     "static": false,
     "longname": "src/system_storage.js~SystemStorage#world",
     "access": "public",
-    "description": null,
-    "lineNumber": 6,
-    "undocument": true,
+    "description": "World instance",
+    "lineNumber": 8,
     "type": {
       "types": [
         "*"
@@ -1665,9 +1648,8 @@
     "static": false,
     "longname": "src/system_storage.js~SystemStorage#systems",
     "access": "public",
-    "description": null,
-    "lineNumber": 7,
-    "undocument": true,
+    "description": "List of systems, stored in run-order",
+    "lineNumber": 10,
     "type": {
       "types": [
         "*[]"
@@ -1682,9 +1664,8 @@
     "static": false,
     "longname": "src/system_storage.js~SystemStorage#context",
     "access": "public",
-    "description": null,
-    "lineNumber": 8,
-    "undocument": true,
+    "description": "Context passed to all systems",
+    "lineNumber": 12,
     "type": {
       "types": [
         "{\"world\": *}"
@@ -1701,9 +1682,8 @@
     "static": false,
     "longname": "src/system_storage.js~SystemStorage#register",
     "access": "public",
-    "description": null,
-    "lineNumber": 11,
-    "undocument": true,
+    "description": "Pushes a system to the list with optional init/constructor args",
+    "lineNumber": 16,
     "params": [
       {
         "name": "systemClass",
@@ -1731,9 +1711,8 @@
     "static": false,
     "longname": "src/system_storage.js~SystemStorage#run",
     "access": "public",
-    "description": null,
-    "lineNumber": 23,
-    "undocument": true,
+    "description": "Runs a system with optional args",
+    "lineNumber": 29,
     "params": [
       {
         "name": "args",
@@ -1755,9 +1734,8 @@
     "static": false,
     "longname": "src/system_storage.js~SystemStorage#setContext",
     "access": "public",
-    "description": null,
-    "lineNumber": 39,
-    "undocument": true,
+    "description": "Update existing systems' context",
+    "lineNumber": 45,
     "params": [
       {
         "name": "data",
@@ -1778,9 +1756,8 @@
     "static": false,
     "longname": "src/system_storage.js~SystemStorage#_injectContext",
     "access": "private",
-    "description": null,
-    "lineNumber": 47,
-    "undocument": true,
+    "description": "Injects context into a system based on current context state",
+    "lineNumber": 53,
     "params": [
       {
         "name": "system",
@@ -2334,7 +2311,7 @@
   },
   {
     "kind": "index",
-    "content": "# PicoES\n\n[![Build Status](https://travis-ci.org/ayebear/picoes.svg?branch=master)](https://travis-ci.org/ayebear/picoes)\n[![Coverage Status](https://coveralls.io/repos/github/ayebear/picoes/badge.svg?branch=master)](https://coveralls.io/github/ayebear/picoes?branch=master)\n[![Documentation Status](https://ayebear.com/picoes/badge.svg)](https://ayebear.com/picoes/source.html)\n\n### Table Of Contents\n\n- [About](#about)\n  - [Features](#features)\n  - [Terminology](#terminology)\n  - [License](#license)\n  - [Author](#author)\n- [Instructions](#instructions)\n  - [Setup](#setup)\n  - [Documentation](#documentation)\n  - [Examples](#examples)\n\n## About\n\nPico Entity System for JavaScript (ES6+).\n\nRead up on what an ECS is here: [https://en.wikipedia.org/wiki/Entity_component_system](https://en.wikipedia.org/wiki/Entity_component_system)\n\n### Features\n\n- **Simple query syntax**\n  - `world.each('a', 'b', ({a, b}) => { a.foo = b.bar })`\n  - See the examples below for more advanced usage, or the [reference docs](https://ayebear.com/picoes/class/src/world.js~World.html#instance-method-each)\n- **Optional registration of systems and components**\n  - Once a `World` instance is made, you can arbitrarily set components on entities and query them\n  - This is possible due to the use of strings as component keys\n- **Automatic dependency injection**\n  - No need to pass state to each system, can have a single context that gets injected into all systems automatically\n  - Registered components also get their parent entity injected\n- **Balanced performance**\n  - See [ECS benchmark comparison](https://github.com/noctjs/ecs-benchmark)\n  - Entity/Component adding/removing performance is good with PicoES, which is important for many games.\n  - Continued research is being done to find new ways to make PicoES faster. There are many things such as pools, bit arrays, better indexing structures, and more that could be done to achieve this.\n\n### Terminology\n\n- **Component:** Holds some related data\n  - Example: Position, Velocity, Health\n- **Entity:** Refers to a collection of components\n  - Example: Position and Health could represent a player\n- **System:** Logic loop that processes entities\n  - Example: Movement system which handles positions and velocities\n- **World:** The entry point of all PicoES features. Can register components/systems and create/query entities in a self-contained object - which avoids the use of singletons.\n\n### License\n\nMIT\n\n### Author\n\nEric Hebert\n\n## Instructions\n\n### Setup\n\nYou'll normally want to install PicoES as a dev dependency, and have it transpiled into the build of your application. PicoES uses features such as import/export syntax, so you may need updated tools to use it. It has been used successfully with node 14+ and parcel 2+.\n\n#### Yarn\n\n```bash\nyarn add --dev picoes\n```\n\n#### NPM\n\n```bash\nnpm i -D picoes\n```\n\n### Documentation\n\nThe full reference documentation can be found here:\n\n[PicoES Documentation](https://ayebear.com/picoes)\n\n### Examples\n\n#### Unregistered components and queries\n\n```javascript\nimport { World } from 'picoes'\n\n// Create a world to store entities in\nconst world = new World()\n\n// Create a player entity with health component\nconst player = world.entity().set('health', { value: 100 })\n\n// Create enemies\nworld.entity().set('damages', 10)\nworld.entity().set('damages', 30)\n\n// Apply damage to player from enemies\nworld.each('damages', ({ damages }) => {\n  player.get('health').value -= damages\n})\n\n// Player now has reduced health\nconsole.assert(player.get('health').value === 60)\n```\n\n#### System and component registration\n\n```javascript\nimport { World } from 'picoes'\n\n// Create a reusable vector component\nclass Vec2 {\n  constructor(x = 0, y = 0) {\n    this.x = x\n    this.y = y\n  }\n}\n\n// Define a system for handling movement\nclass Movement {\n  run(dt) {\n    this.world.each('position', 'velocity', ({ position, velocity }) => {\n      position.x += velocity.x * dt\n      position.y += velocity.y * dt\n    })\n  }\n}\n\n// Create a world, register components and systems\nconst world = new World({\n  components: { position: Vec2, velocity: Vec2 },\n  systems: [Movement],\n})\n\n// Create an entity at (0,0) with a velocity\nconst entity = world.entity().set('position').set('velocity', 10, 10)\n\n// Run the systems (typically would use a ticker and pass dt)\nworld.run(16)\n\n// See that the entity has moved\nconst { x, y } = entity.get('position')\nconsole.log(x, y) // 160 160\n```\n\nFor more information, refer to the [full documentation](https://ayebear.com/picoes).\n",
+    "content": "# PicoES\n\n![Build Status](https://github.com/ayebear/picoes/actions/workflows/node.js.yml/badge.svg)\n[![Coverage Status](https://coveralls.io/repos/github/ayebear/picoes/badge.svg?branch=master)](https://coveralls.io/github/ayebear/picoes?branch=master)\n[![Documentation Status](https://ayebear.com/picoes/badge.svg)](https://ayebear.com/picoes/source.html)\n\n### Table Of Contents\n\n- [About](#about)\n  - [Features](#features)\n  - [Terminology](#terminology)\n  - [License](#license)\n  - [Author](#author)\n- [Instructions](#instructions)\n  - [Setup](#setup)\n  - [Documentation](#documentation)\n  - [Examples](#examples)\n\n## About\n\nPico Entity System for JavaScript (ES6+).\n\nRead up on what an ECS is here: [https://en.wikipedia.org/wiki/Entity_component_system](https://en.wikipedia.org/wiki/Entity_component_system)\n\n### Features\n\n- **Simple query syntax**\n  - `world.each('a', 'b', ({a, b}) => { a.foo = b.bar })`\n  - See the examples below for more advanced usage, or the [reference docs](https://ayebear.com/picoes/class/src/world.js~World.html#instance-method-each)\n- **Optional registration of systems and components**\n  - Once a `World` instance is made, you can arbitrarily set components on entities and query them\n  - This is possible due to the use of strings as component keys\n- **Automatic dependency injection**\n  - No need to pass state to each system, can have a single context that gets injected into all systems automatically\n  - Registered components also get their parent entity injected\n- **Balanced performance**\n  - See [ECS benchmark comparison](https://github.com/noctjs/ecs-benchmark)\n  - Entity/Component adding/removing performance is good with PicoES, which is important for many games.\n  - Continued research is being done to find new ways to make PicoES faster. There are many things such as pools, bit arrays, better indexing structures, and more that could be done to achieve this.\n\n### Terminology\n\n- **Component:** Holds some related data\n  - Example: Position, Velocity, Health\n- **Entity:** Refers to a collection of components\n  - Example: Position and Health could represent a player\n- **System:** Logic loop that processes entities\n  - Example: Movement system which handles positions and velocities\n- **World:** The entry point of all PicoES features. Can register components/systems and create/query entities in a self-contained object - which avoids the use of singletons.\n\n### License\n\nMIT\n\n### Author\n\nEric Hebert\n\n## Instructions\n\n### Setup\n\nYou'll normally want to install PicoES as a dev dependency, and have it transpiled into the build of your application. PicoES uses features such as import/export syntax, so you may need updated tools to use it. It has been used successfully with node 14+ and parcel 2+.\n\n#### Yarn\n\n```bash\nyarn add --dev picoes\n```\n\n#### NPM\n\n```bash\nnpm i -D picoes\n```\n\n### Documentation\n\nThe full reference documentation can be found here:\n\n[PicoES Documentation](https://ayebear.com/picoes)\n\n### Examples\n\n#### Unregistered components and queries\n\n```javascript\nimport { World } from 'picoes'\n\n// Create a world to store entities in\nconst world = new World()\n\n// Create a player entity with health component\nconst player = world.entity().set('health', { value: 100 })\n\n// Create enemies\nworld.entity().set('damages', 10)\nworld.entity().set('damages', 30)\n\n// Apply damage to player from enemies\nworld.each('damages', ({ damages }) => {\n  player.get('health').value -= damages\n})\n\n// Player now has reduced health\nconsole.assert(player.get('health').value === 60)\n```\n\n#### System and component registration\n\n```javascript\nimport { World } from 'picoes'\n\n// Create a reusable vector component\nclass Vec2 {\n  constructor(x = 0, y = 0) {\n    this.x = x\n    this.y = y\n  }\n}\n\n// Define a system for handling movement\nclass Movement {\n  run(dt) {\n    this.world.each('position', 'velocity', ({ position, velocity }) => {\n      position.x += velocity.x * dt\n      position.y += velocity.y * dt\n    })\n  }\n}\n\n// Create a world, register components and systems\nconst world = new World({\n  components: { position: Vec2, velocity: Vec2 },\n  systems: [Movement],\n})\n\n// Create an entity at (0,0) with a velocity\nconst entity = world.entity().set('position').set('velocity', 10, 10)\n\n// Run the systems (typically would use a ticker and pass dt)\nworld.run(16)\n\n// See that the entity has moved\nconst { x, y } = entity.get('position')\nconsole.log(x, y) // 160 160\n```\n\nFor more information, refer to the [full documentation](https://ayebear.com/picoes).\n",
     "longname": "/home/eric/dev/picoes/README.md",
     "name": "./README.md",
     "static": true,
@@ -2342,7 +2319,7 @@
   },
   {
     "kind": "packageJSON",
-    "content": "{\n  \"name\": \"picoes\",\n  \"version\": \"1.1.0-rc0\",\n  \"description\": \"Pico Entity System for JavaScript\",\n  \"main\": \"index.js\",\n  \"files\": [\n    \"src\",\n    \"index.js\"\n  ],\n  \"scripts\": {\n    \"test\": \"node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage\",\n    \"testCoveralls\": \"node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage && coveralls < coverage/lcov.info\",\n    \"doc\": \"node --experimental-vm-modules ./node_modules/.bin/esdoc\",\n    \"deploy\": \"gh-pages -d docs\"\n  },\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"git+https://github.com/ayebear/picoes.git\"\n  },\n  \"keywords\": [\n    \"entity\",\n    \"component\",\n    \"system\",\n    \"ecs\",\n    \"picoes\"\n  ],\n  \"author\": \"Eric Hebert\",\n  \"license\": \"MIT\",\n  \"bugs\": {\n    \"url\": \"https://github.com/ayebear/picoes/issues\"\n  },\n  \"homepage\": \"https://github.com/ayebear/picoes#readme\",\n  \"devDependencies\": {\n    \"coveralls\": \"^3.1.1\",\n    \"esdoc\": \"^1.1.0\",\n    \"esdoc-ecmascript-proposal-plugin\": \"^1.0.0\",\n    \"esdoc-flow-type-plugin\": \"^1.1.0\",\n    \"esdoc-standard-plugin\": \"^1.0.0\",\n    \"esdoc-undocumented-identifier-plugin\": \"^1.0.0\",\n    \"esdoc-unexported-identifier-plugin\": \"^1.0.0\",\n    \"gh-pages\": \"^3.2.3\",\n    \"husky\": \"^7.0.2\",\n    \"jest\": \"^27.3.0\",\n    \"prettier\": \"^2.4.1\",\n    \"pretty-quick\": \"^3.1.1\"\n  },\n  \"dependencies\": {},\n  \"type\": \"module\",\n  \"husky\": {\n    \"hooks\": {\n      \"pre-commit\": \"pretty-quick --staged\"\n    }\n  }\n}\n",
+    "content": "{\n  \"name\": \"picoes\",\n  \"version\": \"1.1.0\",\n  \"description\": \"Pico Entity System for JavaScript\",\n  \"main\": \"index.js\",\n  \"files\": [\n    \"src\",\n    \"index.js\"\n  ],\n  \"scripts\": {\n    \"test\": \"jest --coverage\",\n    \"doc\": \"node --experimental-vm-modules ./node_modules/.bin/esdoc\",\n    \"deploy\": \"gh-pages -d docs\",\n    \"prepare\": \"husky install\"\n  },\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"git+https://github.com/ayebear/picoes.git\"\n  },\n  \"keywords\": [\n    \"entity\",\n    \"component\",\n    \"system\",\n    \"ecs\",\n    \"picoes\"\n  ],\n  \"author\": \"Eric Hebert\",\n  \"license\": \"MIT\",\n  \"bugs\": {\n    \"url\": \"https://github.com/ayebear/picoes/issues\"\n  },\n  \"homepage\": \"https://github.com/ayebear/picoes#readme\",\n  \"devDependencies\": {\n    \"@babel/core\": \"^7.17.10\",\n    \"@babel/plugin-proposal-class-properties\": \"^7.16.7\",\n    \"@babel/preset-env\": \"^7.17.10\",\n    \"babel-jest\": \"^28.1.0\",\n    \"coveralls\": \"^3.1.1\",\n    \"esdoc\": \"^1.1.0\",\n    \"esdoc-ecmascript-proposal-plugin\": \"^1.0.0\",\n    \"esdoc-flow-type-plugin\": \"^1.1.0\",\n    \"esdoc-standard-plugin\": \"^1.0.0\",\n    \"esdoc-undocumented-identifier-plugin\": \"^1.0.0\",\n    \"esdoc-unexported-identifier-plugin\": \"^1.0.0\",\n    \"gh-pages\": \"^4.0.0\",\n    \"husky\": \"^8.0.1\",\n    \"jest\": \"^28.1.0\",\n    \"prettier\": \"^2.6.2\",\n    \"pretty-quick\": \"^3.1.3\"\n  },\n  \"type\": \"module\"\n}\n",
     "longname": "/home/eric/dev/picoes/package.json",
     "name": "package.json",
     "static": true,
