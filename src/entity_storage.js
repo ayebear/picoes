@@ -125,7 +125,7 @@ export class EntityStorage {
     componentNames.sort(
       (a, b) => this.accessIndex(a).size - this.accessIndex(b).size
     )
-    const iter = this.accessIndex(componentNames[0]).values()
+    const iter = this.accessIndex(componentNames.shift()).values()
 
     // Return array of matched entities
     if (!callback) {
