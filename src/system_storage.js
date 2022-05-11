@@ -2,12 +2,17 @@ import { invoke } from './utilities.js'
 
 /** @ignore */
 export class SystemStorage {
+  /** SystemStorage constructor, needs reference back to world */
   constructor(world) {
+    /** World instance */
     this.world = world
+    /** List of systems, stored in run-order */
     this.systems = []
+    /** Context passed to all systems */
     this.context = { world }
   }
 
+  /** Pushes a system to the list with optional init/constructor args */
   register(systemClass, ...args) {
     // Make sure the system is valid
     if (typeof systemClass !== 'function') {
@@ -20,6 +25,7 @@ export class SystemStorage {
     this.systems.push(newSystem)
   }
 
+  /** Runs a system with optional args */
   run(...args) {
     let status = true
     // Continue rerunning while any systems return true
@@ -35,7 +41,7 @@ export class SystemStorage {
     }
   }
 
-  // Update existing systems' context
+  /** Update existing systems' context */
   setContext(data) {
     this.context = { ...data, world: this.world }
     for (const system of this.systems) {
@@ -43,7 +49,7 @@ export class SystemStorage {
     }
   }
 
-  // Injects context into a system based on current context state
+  /** Injects context into a system based on current context state */
   _injectContext(system) {
     for (const key in this.context) {
       system[key] = this.context[key]

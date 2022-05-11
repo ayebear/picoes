@@ -3,27 +3,25 @@ import { invoke } from './utilities.js'
 
 /** @ignore */
 export class EntityStorage {
+  /** EntityStorage constructor, needs reference back to world */
   constructor(world) {
-    /** @ignore */
+    /** World instance */
     this.world = world
-    /** @ignore */
+    /** Component keys to component classes */
     this.componentClasses = {}
-    /** @ignore */
+    /** Used for generating entity IDs */
     this.nextEntityId = 1
-
-    /**
-     * Maps entity IDs to entities
-     * @ignore
-     */
+    /** Maps entity IDs to entities */
     this.entities = new Map()
-
-    /**
-     * Maps component keys to entities
-     * @ignore
-     */
+    /** Maps component keys to entities */
     this.index = new Map()
   }
 
+  /**
+   * Removes all entities along with their components.
+   * This is more efficient than calling entity.destroy() on each, since
+   * this will only call onRemove on each and then clear the index.
+   */
   clear() {
     // Call onRemove on all components of all entities
     for (const { data } of this.entities.values()) {
@@ -37,15 +35,15 @@ export class EntityStorage {
     this.index.clear()
   }
 
+  /** Registers a function/class with a name as a component */
   registerComponent(name, componentClass) {
-    // Only allow functions and classes to be components
     if (typeof componentClass !== 'function') {
       throw new Error('Component is not a valid function or class.')
     }
     this.componentClasses[name] = componentClass
   }
 
-  // Creates a new entity attached to the world
+  /** Creates a new entity attached to the world */
   createEntity() {
     const entityId = this.nextEntityId++
     const entity = new Entity(this.world, entityId)
@@ -53,12 +51,12 @@ export class EntityStorage {
     return entity
   }
 
-  // Forwards query args from world
+  /** Forwards query args from world */
   each(...args) {
     return this.queryIndex(this.queryArgs(...args))
   }
 
-  // Returns an existing or new index
+  /** Returns an existing or new index */
   accessIndex(component) {
     return (
       this.index.get(component) ||
@@ -66,18 +64,18 @@ export class EntityStorage {
     )
   }
 
-  // Add component with an entity to the index
+  /** Add component with an entity to the index */
   addToIndex(entity, compName) {
     this.accessIndex(compName).set(entity.id, entity)
   }
 
-  // Remove component from the index for an entity
+  /** Remove component from the index for an entity */
   removeFromIndex(entity, compName) {
     this.accessIndex(compName).delete(entity.id)
   }
 
+  /** Get component names and optional callback from query args */
   queryArgs(...args) {
-    // Gather component names and a callback (if any) from args
     const result = {
       componentNames: [],
       callback: null,
@@ -101,9 +99,11 @@ export class EntityStorage {
     return result
   }
 
-  // Uses an existing index or builds a new index, to get entities with the specified components
-  // If callback is defined, it will be called for each entity with component data, and returns undefined
-  // If callback is not defined, an array of entities will be returned
+  /**
+   * Uses an existing index or builds a new index, to get entities with the specified components
+   * If callback is defined, it will be called for each entity with component data, and returns undefined
+   * If callback is not defined, an array of entities will be returned
+   */
   queryIndex({ componentNames, callback }) {
     // Return all entities (array if no callback)
     if (componentNames.length === 0) {
@@ -125,7 +125,7 @@ export class EntityStorage {
     componentNames.sort(
       (a, b) => this.accessIndex(a).size - this.accessIndex(b).size
     )
-    const iter = this.accessIndex(componentNames[0]).values()
+    const iter = this.accessIndex(componentNames.shift()).values()
 
     // Return array of matched entities
     if (!callback) {
