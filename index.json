@@ -567,7 +567,7 @@
     "__docId__": 48,
     "kind": "file",
     "name": "src/entity.js",
-    "content": "/** @ignore */\nimport { invoke, shallowClone, isEmpty } from './utilities.js'\n\n/**\n * Entity class used for storing components.\n *\n * @class      Entity (name)\n */\nexport class Entity {\n  /**\n   * Do not construct an Entity yourself - use the entity() method in World instead.\n   * Also, do not shallow/deep copy entity objects, only pass around references.\n   *\n   * @private\n   *\n   * @param {World}  world - The world\n   * @param {number} id    - The identifier\n   */\n  constructor(world, id) {\n    /** @ignore */\n    this.world = world\n\n    /** @ignore */\n    this._id = id\n\n    /** @ignore */\n    this.data = { entity: this }\n  }\n\n  /**\n   * Return the entity ID.\n   *\n   * @return {number} Integer entity ID\n   */\n  get id() {\n    return this._id\n  }\n\n  /**\n   * ID is read-only, attempting to set it will throw an error.\n   *\n   * @private\n   *\n   * @throws {Error} Cannot set entity id\n   */\n  set id(id) {\n    throw new Error('Cannot set entity id')\n  }\n\n  /**\n   * Returns true if the entity has the specified component name.\n   *\n   * @example\n   * entity.has('position')\n   *\n   * @param {string} name - The component name to check for\n   *\n   * @return {boolean} true or false\n   */\n  has(name) {\n    return name in this.data\n  }\n\n  /**\n   * Returns a component by name, or undefined if it doesn't exist\n   *\n   * @example\n   * const position = entity.get('position')\n   *\n   * @param {string} component - The component name to get\n   *\n   * @return {Object} The component if defined, otherwise undefined\n   */\n  get(component) {\n    return this.data[component]\n  }\n\n  /**\n   * Returns a component by name (automatically created if it doesn't exist)\n   * For unregistered components, passing no arguments to this will create a {} component,\n   * if the component does not exist. The argument behavior is exactly the same as set().\n   *\n   * @example\n   * const position = entity.access('position', 3, 4)\n   *\n   * @example\n   * entity.access('anything').foo = 'bar'\n   * // 'anything' now has { foo: 'bar' }\n   *\n   * @example\n   * entity.access('anything', { foo: 'bar' }).foo2 = 'bar2'\n   * // 'anything' now has { foo: 'bar', foo2: 'bar2' }\n   *\n   * @param {string}    component - The component name to create/get\n   * @param {...Object} [args]    - The arguments to forward to create the new component, only if it doesn't exist.\n   *\n   * @return {Object} Always returns either the existing component, or the newly created one.\n   */\n  access(component, ...args) {\n    if (!this.has(component)) {\n      this.set(component, ...args)\n    }\n    return this.data[component]\n  }\n\n  /**\n   * Adds a new component, or re-creates and overwrites an existing component\n   *\n   * @example\n   * entity.set('position', 1, 2)\n   * // If position was registered: { x: 1, y: 2 }\n   * // If position was not registered: 1\n   * // This is because only the first arg is used for unregistered components\n   *\n   * @example\n   * entity.set('anonymousComponent', { keys: 'values' })\n   *\n   * @example\n   * entity.set('someString', 'Any type of any value')\n   *\n   * @example\n   * entity.set('thisCompIsUndefined', undefined)\n   *\n   * @example\n   * entity.set('thisCompIsEmptyObject')\n   *\n   * @param {string}    compName - The component name to create. If there is a registered component for this name,\n   * then its constructor will be called with (...args) and an object of that type will be created. The parent\n   * entity reference gets injected into registered components after they are constructed. The onCreate method\n   * gets called after the component is added to the entity, and after the entity is injected. The onCreate method\n   * also gets passed the same (...args) as the component's constructor.\n   * @param {...Object} [args]    - The arguments to forward to the registered component type. If the component type\n   * is not registered, then only the first additional argument will be used as the value of the entire component.\n   *\n   * @return {Object} The original entity that set() was called on, so that operations can be chained.\n   */\n  set(compName, ...args) {\n    const compClass = this.world?.entities.componentClasses[compName]\n    if (compClass) {\n      // Create registered component\n      const comp = new compClass(...args)\n      comp.entity = this\n      this.data[compName] = comp\n    } else if (args.length > 0) {\n      // Use first argument as component value\n      this.data[compName] = args[0]\n    } else {\n      // Set to an empty object if no args were specified\n      this.data[compName] = {}\n    }\n\n    // Update the index with this component\n    if (this.valid()) {\n      this.world.entities.addToIndex(this, compName)\n    }\n\n    // Call custom onCreate to initialize component, and any additional arguments passed into set()\n    invoke(this.data[compName], 'onCreate', ...args)\n\n    return this\n  }\n\n  /**\n   * Low level method to set components directly. It is recommended to use set() instead, unless\n   * you know what you are doing. The onCreate method is not called, and it is expected that you\n   * pass an already initialized component. By default, an error will be thrown if you try calling\n   * this on a registered component, as that could have unintended consequences in your systems.\n   * This method can be useful for saving and restoring components without serialization.\n   *\n   * @example\n   * entity.replace('position', position)\n   *\n   * @param {string} compName  - The component name to set.\n   * @param {Object} value     - Should be a previous component instance, or whatever is expected for\n   * the component name.\n   * @param {boolean} overwriteRegistered - Whether or not to proceed with overwriting components\n   * in this entity that are registered components. By default, this is false.\n   *\n   * @return {Object} The original entity that replace() was called on, so that operations can be chained.\n   */\n  replace(compName, value, overwriteRegistered = false) {\n    // Registered component check\n    if (\n      !overwriteRegistered &&\n      this.world?.entities.componentClasses[compName]\n    ) {\n      throw new Error(\n        `Cannot replace() component \"${compName}\" because it is registered. Please refer to the docs for details.`\n      )\n    }\n\n    // Directly set value\n    this.data[compName] = value\n\n    // Update the index with this component\n    if (this.valid()) {\n      this.world.entities.addToIndex(this, compName)\n    }\n\n    return this\n  }\n\n  /**\n   * Removes a component from the entity - has no effect when it doesn't exist.\n   * Can specify an onRemove() method in your component which gets called before it is removed.\n   * If nothing is specified, then nothing will be removed.\n   * Attempting to remove components that aren't set will be safely ignored.\n   *\n   * @example\n   * entity.remove('position')\n   *\n   * @param {...string} [components] - The component names to remove from the entity.\n   *\n   * @return {Object} The original entity that remove() was called on, so that operations can be chained.\n   */\n  remove(...components) {\n    for (const compName of components) {\n      if (compName in this.data) {\n        this._removeComponent(compName)\n      }\n    }\n    return this\n  }\n\n  /**\n   * Remove this entity and all of its components from the world. After an entity is destroyed,\n   * the object should be discarded, and it is recommended to avoid re-using it.\n   *\n   * @example\n   * entity.destroy()\n   */\n  destroy() {\n    if (!this.valid()) {\n      throw new Error('Cannot destroy invalid entity')\n    }\n\n    // Remove all components\n    for (const compName in this.data) {\n      this._removeComponent(compName)\n    }\n\n    if (!isEmpty(this.data)) {\n      throw new Error(\n        'Failed to remove all components. Components must have been added inside onRemove().'\n      )\n    }\n\n    // Remove entity from world\n    this.world.entities.entities.delete(this._id)\n    this.world = undefined\n    this._id = undefined\n  }\n\n  /**\n   * Returns true if this is a valid, existing, and usable entity, which is attached to a world.\n   *\n   * @example\n   * if (entity.valid()) {...}\n   *\n   * @return {boolean} true or false\n   */\n  valid() {\n    // No need to actually look in the world for the ID, if entities are only ever copied by reference.\n    // If entities are ever deep/shallow copied, this function will need to check this to be more robust.\n    return this.world != null && this._id != null\n  }\n\n  /**\n   * Serializes entire entity and components to JSON.\n   * Defining toJSON methods in your components will override the built-in behavior.\n   *\n   * @example\n   * const serializedEntity = entity.toJSON()\n   *\n   * @return {string} JSON encoded string\n   */\n  toJSON() {\n    // Don't include \"entity\" key in serialized data\n    const { entity: _, ...comps } = this.data\n    return JSON.stringify(comps)\n  }\n\n  /**\n   * Deserializes data from JSON, creating new components and overwriting existing components.\n   * Defining fromJSON methods in your components will override the built-in behavior.\n   *\n   * @example\n   * entity.fromJSON(serializedEntity)\n   *\n   * @param {string} data - A JSON string containing component data to parse, and store in this entity.\n   *\n   * @return {Object} The original entity that fromJSON() was called on, so that operations can be chained.\n   */\n  fromJSON(data) {\n    const parsed = JSON.parse(data)\n    for (const name in parsed) {\n      const comp = this.access(name)\n\n      // Either call custom method or copy all properties\n      if (typeof comp.fromJSON === 'function') {\n        comp.fromJSON(parsed[name])\n      } else {\n        Object.assign(this.access(name), parsed[name])\n      }\n    }\n    return this\n  }\n\n  /**\n   * Attaches a currently detached entity back to a world.\n   * Do not use detached entities, get() may be safe, but avoid calling other methods\n   * The ID will be reassigned, so do not rely on this\n   *\n   * @example\n   * entity.attach(world)\n   *\n   * @param {World} world - The world to attach this entity to\n   */\n  attach(world) {\n    if (world && !this.valid()) {\n      // Assign new id, and reattach to world\n      this.world = world\n      this._id = this.world.entities.nextEntityId++\n      this.world.entities.entities.set(this._id, this)\n      for (const compName in this.data) {\n        this.world.entities.addToIndex(this, compName)\n      }\n    }\n  }\n\n  /**\n   * Removes this entity from the current world, without removing any components or data.\n   * It can be re-attached to another world (or the same world), using the attach() method.\n   * Do not use detached entities, get() may be safe, but avoid calling other methods\n   * The ID will be reassigned, so do not rely on this\n   *\n   * @example\n   * entity.detach()\n   */\n  detach() {\n    if (this.valid()) {\n      // Remove from current world\n      for (const compName in this.data) {\n        this.world.entities.removeFromIndex(this, compName)\n      }\n      this.world.entities.entities.delete(this._id)\n      this._id = undefined\n      this.world = undefined\n    }\n  }\n\n  /**\n   * Creates a copy of this entity with all of the components cloned and returns it.\n   * Individual components are either shallow or deep copied, depending on component\n   * registration status and if a clone() method is defined.\n   *\n   * @example\n   * const clonedEntity = entity.clone()\n   *\n   * @example\n   * // How to define custom clone methods\n   * world.component('foo', class {\n   *   onCreate(bar, baz) {\n   *     this.bar = bar\n   *     this.baz = baz\n   *     this.qux = false\n   *   }\n   *   setQux(qux = true) {\n   *     this.qux = qux\n   *   }\n   *   cloneArgs() {\n   *     return [this.bar, this.baz]\n   *   }\n   *   clone(target) {\n   *     target.qux = this.qux\n   *   }\n   * })\n   */\n  clone() {\n    if (!this.valid()) {\n      throw new Error('Cannot clone detached or invalid entity.')\n    }\n\n    // Clone each component in this entity, to a new entity\n    const newEntity = this.world.entity()\n    for (const name in this.data) {\n      this._cloneComponentTo(newEntity, name)\n    }\n\n    // Return the cloned entity\n    return newEntity\n  }\n\n  /**\n   * @ignore\n   * Clones a component from this entity to the target entity.\n   *\n   * @example\n   * const source = world.entity().set('foo', 'bar')\n   * const target = world.entity()\n   * source._cloneComponentTo(target, 'foo')\n   * assert(target.get('foo') === 'bar')\n   *\n   * @example\n   * world.component('foo', class {\n   *   onCreate(bar, baz) {\n   *     this.bar = bar\n   *     this.baz = baz\n   *     this.qux = false\n   *   }\n   *   setQux(qux = true) {\n   *     this.qux = qux\n   *   }\n   *   cloneArgs() {\n   *     return [this.bar, this.baz]\n   *   }\n   *   clone(target) {\n   *     target.qux = this.qux\n   *   }\n   * })\n   * const source = world.entity()\n   *   .set('foo', 'bar', 'baz')\n   *   .set('qux', true)\n   * const target = world.entity()\n   * source._cloneComponentTo(target, 'foo')\n   * assert(source.get('foo').bar === target.get('foo').bar)\n   * assert(source.get('foo').baz === target.get('foo').baz)\n   * assert(source.get('foo').qux === target.get('foo').qux)\n   *\n   * @param {Entity} targetEntity - Must be a valid entity. Could be part of another world, but it\n   * is undefined behavior if the registered components are different types.\n   * @param {string} name         - Component name of both source and target components.\n   *\n   * @return {Object} The original entity that _cloneComponentTo() was called on,\n   * so that operations can be chained.\n   */\n  _cloneComponentTo(targetEntity, name) {\n    // Get component and optional arguments for cloning\n    const component = this.get(name)\n    const args = invoke(component, 'cloneArgs') || []\n    const compClass = targetEntity.world.entities.componentClasses[name]\n    if (compClass) {\n      // Registered component, so create new using constructor, inject\n      // entity, and call optional clone\n      const newComponent = new compClass(...args)\n      newComponent.entity = targetEntity\n      targetEntity.data[name] = newComponent\n      invoke(component, 'clone', newComponent)\n    } else {\n      // Unregistered component, so just shallow clone it\n      targetEntity.data[name] = shallowClone(component)\n    }\n\n    // Update the index with this new component\n    targetEntity.world.entities.addToIndex(targetEntity, name)\n\n    // Call custom onCreate to initialize component, and any additional arguments passed into set()\n    invoke(targetEntity.data[name], 'onCreate', ...args)\n\n    return this\n  }\n\n  /** @ignore */\n  _removeComponent(compName) {\n    // Call custom onRemove\n    invoke(this.data[compName], 'onRemove')\n\n    // Remove from index\n    this.world?.entities.removeFromIndex(this, compName)\n\n    // Remove from entity\n    delete this.data[compName]\n  }\n}\n",
+    "content": "/** @ignore */\nimport {\n  invoke,\n  shallowClone,\n  isEntityEmpty as isEntityEmpty,\n} from './utilities.js'\n\n/**\n * Entity class used for storing components.\n *\n * @class      Entity (name)\n */\nexport class Entity {\n  /**\n   * Do not construct an Entity yourself - use the entity() method in World instead.\n   * Also, do not shallow/deep copy entity objects, only pass around references.\n   *\n   * @private\n   *\n   * @param {World}  world - The world\n   * @param {number} id    - The identifier\n   */\n  constructor(world, id) {\n    /** @ignore */\n    this.world = world\n\n    /** @ignore */\n    this._id = id\n\n    /** @ignore */\n    this.data = { entity: this }\n  }\n\n  /**\n   * Return the entity ID.\n   *\n   * @return {number} Integer entity ID\n   */\n  get id() {\n    return this._id\n  }\n\n  /**\n   * ID is read-only, attempting to set it will throw an error.\n   *\n   * @private\n   *\n   * @throws {Error} Cannot set entity id\n   */\n  set id(id) {\n    throw new Error('Cannot set entity id')\n  }\n\n  /**\n   * Returns true if the entity has the specified component name.\n   *\n   * @example\n   * entity.has('position')\n   *\n   * @param {string} name - The component name to check for\n   *\n   * @return {boolean} true or false\n   */\n  has(name) {\n    return name in this.data\n  }\n\n  /**\n   * Returns a component by name, or undefined if it doesn't exist\n   *\n   * @example\n   * const position = entity.get('position')\n   *\n   * @param {string} component - The component name to get\n   *\n   * @return {Object} The component if defined, otherwise undefined\n   */\n  get(component) {\n    return this.data[component]\n  }\n\n  /**\n   * Returns a component by name (automatically created if it doesn't exist)\n   * For unregistered components, passing no arguments to this will create a {} component,\n   * if the component does not exist. The argument behavior is exactly the same as set().\n   *\n   * @example\n   * const position = entity.access('position', 3, 4)\n   *\n   * @example\n   * entity.access('anything').foo = 'bar'\n   * // 'anything' now has { foo: 'bar' }\n   *\n   * @example\n   * entity.access('anything', { foo: 'bar' }).foo2 = 'bar2'\n   * // 'anything' now has { foo: 'bar', foo2: 'bar2' }\n   *\n   * @param {string}    component - The component name to create/get\n   * @param {...Object} [args]    - The arguments to forward to create the new component, only if it doesn't exist.\n   *\n   * @return {Object} Always returns either the existing component, or the newly created one.\n   */\n  access(component, ...args) {\n    if (!(component in this.data)) {\n      this.set(component, ...args)\n    }\n    return this.data[component]\n  }\n\n  /**\n   * Adds a new component, or re-creates and overwrites an existing component\n   *\n   * @example\n   * entity.set('position', 1, 2)\n   * // If position was registered: { x: 1, y: 2 }\n   * // If position was not registered: 1\n   * // This is because only the first arg is used for unregistered components\n   *\n   * @example\n   * entity.set('anonymousComponent', { keys: 'values' })\n   *\n   * @example\n   * entity.set('someString', 'Any type of any value')\n   *\n   * @example\n   * entity.set('thisCompIsUndefined', undefined)\n   *\n   * @example\n   * entity.set('thisCompIsEmptyObject')\n   *\n   * @param {string}    compName - The component name to create. If there is a registered component for this name,\n   * then its constructor will be called with (...args) and an object of that type will be created. The parent\n   * entity reference gets injected into registered components after they are constructed. The onCreate method\n   * gets called after the component is added to the entity, and after the entity is injected. The onCreate method\n   * also gets passed the same (...args) as the component's constructor.\n   * @param {...Object} [args]    - The arguments to forward to the registered component type. If the component type\n   * is not registered, then only the first additional argument will be used as the value of the entire component.\n   *\n   * @return {Object} The original entity that set() was called on, so that operations can be chained.\n   */\n  set(compName, ...args) {\n    const compClass = this.world?.entities.componentClasses[compName]\n    if (compClass) {\n      // Create registered component\n      const comp = new compClass(...args)\n      comp.entity = this\n      this.data[compName] = comp\n    } else if (args.length > 0) {\n      // Use first argument as component value\n      this.data[compName] = args[0]\n    } else {\n      // Set to an empty object if no args were specified\n      this.data[compName] = {}\n    }\n\n    // Update the index with this component\n    if (this.valid()) {\n      this.world.entities.addToIndex(this, compName)\n    }\n\n    // Call custom onCreate to initialize component, and any additional arguments passed into set()\n    invoke(this.data[compName], 'onCreate', ...args)\n\n    return this\n  }\n\n  /**\n   * Low level method to set components directly. It is recommended to use set() instead, unless\n   * you know what you are doing. The onCreate method is not called, and it is expected that you\n   * pass an already initialized component. By default, an error will be thrown if you try calling\n   * this on a registered component, as that could have unintended consequences in your systems.\n   * This method can be useful for saving and restoring components without serialization.\n   *\n   * @example\n   * entity.replace('position', position)\n   *\n   * @param {string} compName  - The component name to set.\n   * @param {Object} value     - Should be a previous component instance, or whatever is expected for\n   * the component name.\n   * @param {boolean} overwriteRegistered - Whether or not to proceed with overwriting components\n   * in this entity that are registered components. By default, this is false.\n   *\n   * @return {Object} The original entity that replace() was called on, so that operations can be chained.\n   */\n  replace(compName, value, overwriteRegistered = false) {\n    // Registered component check\n    if (\n      !overwriteRegistered &&\n      this.world?.entities.componentClasses[compName]\n    ) {\n      throw new Error(\n        `Cannot replace() component \"${compName}\" because it is registered. Please refer to the docs for details.`\n      )\n    }\n\n    // Directly set value\n    this.data[compName] = value\n\n    // Update the index with this component\n    if (this.valid()) {\n      this.world.entities.addToIndex(this, compName)\n    }\n\n    return this\n  }\n\n  /**\n   * Removes a component from the entity - has no effect when it doesn't exist.\n   * Can specify an onRemove() method in your component which gets called before it is removed.\n   * If nothing is specified, then nothing will be removed.\n   * Attempting to remove components that aren't set will be safely ignored.\n   *\n   * @example\n   * entity.remove('position')\n   *\n   * @param {...string} [components] - The component names to remove from the entity.\n   *\n   * @return {Object} The original entity that remove() was called on, so that operations can be chained.\n   */\n  remove(...components) {\n    for (const name of components) {\n      if (name in this.data) {\n        this._removeComponent(name)\n      }\n    }\n    return this\n  }\n\n  /**\n   * Remove this entity and all of its components from the world. After an entity is destroyed,\n   * the object should be discarded, and it is recommended to avoid re-using it.\n   *\n   * @example\n   * entity.destroy()\n   */\n  destroy() {\n    if (!this.valid()) {\n      throw new Error('Cannot destroy invalid entity')\n    }\n\n    // Remove all components\n    for (const name in this.data) {\n      if (name === 'entity') continue\n      this._removeComponent(name)\n    }\n\n    if (!isEntityEmpty(this.data)) {\n      throw new Error(\n        'Failed to remove all components. Components must have been added inside onRemove().'\n      )\n    }\n\n    // Remove entity from world\n    this.world.entities.entities.delete(this._id)\n    this.world = undefined\n    this._id = undefined\n  }\n\n  /**\n   * Returns true if this is a valid, existing, and usable entity, which is attached to a world.\n   *\n   * @example\n   * if (entity.valid()) {...}\n   *\n   * @return {boolean} true or false\n   */\n  valid() {\n    // No need to actually look in the world for the ID, if entities are only ever copied by reference.\n    // If entities are ever deep/shallow copied, this function will need to check this to be more robust.\n    return this.world != null && this._id != null\n  }\n\n  /**\n   * Serializes entire entity and components to JSON.\n   * Defining toJSON methods in your components will override the built-in behavior.\n   *\n   * @example\n   * const serializedEntity = entity.toJSON()\n   *\n   * @return {string} JSON encoded string\n   */\n  toJSON() {\n    // Don't include \"entity\" key in serialized data\n    const { entity: _, ...comps } = this.data\n    return JSON.stringify(comps)\n  }\n\n  /**\n   * Deserializes data from JSON, creating new components and overwriting existing components.\n   * Defining fromJSON methods in your components will override the built-in behavior.\n   *\n   * @example\n   * entity.fromJSON(serializedEntity)\n   *\n   * @param {string} data - A JSON string containing component data to parse, and store in this entity.\n   *\n   * @return {Object} The original entity that fromJSON() was called on, so that operations can be chained.\n   */\n  fromJSON(data) {\n    const parsed = JSON.parse(data)\n    for (const name in parsed) {\n      const comp = this.access(name)\n\n      // Either call custom method or copy all properties\n      if (typeof comp.fromJSON === 'function') {\n        comp.fromJSON(parsed[name])\n      } else {\n        Object.assign(this.access(name), parsed[name])\n      }\n    }\n    return this\n  }\n\n  /**\n   * Attaches a currently detached entity back to a world.\n   * Do not use detached entities, get() may be safe, but avoid calling other methods\n   * The ID will be reassigned, so do not rely on this\n   *\n   * @example\n   * entity.attach(world)\n   *\n   * @param {World} world - The world to attach this entity to\n   */\n  attach(world) {\n    if (world && !this.valid()) {\n      // Assign new id, and reattach to world\n      this.world = world\n      this._id = this.world.entities.nextEntityId++\n      this.world.entities.entities.set(this._id, this)\n      for (const name in this.data) {\n        if (name === 'entity') continue\n        this.world.entities.addToIndex(this, name)\n      }\n    }\n  }\n\n  /**\n   * Removes this entity from the current world, without removing any components or data.\n   * It can be re-attached to another world (or the same world), using the attach() method.\n   * Do not use detached entities, get() may be safe, but avoid calling other methods\n   * The ID will be reassigned, so do not rely on this\n   *\n   * @example\n   * entity.detach()\n   */\n  detach() {\n    if (this.valid()) {\n      // Remove from current world\n      for (const name in this.data) {\n        if (name === 'entity') continue\n        this.world.entities.removeFromIndex(this, name)\n      }\n      this.world.entities.entities.delete(this._id)\n      this._id = undefined\n      this.world = undefined\n    }\n  }\n\n  /**\n   * Creates a copy of this entity with all of the components cloned and returns it.\n   * Individual components are either shallow or deep copied, depending on component\n   * registration status and if a clone() method is defined.\n   *\n   * @example\n   * const clonedEntity = entity.clone()\n   *\n   * @example\n   * // How to define custom clone methods\n   * world.component('foo', class {\n   *   onCreate(bar, baz) {\n   *     this.bar = bar\n   *     this.baz = baz\n   *     this.qux = false\n   *   }\n   *   setQux(qux = true) {\n   *     this.qux = qux\n   *   }\n   *   cloneArgs() {\n   *     return [this.bar, this.baz]\n   *   }\n   *   clone(target) {\n   *     target.qux = this.qux\n   *   }\n   * })\n   */\n  clone() {\n    if (!this.valid()) {\n      throw new Error('Cannot clone detached or invalid entity.')\n    }\n\n    // Clone each component in this entity, to a new entity\n    const newEntity = this.world.entity()\n    for (const name in this.data) {\n      if (name === 'entity') continue\n      this._cloneComponentTo(newEntity, name)\n    }\n\n    // Return the cloned entity\n    return newEntity\n  }\n\n  /**\n   * @ignore\n   * Clones a component from this entity to the target entity.\n   *\n   * @example\n   * const source = world.entity().set('foo', 'bar')\n   * const target = world.entity()\n   * source._cloneComponentTo(target, 'foo')\n   * assert(target.get('foo') === 'bar')\n   *\n   * @example\n   * world.component('foo', class {\n   *   onCreate(bar, baz) {\n   *     this.bar = bar\n   *     this.baz = baz\n   *     this.qux = false\n   *   }\n   *   setQux(qux = true) {\n   *     this.qux = qux\n   *   }\n   *   cloneArgs() {\n   *     return [this.bar, this.baz]\n   *   }\n   *   clone(target) {\n   *     target.qux = this.qux\n   *   }\n   * })\n   * const source = world.entity()\n   *   .set('foo', 'bar', 'baz')\n   *   .set('qux', true)\n   * const target = world.entity()\n   * source._cloneComponentTo(target, 'foo')\n   * assert(source.get('foo').bar === target.get('foo').bar)\n   * assert(source.get('foo').baz === target.get('foo').baz)\n   * assert(source.get('foo').qux === target.get('foo').qux)\n   *\n   * @param {Entity} targetEntity - Must be a valid entity. Could be part of another world, but it\n   * is undefined behavior if the registered components are different types.\n   * @param {string} name         - Component name of both source and target components.\n   *\n   * @return {Object} The original entity that _cloneComponentTo() was called on,\n   * so that operations can be chained.\n   */\n  _cloneComponentTo(targetEntity, name) {\n    // Get component and optional arguments for cloning\n    const component = this.get(name)\n    const args = invoke(component, 'cloneArgs') || []\n    const compClass = targetEntity.world.entities.componentClasses[name]\n    if (compClass) {\n      // Registered component, so create new using constructor, inject\n      // entity, and call optional clone\n      const newComponent = new compClass(...args)\n      newComponent.entity = targetEntity\n      targetEntity.data[name] = newComponent\n      invoke(component, 'clone', newComponent)\n    } else {\n      // Unregistered component, so just shallow clone it\n      targetEntity.data[name] = shallowClone(component)\n    }\n\n    // Update the index with this new component\n    targetEntity.world.entities.addToIndex(targetEntity, name)\n\n    // Call custom onCreate to initialize component, and any additional arguments passed into set()\n    invoke(targetEntity.data[name], 'onCreate', ...args)\n\n    return this\n  }\n\n  /** @ignore */\n  _removeComponent(compName) {\n    // Call custom onRemove\n    invoke(this.data[compName], 'onRemove')\n\n    // Remove from index\n    this.world?.entities.removeFromIndex(this, compName)\n\n    // Remove from entity\n    delete this.data[compName]\n  }\n}\n",
     "static": true,
     "longname": "/home/eric/dev/picoes/src/entity.js",
     "access": "public",
@@ -586,7 +586,7 @@
     "importPath": "picoes/src/entity.js",
     "importStyle": "{Entity}",
     "description": "Entity class used for storing components.",
-    "lineNumber": 9,
+    "lineNumber": 13,
     "unknown": [
       {
         "tagName": "@class",
@@ -606,7 +606,7 @@
     "longname": "src/entity.js~Entity#constructor",
     "access": "private",
     "description": "Do not construct an Entity yourself - use the entity() method in World instead.\nAlso, do not shallow/deep copy entity objects, only pass around references.",
-    "lineNumber": 19,
+    "lineNumber": 23,
     "params": [
       {
         "nullable": null,
@@ -639,7 +639,7 @@
     "longname": "src/entity.js~Entity#world",
     "access": "public",
     "description": null,
-    "lineNumber": 21,
+    "lineNumber": 25,
     "ignore": true,
     "type": {
       "types": [
@@ -656,7 +656,7 @@
     "longname": "src/entity.js~Entity#_id",
     "access": "private",
     "description": null,
-    "lineNumber": 24,
+    "lineNumber": 28,
     "ignore": true,
     "type": {
       "types": [
@@ -673,7 +673,7 @@
     "longname": "src/entity.js~Entity#data",
     "access": "public",
     "description": null,
-    "lineNumber": 27,
+    "lineNumber": 31,
     "ignore": true,
     "type": {
       "types": [
@@ -692,7 +692,7 @@
     "longname": "src/entity.js~Entity#id",
     "access": "public",
     "description": "Return the entity ID.",
-    "lineNumber": 35,
+    "lineNumber": 39,
     "return": {
       "nullable": null,
       "types": [
@@ -718,7 +718,7 @@
     "longname": "src/entity.js~Entity#id",
     "access": "private",
     "description": "ID is read-only, attempting to set it will throw an error.",
-    "lineNumber": 46,
+    "lineNumber": 50,
     "throws": [
       {
         "types": [
@@ -742,7 +742,7 @@
     "examples": [
       "entity.has('position')"
     ],
-    "lineNumber": 60,
+    "lineNumber": 64,
     "params": [
       {
         "nullable": null,
@@ -778,7 +778,7 @@
     "examples": [
       "const position = entity.get('position')"
     ],
-    "lineNumber": 74,
+    "lineNumber": 78,
     "params": [
       {
         "nullable": null,
@@ -816,7 +816,7 @@
       "entity.access('anything').foo = 'bar'\n// 'anything' now has { foo: 'bar' }",
       "entity.access('anything', { foo: 'bar' }).foo2 = 'bar2'\n// 'anything' now has { foo: 'bar', foo2: 'bar2' }"
     ],
-    "lineNumber": 99,
+    "lineNumber": 103,
     "params": [
       {
         "nullable": null,
@@ -866,7 +866,7 @@
       "entity.set('thisCompIsUndefined', undefined)",
       "entity.set('thisCompIsEmptyObject')"
     ],
-    "lineNumber": 137,
+    "lineNumber": 141,
     "params": [
       {
         "nullable": null,
@@ -912,7 +912,7 @@
     "examples": [
       "entity.replace('position', position)"
     ],
-    "lineNumber": 181,
+    "lineNumber": 185,
     "params": [
       {
         "nullable": null,
@@ -968,7 +968,7 @@
     "examples": [
       "entity.remove('position')"
     ],
-    "lineNumber": 216,
+    "lineNumber": 220,
     "params": [
       {
         "nullable": null,
@@ -1004,7 +1004,7 @@
     "examples": [
       "entity.destroy()"
     ],
-    "lineNumber": 232,
+    "lineNumber": 236,
     "params": [],
     "return": null
   },
@@ -1022,7 +1022,7 @@
     "examples": [
       "if (entity.valid()) {...}"
     ],
-    "lineNumber": 262,
+    "lineNumber": 267,
     "return": {
       "nullable": null,
       "types": [
@@ -1047,7 +1047,7 @@
     "examples": [
       "const serializedEntity = entity.toJSON()"
     ],
-    "lineNumber": 277,
+    "lineNumber": 282,
     "return": {
       "nullable": null,
       "types": [
@@ -1072,7 +1072,7 @@
     "examples": [
       "entity.fromJSON(serializedEntity)"
     ],
-    "lineNumber": 294,
+    "lineNumber": 299,
     "params": [
       {
         "nullable": null,
@@ -1108,7 +1108,7 @@
     "examples": [
       "entity.attach(world)"
     ],
-    "lineNumber": 319,
+    "lineNumber": 324,
     "params": [
       {
         "nullable": null,
@@ -1137,7 +1137,7 @@
     "examples": [
       "entity.detach()"
     ],
-    "lineNumber": 340,
+    "lineNumber": 346,
     "params": [],
     "return": null
   },
@@ -1156,7 +1156,7 @@
       "const clonedEntity = entity.clone()",
       "// How to define custom clone methods\nworld.component('foo', class {\n  onCreate(bar, baz) {\n    this.bar = bar\n    this.baz = baz\n    this.qux = false\n  }\n  setQux(qux = true) {\n    this.qux = qux\n  }\n  cloneArgs() {\n    return [this.bar, this.baz]\n  }\n  clone(target) {\n    target.qux = this.qux\n  }\n})"
     ],
-    "lineNumber": 379,
+    "lineNumber": 386,
     "params": [],
     "return": {
       "types": [
@@ -1179,7 +1179,7 @@
       "const source = world.entity().set('foo', 'bar')\nconst target = world.entity()\nsource._cloneComponentTo(target, 'foo')\nassert(target.get('foo') === 'bar')",
       "world.component('foo', class {\n  onCreate(bar, baz) {\n    this.bar = bar\n    this.baz = baz\n    this.qux = false\n  }\n  setQux(qux = true) {\n    this.qux = qux\n  }\n  cloneArgs() {\n    return [this.bar, this.baz]\n  }\n  clone(target) {\n    target.qux = this.qux\n  }\n})\nconst source = world.entity()\n  .set('foo', 'bar', 'baz')\n  .set('qux', true)\nconst target = world.entity()\nsource._cloneComponentTo(target, 'foo')\nassert(source.get('foo').bar === target.get('foo').bar)\nassert(source.get('foo').baz === target.get('foo').baz)\nassert(source.get('foo').qux === target.get('foo').qux)"
     ],
-    "lineNumber": 437,
+    "lineNumber": 445,
     "ignore": true,
     "params": [
       {
@@ -1223,7 +1223,7 @@
     "longname": "src/entity.js~Entity#_removeComponent",
     "access": "private",
     "description": null,
-    "lineNumber": 464,
+    "lineNumber": 472,
     "ignore": true,
     "params": [
       {
@@ -1772,7 +1772,7 @@
     "__docId__": 105,
     "kind": "file",
     "name": "src/utilities.js",
-    "content": "/**\n * Utility function for invoking methods inside objects, binding \"this\" to the object.\n *\n * @ignore\n *\n * @param {Object}   object - The object\n * @param {Function} method - The method\n * @param {Array}    args   - The arguments\n *\n * @return {Object} Returns what the called method returns\n */\nexport function invoke(object, method, ...args) {\n  if (object && typeof object[method] === 'function') {\n    return object[method].call(object, ...args)\n  }\n}\n\n/**\n * Shallow clones any type of variable.\n *\n * @ignore\n */\nexport function shallowClone(val) {\n  if (Array.isArray(val)) {\n    return [...val]\n  } else if (typeof val === 'object') {\n    return { ...val }\n  }\n  return val\n}\n\n/**\n * Tests if an object is empty in O(1)\n *\n * @ignore\n */\nexport function isEmpty(obj) {\n  for (const key in obj) {\n    return false\n  }\n  return true\n}\n",
+    "content": "/**\n * Utility function for invoking methods inside objects, binding \"this\" to the object.\n *\n * @ignore\n *\n * @param {Object}   object - The object\n * @param {Function} method - The method\n * @param {Array}    args   - The arguments\n *\n * @return {Object} Returns what the called method returns\n */\nexport function invoke(object, method, ...args) {\n  if (object && typeof object[method] === 'function') {\n    return object[method].call(object, ...args)\n  }\n}\n\n/**\n * Shallow clones any type of variable.\n *\n * @ignore\n */\nexport function shallowClone(val) {\n  if (Array.isArray(val)) {\n    return [...val]\n  } else if (typeof val === 'object') {\n    return { ...val }\n  }\n  return val\n}\n\n/**\n * Tests if an entity's data is empty in O(1)\n *\n * @ignore\n */\nexport function isEntityEmpty(obj) {\n  for (const key in obj) {\n    if (key === 'entity') continue\n    return false\n  }\n  return true\n}\n",
     "static": true,
     "longname": "/home/eric/dev/picoes/src/utilities.js",
     "access": "public",
@@ -1869,17 +1869,17 @@
   {
     "__docId__": 108,
     "kind": "function",
-    "name": "isEmpty",
+    "name": "isEntityEmpty",
     "memberof": "src/utilities.js",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/utilities.js~isEmpty",
+    "longname": "src/utilities.js~isEntityEmpty",
     "access": "public",
     "export": true,
     "importPath": "picoes/src/utilities.js",
-    "importStyle": "{isEmpty}",
-    "description": "Tests if an object is empty in O(1)",
+    "importStyle": "{isEntityEmpty}",
+    "description": "Tests if an entity's data is empty in O(1)",
     "lineNumber": 37,
     "ignore": true,
     "params": [
@@ -2319,7 +2319,7 @@
   },
   {
     "kind": "packageJSON",
-    "content": "{\n  \"name\": \"picoes\",\n  \"version\": \"1.1.0\",\n  \"description\": \"Pico Entity System for JavaScript\",\n  \"main\": \"index.js\",\n  \"files\": [\n    \"src\",\n    \"index.js\"\n  ],\n  \"scripts\": {\n    \"test\": \"jest --coverage\",\n    \"doc\": \"node --experimental-vm-modules ./node_modules/.bin/esdoc\",\n    \"deploy\": \"gh-pages -d docs\",\n    \"prepare\": \"husky install\"\n  },\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"git+https://github.com/ayebear/picoes.git\"\n  },\n  \"keywords\": [\n    \"entity\",\n    \"component\",\n    \"system\",\n    \"ecs\",\n    \"picoes\"\n  ],\n  \"author\": \"Eric Hebert\",\n  \"license\": \"MIT\",\n  \"bugs\": {\n    \"url\": \"https://github.com/ayebear/picoes/issues\"\n  },\n  \"homepage\": \"https://github.com/ayebear/picoes#readme\",\n  \"devDependencies\": {\n    \"@babel/core\": \"^7.17.10\",\n    \"@babel/plugin-proposal-class-properties\": \"^7.16.7\",\n    \"@babel/preset-env\": \"^7.17.10\",\n    \"babel-jest\": \"^28.1.0\",\n    \"coveralls\": \"^3.1.1\",\n    \"esdoc\": \"^1.1.0\",\n    \"esdoc-ecmascript-proposal-plugin\": \"^1.0.0\",\n    \"esdoc-flow-type-plugin\": \"^1.1.0\",\n    \"esdoc-standard-plugin\": \"^1.0.0\",\n    \"esdoc-undocumented-identifier-plugin\": \"^1.0.0\",\n    \"esdoc-unexported-identifier-plugin\": \"^1.0.0\",\n    \"gh-pages\": \"^4.0.0\",\n    \"husky\": \"^8.0.1\",\n    \"jest\": \"^28.1.0\",\n    \"prettier\": \"^2.6.2\",\n    \"pretty-quick\": \"^3.1.3\"\n  },\n  \"type\": \"module\"\n}\n",
+    "content": "{\n  \"name\": \"picoes\",\n  \"version\": \"1.1.1\",\n  \"description\": \"Pico Entity System for JavaScript\",\n  \"main\": \"index.js\",\n  \"files\": [\n    \"src\",\n    \"index.js\"\n  ],\n  \"scripts\": {\n    \"test\": \"jest --coverage\",\n    \"doc\": \"node --experimental-vm-modules ./node_modules/.bin/esdoc\",\n    \"deploy\": \"gh-pages -d docs\",\n    \"prepare\": \"husky install\"\n  },\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"git+https://github.com/ayebear/picoes.git\"\n  },\n  \"keywords\": [\n    \"entity\",\n    \"component\",\n    \"system\",\n    \"ecs\",\n    \"picoes\"\n  ],\n  \"author\": \"Eric Hebert\",\n  \"license\": \"MIT\",\n  \"bugs\": {\n    \"url\": \"https://github.com/ayebear/picoes/issues\"\n  },\n  \"homepage\": \"https://github.com/ayebear/picoes#readme\",\n  \"devDependencies\": {\n    \"@babel/core\": \"^7.17.10\",\n    \"@babel/plugin-proposal-class-properties\": \"^7.16.7\",\n    \"@babel/preset-env\": \"^7.17.10\",\n    \"babel-jest\": \"^28.1.0\",\n    \"coveralls\": \"^3.1.1\",\n    \"esdoc\": \"^1.1.0\",\n    \"esdoc-ecmascript-proposal-plugin\": \"^1.0.0\",\n    \"esdoc-flow-type-plugin\": \"^1.1.0\",\n    \"esdoc-standard-plugin\": \"^1.0.0\",\n    \"esdoc-undocumented-identifier-plugin\": \"^1.0.0\",\n    \"esdoc-unexported-identifier-plugin\": \"^1.0.0\",\n    \"gh-pages\": \"^4.0.0\",\n    \"husky\": \"^8.0.1\",\n    \"jest\": \"^28.1.0\",\n    \"prettier\": \"^2.6.2\",\n    \"pretty-quick\": \"^3.1.3\"\n  },\n  \"type\": \"module\"\n}\n",
     "longname": "/home/eric/dev/picoes/package.json",
     "name": "package.json",
     "static": true,

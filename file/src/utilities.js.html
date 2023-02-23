@@ -68,12 +68,13 @@ export function shallowClone(val) {
 }
 
 /**
- * Tests if an object is empty in O(1)
+ * Tests if an entity&apos;s data is empty in O(1)
  *
  * @ignore
  */
-export function isEmpty(obj) {
+export function isEntityEmpty(obj) {
   for (const key in obj) {
+    if (key === &apos;entity&apos;) continue
     return false
   }
   return true
