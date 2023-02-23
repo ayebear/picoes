@@ -1,5 +1,9 @@
 /** @ignore */
-import { invoke, shallowClone, isEmpty } from './utilities.js'
+import {
+  invoke,
+  shallowClone,
+  isEntityEmpty as isEntityEmpty,
+} from './utilities.js'
 
 /**
  * Entity class used for storing components.
@@ -97,7 +101,7 @@ export class Entity {
    * @return {Object} Always returns either the existing component, or the newly created one.
    */
   access(component, ...args) {
-    if (!this.has(component)) {
+    if (!(component in this.data)) {
       this.set(component, ...args)
     }
     return this.data[component]
@@ -214,9 +218,9 @@ export class Entity {
    * @return {Object} The original entity that remove() was called on, so that operations can be chained.
    */
   remove(...components) {
-    for (const compName of components) {
-      if (compName in this.data) {
-        this._removeComponent(compName)
+    for (const name of components) {
+      if (name in this.data) {
+        this._removeComponent(name)
       }
     }
     return this
@@ -235,11 +239,12 @@ export class Entity {
     }
 
     // Remove all components
-    for (const compName in this.data) {
-      this._removeComponent(compName)
+    for (const name in this.data) {
+      if (name === 'entity') continue
+      this._removeComponent(name)
     }
 
-    if (!isEmpty(this.data)) {
+    if (!isEntityEmpty(this.data)) {
       throw new Error(
         'Failed to remove all components. Components must have been added inside onRemove().'
       )
@@ -322,8 +327,9 @@ export class Entity {
       this.world = world
       this._id = this.world.entities.nextEntityId++
       this.world.entities.entities.set(this._id, this)
-      for (const compName in this.data) {
-        this.world.entities.addToIndex(this, compName)
+      for (const name in this.data) {
+        if (name === 'entity') continue
+        this.world.entities.addToIndex(this, name)
       }
     }
   }
@@ -340,8 +346,9 @@ export class Entity {
   detach() {
     if (this.valid()) {
       // Remove from current world
-      for (const compName in this.data) {
-        this.world.entities.removeFromIndex(this, compName)
+      for (const name in this.data) {
+        if (name === 'entity') continue
+        this.world.entities.removeFromIndex(this, name)
       }
       this.world.entities.entities.delete(this._id)
       this._id = undefined
@@ -384,6 +391,7 @@ export class Entity {
     // Clone each component in this entity, to a new entity
     const newEntity = this.world.entity()
     for (const name in this.data) {
+      if (name === 'entity') continue
       this._cloneComponentTo(newEntity, name)
     }
 
