@@ -258,7 +258,7 @@ export class World {
    * @example
    * // Pass multiple components, arrays, use extra entity parameter,
    * // and destructure components outside the query
-   * world.each('compA', ['more', 'comps'], 'compB', ({ compA, compC }, entity) => {
+   * world.each('compA', ['more', 'comps'], 'compB', ({ entity, compA, compC }) => {
    *   if (compC) compC.foo(compC.bar)
    *   compA.foo = 'bar'
    *   entity.remove('compB')

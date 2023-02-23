@@ -24,7 +24,7 @@ export class Entity {
     this._id = id
 
     /** @ignore */
-    this.data = {}
+    this.data = { entity: this }
   }
 
   /**
@@ -275,7 +275,9 @@ export class Entity {
    * @return {string} JSON encoded string
    */
   toJSON() {
-    return JSON.stringify(this.data)
+    // Don't include "entity" key in serialized data
+    const { entity: _, ...comps } = this.data
+    return JSON.stringify(comps)
   }
 
   /**

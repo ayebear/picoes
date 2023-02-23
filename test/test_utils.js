@@ -1,7 +1,7 @@
 export function getSize(it) {
   let num = 0
-  for (const _elem in it) {
-    ++num
+  for (const key in it) {
+    if (key !== 'entity') ++num
   }
   return num
 }

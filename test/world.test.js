@@ -442,14 +442,14 @@ test('system: system iteration', () => {
         this.world.each(
           'position',
           'velocity',
-          ({ position, velocity }, ent) => {
+          ({ entity, position, velocity }) => {
             expect(position).toBeTruthy()
             expect(velocity).toBeTruthy()
             position.x += velocity.x
             position.y += velocity.y
-            expect(ent).toBeTruthy()
-            expect(ent.has('position')).toBeTruthy()
-            expect(ent.has('velocity')).toBeTruthy()
+            expect(entity).toBeTruthy()
+            expect(entity.has('position')).toBeTruthy()
+            expect(entity.has('velocity')).toBeTruthy()
             expect(dt > 0).toBeTruthy()
             expect(total > 0).toBeTruthy()
           }
@@ -555,7 +555,7 @@ test('system: system edge cases', () => {
       run() {
         this.world.each(
           ['position', 'velocity'],
-          ({ position, velocity }, ent) => {
+          ({ entity, position, velocity }) => {
             ++count
             if (count == 1) {
               testEnt1.remove('position', 'velocity')
@@ -567,14 +567,14 @@ test('system: system edge cases', () => {
             expect(velocity).toBeTruthy()
             position.x += velocity.x
             position.y += velocity.y
-            expect(ent).toBeTruthy()
-            expect(ent.has('position')).toBeTruthy()
-            expect(ent.has('velocity')).toBeTruthy()
+            expect(entity).toBeTruthy()
+            expect(entity.has('position')).toBeTruthy()
+            expect(entity.has('velocity')).toBeTruthy()
 
             // Make sure the test entities do not show up here
-            expect(ent.id !== testEnt0.id).toBeTruthy()
-            expect(ent.id !== testEnt1.id).toBeTruthy()
-            expect(ent.id !== testEnt2.id).toBeTruthy()
+            expect(entity.id !== testEnt0.id).toBeTruthy()
+            expect(entity.id !== testEnt1.id).toBeTruthy()
+            expect(entity.id !== testEnt2.id).toBeTruthy()
           }
         )
       }
@@ -720,14 +720,14 @@ test('system: indexing edge cases', () => {
 
     // Remove test entities, create more test entities
     let count = 0
-    world.each('sprite', ({ sprite }, entity) => {
+    world.each('sprite', ({ entity, sprite }) => {
       ++count
       entity.destroy()
     })
     expect(count === 4).toBeTruthy()
 
     count = 0
-    world.each('sprite', ({ sprite }, entity) => {
+    world.each('sprite', ({ entity, sprite }) => {
       ++count
       entity.destroy()
     })
@@ -746,14 +746,14 @@ test('system: indexing edge cases', () => {
     }
 
     count = 0
-    world.each('velocity', ({ velocity }, entity) => {
+    world.each('velocity', ({ entity, velocity }) => {
       ++count
       entity.destroy()
     })
     expect(count).toBe(2)
 
     count = 0
-    world.each('velocity', ({ velocity }, entity) => {
+    world.each('velocity', ({ entity, velocity }) => {
       ++count
       entity.destroy()
     })
@@ -770,14 +770,14 @@ test('system: indexing edge cases', () => {
     }
 
     count = 0
-    world.each('position', ({ position }, entity) => {
+    world.each('position', ({ entity, position }) => {
       ++count
       entity.destroy()
     })
     expect(count).toBe(1)
 
     count = 0
-    world.each('position', ({ position }, entity) => {
+    world.each('position', ({ entity, position }) => {
       ++count
       entity.destroy()
     })
@@ -820,13 +820,13 @@ test('system: use the each() method', () => {
   let ent2 = world.entity().set('position', {})
   let ent3 = world.entity().set('position:"velocity"', {})
   let externalVar = 5
-  world.each('position', ({ position: pos }, ent) => {
+  world.each('position', ({ entity: ent, position: pos }) => {
     expect(pos).toBeTruthy()
     expect(ent).toBeTruthy()
     expect(ent.has('position')).toBeTruthy()
     expect(externalVar === 5).toBeTruthy()
   })
-  world.each('position', function ({ position: pos }, ent) {
+  world.each('position', function ({ entity: ent, position: pos }) {
     expect(pos).toBeTruthy()
     expect(ent).toBeTruthy()
     expect(ent.has('position')).toBeTruthy()

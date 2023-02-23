@@ -98,8 +98,9 @@ world.entity().set('damages', 10)
 world.entity().set('damages', 30)
 
 // Apply damage to player from enemies
-world.each('damages', ({ damages }) => {
+world.each('damages', ({ entity, damages }) => {
   player.get('health').value -= damages
+  entity.remove('damages')
 })
 
 // Player now has reduced health
