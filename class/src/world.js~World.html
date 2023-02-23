@@ -1121,7 +1121,7 @@ for (const entity of entities) {...}</code></pre>
       
       <pre class="prettyprint source-code"><code data-ice="exampleCode">// Pass multiple components, arrays, use extra entity parameter,
 // and destructure components outside the query
-world.each(&apos;compA&apos;, [&apos;more&apos;, &apos;comps&apos;], &apos;compB&apos;, ({ compA, compC }, entity) =&gt; {
+world.each(&apos;compA&apos;, [&apos;more&apos;, &apos;comps&apos;], &apos;compB&apos;, ({ entity, compA, compC }) =&gt; {
   if (compC) compC.foo(compC.bar)
   compA.foo = &apos;bar&apos;
   entity.remove(&apos;compB&apos;)
